@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | ENova EMarket</title>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="../js/supabase-adapter.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
@@ -91,7 +94,8 @@
 
     <div class="admin-login-container">
         <div class="admin-logo">
-            <i class="fas fa-shield-alt" style="margin-right: 0.5rem;"></i> ENOVA ADMIN
+            <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 mx-auto mb-2 invert">
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">ADMINISTRATION</span>
         </div>
         <form id="loginForm">
             <div class="form-group">
@@ -125,18 +129,25 @@
             const pass = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
-            const authorizedAdmins = ['benimakiese1234@gmail.com', 'owner2@enova.com', 'owner3@enova.com', 'owner4@enova.com', 'owner5@enova.com'];
+            const authorizedAdmins = window.ADMIN_EMAILS || [];
 
-            if (authorizedAdmins.includes(user) && pass === 'PHOENIX') {
+            if (!authorizedAdmins.includes(user)) {
+                errorMsg.textContent = "Identité non reconnue. Seul l'administrateur désigné peut accéder à cet espace.";
+                errorMsg.style.display = 'block';
+                const container = document.querySelector('.admin-login-container');
+                container.style.animation = 'shake 0.5s';
+                setTimeout(() => container.style.animation = '', 500);
+                return; // Stop execution if user is not authorized
+            }
+
+            if (pass === 'PHOENIX') {
                 // Success
                 sessionStorage.setItem('adminAuth', 'true');
                 localStorage.setItem('enovaRole', 'admin');
                 window.location.href = 'dashboard.html';
             } else {
                 // Failure
-                errorMsg.textContent = !authorizedAdmins.includes(user)
-                    ? "Identité non reconnue. Seul l'administrateur désigné peut accéder à cet espace."
-                    : "Mot de passe incorrect.";
+                errorMsg.textContent = "Mot de passe incorrect.";
                 errorMsg.style.display = 'block';
                 // Shake animation effect
                 const container = document.querySelector('.admin-login-container');

@@ -59,18 +59,16 @@
     <script>
         // Check for Admin or Supplier Role
         const role = localStorage.getItem('enovaRole');
-        if (role !== 'admin' && role !== 'supplier') {
-            window.location.href = '../index.html';
-        }
+        // Check removed to allow AuthManager to handle it properly
     </script>
 </head>
 
 <body class="text-gray-900">
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+        <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <a href="dashboard.html" class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
+                <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
                 <span
                     class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
             </a>
@@ -88,7 +86,7 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 flex-shrink-0">
             <div class="glass-panel p-6 sticky top-24">
@@ -117,7 +115,7 @@
                         <iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon>
                         Mes Clients
                     </a>
-                    <a href="users.html" class="sidebar-link">
+                    <a href="users.html" class="sidebar-link admin-only">
                         <iconify-icon icon="solar:user-bold" width="20"></iconify-icon>
                         Utilisateurs
                     </a>
@@ -191,6 +189,9 @@
                                 <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Prix</th>
                                 <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Stock
                                 </th>
+                                <th
+                                    class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">
+                                    Épinglé</th>
                                 <th
                                     class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">
                                     Actions</th>
@@ -275,8 +276,9 @@
 
             tbody.innerHTML = products.map(p => {
                 const isLowStock = (p.stock || 0) < 10;
+                const isPinned = p.pinned === true;
                 return `
-                <tr class="group hover:bg-gray-50/50 transition-colors">
+                <tr class="group hover:bg-gray-50/50 transition-colors ${isPinned ? 'bg-yellow-50/40' : ''}">
                     <td class="p-4">
                         <input type="checkbox" value="${p.id}" onclick="updateSelectedUI()" class="product-checkbox rounded border-gray-300 text-black focus:ring-black">
                     </td>
@@ -285,12 +287,23 @@
                             <img src="../${p.image}" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/100'">
                         </div>
                     </td>
-                    <td class="p-4 font-bold text-gray-900">${p.name}</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-gray-900">${p.name}</span>
+                            ${isPinned ? '<span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[9px] font-black uppercase rounded-full tracking-wider">📌 Épinglé</span>' : ''}
+                        </div>
+                    </td>
                     <td class="p-4"><span class="px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase rounded-full text-gray-500">${p.category}</span></td>
                     <td class="p-4 font-black text-gray-900" data-price-cdf="${p.price}">${CurrencyManager.formatPrice(p.price)}</td>
                     <td class="p-4">
                         <span class="font-black ${isLowStock ? 'text-red-500' : 'text-gray-900'}">${p.stock || 0}</span>
                         ${isLowStock ? '<span class="text-[8px] font-bold text-red-400 block uppercase">Stock faible</span>' : ''}
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="togglePin('${p.id}')" title="${isPinned ? 'Désépingler' : 'Épingler sur la homepage'}" 
+                            class="w-8 h-8 rounded-lg transition-all flex items-center justify-center mx-auto ${isPinned ? 'bg-yellow-100 text-yellow-500 hover:bg-yellow-200' : 'bg-gray-100 text-gray-400 hover:bg-yellow-50 hover:text-yellow-500'}">
+                            <iconify-icon icon="solar:pin-bold" width="16"></iconify-icon>
+                        </button>
                     </td>
                     <td class="p-4 text-right">
                         <div class="flex justify-end gap-2">
@@ -385,6 +398,15 @@
                 renderAdminProducts();
                 showToast('Article retiré.', 'info');
             });
+        }
+
+        async function togglePin(id) {
+            const p = ProductManager.getProduct(id);
+            if (!p) return;
+            const newPinned = !p.pinned;
+            await ProductManager.updateProduct(id, { pinned: newPinned });
+            renderAdminProducts();
+            showToast(newPinned ? '📌 Produit épinglé sur la homepage !' : 'Produit désépinglé.', newPinned ? 'success' : 'info');
         }
 
         form.addEventListener('submit', (e) => {

@@ -15,6 +15,46 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     migrateData();
 
+    // ========== MOBILE MENU & SEARCH ==========
+    const initMobileControls = () => {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileSearchContainer = document.getElementById('mobileSearchContainer');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+            document.body.classList.toggle('overflow-hidden');
+        };
+
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMenu);
+        if (closeMobileMenu) closeMobileMenu.addEventListener('click', toggleMenu);
+        if (mobileOverlay) mobileOverlay.addEventListener('click', toggleMenu);
+
+        if (mobileSearchBtn && mobileSearchContainer) {
+            mobileSearchBtn.addEventListener('click', () => {
+                mobileSearchContainer.classList.toggle('hidden');
+            });
+        }
+
+        // Update mobile favorites badge
+        const updateMobileBadges = () => {
+            const mobileFavBadge = document.getElementById('mobileFavoritesBadge');
+            if (mobileFavBadge && window.FavoritesManager) {
+                const count = window.FavoritesManager.getCount();
+                mobileFavBadge.textContent = count;
+                mobileFavBadge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        };
+
+        window.addEventListener('favoritesUpdated', updateMobileBadges);
+        updateMobileBadges();
+    };
+    initMobileControls();
+
     console.log('ENova EMarket Loaded');
 
     // ========== CURRENCY MANAGER ==========
@@ -140,10 +180,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // If fromCDF is true, converts CDF -> USD
         // If fromCDF is false, converts USD -> CDF
         convert(amount, toUSD = true) {
-            const config = window.enovaConfig || { exchangeRate: 2500 };
+            const config = window.enovaConfig || this.getConfigFallback();
             const rate = config.exchangeRate || 2500;
             if (toUSD) return amount / rate;
             return amount * rate;
+        },
+
+        getConfigFallback() {
+            return { exchangeRate: 2500 };
         },
 
         updateAllPrices() {
@@ -192,7 +236,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const AuthManager = {
         role: localStorage.getItem('enovaRole') || null, // 'customer' | 'supplier' | null
 
-        init() {
+        async init() {
+            // Subscribe to auth state changes
+            if (window.supabaseClient) {
+                window.supabaseClient.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth State Change:', event, session);
+
+                    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                        const user = session.user;
+                        const role = user.user_metadata.role || 'customer';
+                        const email = user.email;
+
+                        // Admin Override Logic
+                        const adminEmails = window.ADMIN_EMAILS || [];
+                        let finalRole = role;
+                        if (adminEmails.includes(email)) {
+                            finalRole = 'admin';
+                        }
+
+                        // Sync LocalStorage
+                        if (localStorage.getItem('enovaRole') !== finalRole) {
+                            this.setRole(finalRole);
+                        }
+                        if (localStorage.getItem('enovaUserEmail') !== email) {
+                            localStorage.setItem('enovaUserEmail', email);
+                        }
+                    } else if (event === 'SIGNED_OUT') {
+                        this.role = null;
+                        localStorage.removeItem('enovaRole');
+                        localStorage.removeItem('enovaUserEmail');
+                        sessionStorage.removeItem('adminAuth');
+                        this.enforcePermissions();
+                        this.updateAccountLink();
+                        // Redirect to home if on protected page
+                        if (window.location.pathname.includes('ADMIN') || window.location.pathname.includes('customer-dashboard')) {
+                            window.location.href = '../index.html';
+                        }
+                    }
+                });
+
+                // Initial Check
+                const { data } = await window.supabaseClient.auth.getSession();
+                if (data.session) {
+                    const user = data.session.user;
+                    const role = user.user_metadata.role || 'customer';
+
+                    const adminEmails = window.ADMIN_EMAILS || [];
+                    let finalRole = role;
+                    if (adminEmails.includes(user.email)) {
+                        finalRole = 'admin';
+                    }
+                    this.setRole(finalRole);
+                } else {
+                    // No Supabase session, check for legacy admin password auth
+                    if (sessionStorage.getItem('adminAuth') === 'true') {
+                        this.setRole('admin');
+                    } else if (this.role) {
+                        this.setRole(null);
+                    }
+                }
+            }
+
             this.enforcePermissions();
             this.updateAccountLink();
             this.checkWelcomeBonus();
@@ -228,25 +332,21 @@ document.addEventListener('DOMContentLoaded', () => {
             window.dispatchEvent(new CustomEvent('roleChanged', { detail: { role } }));
         },
 
-        logout() {
+        async logout() {
+            if (window.supabaseClient) {
+                await window.supabaseClient.auth.signOut();
+            }
             this.role = null;
             localStorage.removeItem('enovaRole');
+            localStorage.removeItem('enovaUserEmail');
             sessionStorage.removeItem('adminAuth');
-            window.location.reload();
+            window.location.href = 'index.html';
         },
 
         enforcePermissions() {
             const body = document.body;
 
             body.classList.add(`role-${this.role}`);
-
-            // Admin: Full access (no restrictions)
-            if (this.role === 'admin') {
-                document.querySelectorAll('.publish-btn, .supplier-only, .admin-only').forEach(el => {
-                    el.style.display = '';
-                });
-                return;
-            }
 
             // Supplier/Admin UI Adjustments
             if (this.role === 'supplier' || this.role === 'admin') {
@@ -256,10 +356,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.sidebar-link').forEach(link => {
                     const text = link.textContent.trim();
                     if (isAdmin) {
-                        if (text === 'Mes Produits') link.innerHTML = '<iconify-icon icon="solar:box-bold" width="20"></iconify-icon> Gestion Produits';
-                        if (text === 'Commandes') link.innerHTML = '<iconify-icon icon="solar:cart-large-bold" width="20"></iconify-icon> Gestion Commandes';
-                        if (text === 'Mes Clients') link.innerHTML = '<iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon> Clients';
-                        if (text === 'Calcul des Profits') link.innerHTML = '<iconify-icon icon="solar:wad-of-money-bold" width="20"></iconify-icon> Profits Plateforme';
+                        if (text.includes('Mes Produits')) link.innerHTML = '<iconify-icon icon="solar:box-bold" width="20"></iconify-icon> Gestion Produits';
+                        if (text.includes('Commandes')) link.innerHTML = '<iconify-icon icon="solar:cart-large-bold" width="20"></iconify-icon> Gestion Commandes';
+                        if (text.includes('Mes Clients')) link.innerHTML = '<iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon> Clients Plateforme';
+                        if (text.includes('Calcul des Profits')) link.innerHTML = '<iconify-icon icon="solar:wad-of-money-bold" width="20"></iconify-icon> Profits Plateforme';
+                        if (text.includes('Utilisateurs')) link.innerHTML = '<iconify-icon icon="solar:user-bold" width="20"></iconify-icon> Fournisseurs Plateforme';
                     } else {
                         // Reset for supplier if needed (usually already correct in HTML, but for toggle safety)
                     }
@@ -271,16 +372,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Specific Supplier Restrictions
+            // Admin: Full access (no restrictions)
+            if (this.role === 'admin') {
+                document.querySelectorAll('.publish-btn, .supplier-only, .admin-only').forEach(el => {
+                    el.style.display = '';
+                });
+                return;
+            }
+
+            // Supplier Restrictions (Redirected to vendor-dashboard.html)
             if (this.role === 'supplier') {
                 // Hide Cart Triggers & Buttons
                 document.querySelectorAll('.cart-trigger, .add-to-cart-btn, #cart-count').forEach(el => {
                     el.style.display = 'none';
                 });
 
-                // Redirect if on admin-only pages
-                if (window.location.pathname.includes('users.html')) {
-                    window.location.href = 'dashboard.html';
+                // Redirect if on admin-folder pages (Vendeurs have their own dashboard now)
+                if (window.location.pathname.includes('/ADMIN%20NOVA/') || window.location.pathname.includes('/ADMIN NOVA/')) {
+                    window.location.href = '../vendor-dashboard.html';
                 }
 
                 // Redirect if on forbidden customer pages
@@ -300,9 +409,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.style.display = 'none';
                 });
 
-                // Redirect if on forbidden pages
+                // Redirect if on forbidden pages (customer in Admin folder)
+                if (window.location.pathname.includes('/ADMIN%20NOVA/') || window.location.pathname.includes('/ADMIN NOVA/')) {
+                    window.location.href = '../customer-dashboard.html';
+                }
+
                 if (window.location.pathname.includes('publish.html')) {
                     window.location.href = 'index.html';
+                }
+            }
+
+            // Not Logged In Restrictions (Protection for Admin folder)
+            if (this.role === null) {
+                const path = window.location.pathname;
+                const isAdminFolder = path.includes('/ADMIN%20NOVA/') || path.includes('/ADMIN NOVA/');
+                const isLoginPage = path.endsWith('ADMIN%20NOVA/') || path.endsWith('ADMIN NOVA/') || path.endsWith('index.html');
+
+                if (isAdminFolder && !isLoginPage) {
+                    window.location.href = '../login.html';
                 }
             }
         },
@@ -310,8 +434,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAccountLink() {
             const accountLink = document.getElementById('accountLink');
             if (accountLink) {
-                if (this.role === 'admin' || this.role === 'supplier') {
+                if (this.role === 'admin') {
                     accountLink.href = 'ADMIN NOVA/dashboard.html';
+                } else if (this.role === 'supplier') {
+                    accountLink.href = 'vendor-dashboard.html';
                 } else if (this.role === 'customer') {
                     accountLink.href = 'customer-dashboard.html';
                 } else {
@@ -450,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveFavorites(favorites) {
             localStorage.setItem('enovaFavorites', JSON.stringify(favorites));
             this.updateUI();
+            window.dispatchEvent(new CustomEvent('favoritesUpdated'));
         },
 
         // Add item to favorites
@@ -633,7 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         code,
                         type: p.type,
                         value: p.value
-                    });
+                    }, 'code');
                 }
                 this.promos = defaults;
             }
@@ -762,6 +889,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min`;
             if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} h`;
             return date.toLocaleDateString();
+        },
+
+        getRecentActivity(limit = 5) {
+            return this.activities.slice(0, limit);
         }
     };
     window.ActivityManager = ActivityManager;
@@ -779,17 +910,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     isNew: p.is_new,
                     isPromo: p.is_promo,
                     oldPrice: p.old_price,
-                    // Keep snake_case for potential updates back to DB if needed
                 }));
             } else {
                 // Seed default products if database is empty
                 const defaults = [
-                    { id: 'parfum', name: 'Parfum Élégance', category: 'Collections Femme', price: 50000, image: 'Images/flacon.png', rating: 4.5, reviews: 156, is_new: true, stock: 12 },
-                    { id: 'voiture', name: 'Mini EV Nammi S31', category: 'Tech & Gadgets', price: 25000000, image: 'Images/Factory-Direct-Sales-Dongfeng-2024-New-Product-Trending-Small-Electric-Car-Nammi-S31-Mini-EV-Cheapest-Ev-Car-From-China.jpg_300x300.avif', rating: 4.8, reviews: 28, is_promo: true, stock: 5 },
+                    { id: 'parfum', name: 'Parfum Élégance', category: 'Collections Femme', price: 50000, image: 'Images/flacon.png', rating: 4.5, reviews: 156, is_new: true, stock: 12, pinned: true },
+                    { id: 'voiture', name: 'Mini EV Nammi S31', category: 'Tech & Gadgets', price: 25000000, image: 'Images/Factory-Direct-Sales-Dongfeng-2024-New-Product-Trending-Small-Electric-Car-Nammi-S31-Mini-EV-Cheapest-Ev-Car-From-China.jpg_300x300.avif', rating: 4.8, reviews: 28, is_promo: true, stock: 5, pinned: true },
                     { id: 'laptop', name: 'Ordinateur Portable HP I7', category: 'Tech & Gadgets', price: 525000, image: 'Images/3a7cdf50-be32-4d07-b2a0-2cee2df8308a_390x286.jpg', rating: 5.0, reviews: 89, stock: 8 },
                     { id: 'cosmetiques', name: 'Kit Cosmétiques Premium', category: 'Collections Femme', price: 95000, old_price: 125000, image: 'Images/tconvfimg-les-dupes-ces-copies-legales-de-produit-best-seller-que-vous-avez-deja-du-a.jpg', rating: 4.5, reviews: 215, is_new: true, stock: 3 },
-                    { id: 'montre-homme', name: 'Montre Chrono Luxe', category: 'Style Homme', price: 150000, image: 'Images/watch.png', rating: 4.9, reviews: 42, is_new: true, stock: 10 },
-                    { id: 'canape-design', name: 'Canapé Scandinave', category: 'Art de vivre', price: 850000, image: 'Images/sofa.png', rating: 4.7, reviews: 18, stock: 2 }
+                    { id: 'montre-homme', name: 'Montre Chrono Luxe', category: 'Style Homme', price: 150000, image: 'Images/word-image-4.png', rating: 4.9, reviews: 42, is_new: true, stock: 10, pinned: true },
+                    { id: 'canape-design', name: 'Canapé Scandinave', category: 'Art de vivre', price: 850000, image: 'Images/EMarketPc.jpeg', rating: 4.7, reviews: 18, stock: 2 }
                 ];
                 for (const prod of defaults) {
                     await window.SupabaseAdapter.upsert('products', prod);
@@ -915,7 +1045,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 total: order.total,
                 customer_name: order.customer?.name || order.customer_name,
                 customer_email: order.customer?.email || order.customer_email,
-                items: order.items
+                items: order.items,
+                payment_method: order.paymentMethod || 'Non spécifié',
+                phone_number: order.phoneNumber || '',
+                points_used: order.pointsUsed || 0
             };
             const inserted = await window.SupabaseAdapter.insert('orders', newOrderData);
             if (inserted) {
@@ -938,20 +1071,116 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         getCustomerStats(email) {
-            const orders = this.orders.filter(o => o.customer_email === email && o.status !== 'Annulé');
-            const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+            const allOrders = this.orders.filter(o => o.customer_email === email && o.status !== 'Annulé');
+            const totalSpent = allOrders.reduce((sum, o) => sum + o.total, 0);
+
+            // Points earned: 2% cashback only for products > 50$
+            const thresholdUSD = 50;
+            const thresholdCDF = CurrencyManager.convert(thresholdUSD, false);
+            let earnedTotal = 0;
+
+            allOrders.forEach(order => {
+                (order.items || []).forEach(item => {
+                    if (item.price >= thresholdCDF) {
+                        earnedTotal += (item.price * item.quantity);
+                    }
+                });
+            });
+
+            const pointsEarned = Math.floor(earnedTotal * 0.02);
+            const pointsUsed = allOrders.reduce((sum, o) => sum + (o.points_used || 0), 0);
+            const currentBalance = Math.max(0, pointsEarned - pointsUsed);
+
             return {
-                totalOrders: orders.length,
+                totalOrders: allOrders.length,
                 totalSpent: totalSpent,
-                avgOrderValue: orders.length > 0 ? totalSpent / orders.length : 0,
-                lastOrder: orders.length > 0 ? orders[0] : null
+                avgOrderValue: allOrders.length > 0 ? totalSpent / allOrders.length : 0,
+                lastOrder: allOrders.length > 0 ? allOrders[0] : null,
+                novaPoints: currentBalance,
+                pointsEarned,
+                pointsUsed
             };
         },
 
-        getAdvancedStats() {
+        getVendorStats(vendorEmail) {
+            const allOrders = this.getOrders();
+            let vendorTotalSales = 0;
+            let vendorOrderCount = 0;
+            const salesByDay = {};
+
+            // Last 7 days labels
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                salesByDay[d.toISOString().split('T')[0]] = 0;
+            }
+
+            allOrders.forEach(order => {
+                const vendorItems = order.items.filter(item => {
+                    const product = ProductManager.getProduct(item.id);
+                    return product && product.supplier_email === vendorEmail;
+                });
+
+                if (vendorItems.length > 0) {
+                    vendorOrderCount++;
+                    const orderTotalForVendor = vendorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    vendorTotalSales += orderTotalForVendor;
+
+                    const dateKey = new Date(order.date).toISOString().split('T')[0];
+                    if (salesByDay[dateKey] !== undefined) {
+                        salesByDay[dateKey] += orderTotalForVendor;
+                    }
+                }
+            });
+
+            const platformCommission = vendorTotalSales * 0.10;
+            const netGains = vendorTotalSales - platformCommission;
+
+            return {
+                totalSales: vendorTotalSales,
+                netGains: netGains,
+                commission: platformCommission,
+                totalOrders: vendorOrderCount,
+                chartData: {
+                    labels: Object.keys(salesByDay).map(date => {
+                        const d = new Date(date);
+                        return d.toLocaleDateString('fr-FR', { weekday: 'short' });
+                    }),
+                    data: Object.values(salesByDay)
+                },
+                recentOrders: allOrders.filter(order =>
+                    order.items.some(item => {
+                        const product = ProductManager.getProduct(item.id);
+                        return product && product.supplier_email === vendorEmail;
+                    })
+                ).slice(0, 5)
+            };
+        },
+
+        getAdvancedStats(timeframe = 'all') {
             const role = localStorage.getItem('enovaRole');
             const email = localStorage.getItem('enovaUserEmail');
             let orders = this.orders;
+
+            // Apply timeframe filter
+            if (timeframe !== 'all') {
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                orders = orders.filter(o => {
+                    const orderDate = new Date(o.date);
+                    if (timeframe === 'day') {
+                        return orderDate >= startOfDay;
+                    }
+                    const diffTime = now - orderDate;
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+                    if (timeframe === 'week') return diffDays <= 7;
+                    if (timeframe === 'month') return diffDays <= 30;
+                    if (timeframe === 'year') return diffDays <= 365;
+                    return true;
+                });
+            }
 
             if (role === 'supplier' && email) {
                 orders = orders.filter(o => {
@@ -972,8 +1201,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const productSalesCount = {};
             const categorySales = {};
+            const customerEmails = new Set();
 
             orders.forEach(o => {
+                const email = o.customer?.email || o.customer_email;
+                if (email) customerEmails.add(email);
+
                 (o.items || []).forEach(item => {
                     productSalesCount[item.id] = (productSalesCount[item.id] || 0) + item.quantity;
                     const p = products.find(prod => prod.id === item.id);
@@ -981,6 +1214,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     categorySales[cat] = (categorySales[cat] || 0) + (item.price * item.quantity);
                 });
             });
+
+            const totalCustomers = customerEmails.size;
 
             const deadStock = products.filter(p => !productSalesCount[p.id]);
             const topProducts = products
@@ -995,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 aov,
                 commissionTotal: totalSales * (commissionRate / 100),
                 netSales: totalSales * (1 - commissionRate / 100),
+                totalCustomers,
                 deadStockCount: deadStock.length,
                 deadStockList: deadStock.slice(0, 10),
                 categorySales,
@@ -1012,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalSales: stats.totalSales,
                     netSales: stats.commissionTotal,
                     commissionTotal: stats.commissionTotal,
-                    totalCustomers: 0
+                    totalCustomers: stats.totalCustomers
                 };
             }
 
@@ -1021,7 +1257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalSales: stats.totalSales,
                 netSales: stats.netSales,
                 commissionTotal: stats.commissionTotal,
-                totalCustomers: 0
+                totalCustomers: stats.totalCustomers
             };
         },
 
@@ -1149,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ========== TOAST NOTIFICATION SYSTEM ==========
-    function showToast(message, type = 'success') {
+    window.showToast = function (message, type = 'success') {
         const existingToast = document.querySelector('.enova-toast');
         if (existingToast) existingToast.remove();
 
@@ -1195,7 +1431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========== PREMIUM OVERLAY & MODAL SYSTEM ==========
-    function showConfirm(title, message, onConfirm, confirmText = 'Confirmer', cancelText = 'Annuler') {
+    window.showConfirm = function (title, message, onConfirm, confirmText = 'Confirmer', cancelText = 'Annuler') {
         const existingOverlay = document.getElementById('enova-global-overlay');
         if (existingOverlay) existingOverlay.remove();
 
@@ -1289,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
+    window.LoaderManager = LoaderManager;
 
     function showPasswordConfirm(title, message, onConfirm) {
         const existingOverlay = document.getElementById('enova-global-overlay');
@@ -1633,79 +1870,162 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ========== RENDER PRODUCTS (New) ==========
-    function renderProducts() {
-        const grid = document.getElementById('mainProductGrid');
+    // ========== RENDER PRODUCTS (Homepage - 3 grilles) ==========
+
+    // Helper: génère le HTML d'une carte produit
+    function buildProductCardHTML(product) {
+        let badgeHTML = '';
+        if (product.isNew || product.is_new) badgeHTML = '<span class="badge badge-new"><iconify-icon icon="solar:stars-bold" width="12"></iconify-icon>Nouveau</span>';
+        if (product.isPromo || product.is_promo) badgeHTML = '<span class="badge badge-sale"><iconify-icon icon="solar:tag-price-bold" width="12"></iconify-icon>Promo</span>';
+
+        const oldPrice = product.oldPrice || product.old_price;
+
+        return `
+            <div class="product-card flex flex-col h-full bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all hover:shadow-xl group" data-product-id="${product.id}">
+                <div class="product-image relative aspect-[4/3] overflow-hidden bg-gray-50">
+                    ${badgeHTML}
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/300'">
+                    <button class="wishlist-btn absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-gray-900 hover:text-white ${FavoritesManager.isInFavorites(product.id) ? 'text-red-500' : ''}" onclick="addToWishlist('${product.id}', event)">
+                        <iconify-icon icon="${FavoritesManager.isInFavorites(product.id) ? 'solar:heart-bold' : 'solar:heart-linear'}" width="18"></iconify-icon>
+                    </button>
+                </div>
+                <div class="product-info p-6 flex flex-col flex-1">
+                    <div class="text-[10px] font-bold text-gray-900 uppercase tracking-widest mb-1">${product.category}</div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+                        <a href="product.html?id=${product.id}" class="hover:text-gray-600 transition-colors">${product.name}</a>
+                    </h3>
+                    <div class="flex items-center gap-1 mb-3">
+                        <div class="flex text-yellow-400">
+                            <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
+                            <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
+                            <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
+                            <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
+                            <iconify-icon icon="solar:star-bold" width="12" class="text-gray-200"></iconify-icon>
+                        </div>
+                        <span class="text-[10px] text-gray-400 font-medium">(${product.reviews || 0})</span>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-base font-bold text-gray-900" data-price-cdf="${product.price}">${CurrencyManager.formatPrice(product.price)}</span>
+                            ${oldPrice ? `<span class="text-xs text-gray-400 line-through" data-price-cdf="${oldPrice}">${CurrencyManager.formatPrice(oldPrice)}</span>` : ''}
+                        </div>
+                        <button class="w-full bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 group/btn add-to-cart-btn" onclick="addToCart('${product.id}')">
+                            <iconify-icon icon="solar:cart-large-2-linear" width="16" class="transition-transform group-hover/btn:scale-110"></iconify-icon>
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 1. Produits épinglés
+    function renderPinnedProducts() {
+        const grid = document.getElementById('pinnedProductGrid');
+        const section = document.getElementById('pinnedSection');
+        if (!grid || !section) return;
+
+        const products = ProductManager.getProducts();
+        const pinned = products.filter(p => p.pinned === true);
+
+        if (pinned.length === 0) {
+            // Si aucun produit épinglé, cacher la section entièrement
+            section.style.display = 'none';
+            return;
+        }
+
+        // S'il y a des épinglés, on s'assure d'afficher la section
+        section.style.display = 'block';
+
+        grid.innerHTML = pinned.map(p => buildProductCardHTML(p)).join('');
+        CurrencyManager.updateAllPrices();
+        grid.querySelectorAll('.product-card').forEach(el => {
+            el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        });
+    }
+
+    // 2. 10 produits récemment publiés
+    function renderRecentProducts() {
+        const grid = document.getElementById('recentProductGrid');
         if (!grid) return;
 
         const products = ProductManager.getProducts();
-
-        grid.innerHTML = products.map((product, index) => {
-            // Calculate USD price roughly if not provided
-            const usdPrice = Math.round(product.price / 2500);
-
-            // Badge Logic
-            let badgeHTML = '';
-            if (product.isNew) badgeHTML = '<span class="badge badge-new"><iconify-icon icon="solar:stars-bold" width="12"></iconify-icon>Nouveau</span>';
-            if (product.isPromo) badgeHTML = '<span class="badge badge-sale"><iconify-icon icon="solar:tag-price-bold" width="12"></iconify-icon>Promo</span>';
-
-            // Star Ratings (simplified)
-            let stars = '';
-            for (let i = 0; i < 5; i++) {
-                if (i < Math.floor(product.rating)) stars += '<i class="fas fa-star text-yellow-400"></i>';
-                else if (i === Math.floor(product.rating) && product.rating % 1 !== 0) stars += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
-                else stars += '<i class="far fa-star text-yellow-400"></i>';
-            }
-
-            return `
-                <div class="product-card flex flex-col h-full bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all hover:shadow-xl group" data-product-id="${product.id}">
-                    <div class="product-image relative aspect-[4/3] overflow-hidden bg-gray-50">
-                        ${badgeHTML}
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/300'">
-                        <button class="wishlist-btn absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-gray-900 hover:text-white ${FavoritesManager.isInFavorites(product.id) ? 'text-red-500' : ''}" onclick="addToWishlist('${product.id}', event)">
-                            <iconify-icon icon="${FavoritesManager.isInFavorites(product.id) ? 'solar:heart-bold' : 'solar:heart-linear'}" width="18"></iconify-icon>
-                        </button>
-                    </div>
-                    <div class="product-info p-6 flex flex-col flex-1">
-                        <div class="text-[10px] font-bold text-gray-900 uppercase tracking-widest mb-1">${product.category}</div>
-                        <h3 class="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
-                            <a href="product.html?id=${product.id}" class="hover:text-gray-600 transition-colors">${product.name}</a>
-                        </h3>
-                        <div class="flex items-center gap-1 mb-3">
-                            <div class="flex text-yellow-400">
-                                <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
-                                <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
-                                <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
-                                <iconify-icon icon="solar:star-bold" width="12"></iconify-icon>
-                                <iconify-icon icon="solar:star-bold" width="12" class="text-gray-200"></iconify-icon>
-                            </div>
-                            <span class="text-[10px] text-gray-400 font-medium">(${product.reviews || 0})</span>
-                        </div>
-                        <div class="mt-auto">
-                            <div class="flex items-baseline gap-2 mb-3">
-                                <span class="text-base font-bold text-gray-900" data-price-cdf="${product.price}">${CurrencyManager.formatPrice(product.price)}</span>
-                                ${product.oldPrice ? `<span class="text-xs text-gray-400 line-through" data-price-cdf="${product.oldPrice}">${CurrencyManager.formatPrice(product.oldPrice)}</span>` : ''}
-                            </div>
-                            <button class="w-full bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 group/btn add-to-cart-btn" onclick="addToCart('${product.id}')">
-                                <iconify-icon icon="solar:cart-large-2-linear" width="16" class="transition-transform group-hover/btn:scale-110"></iconify-icon>
-                                Ajouter
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                `;
-        }).join('');
-
-        // No need for CurrencyManager.updateAllPrices() here if we already formatted them, 
-        // but it doesn't hurt.
-        CurrencyManager.updateAllPrices();
-
-        // Reveal animation for new elements
-        const revealElements = document.querySelectorAll('.product-card');
-        revealElements.forEach(el => {
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
+        // Trier par date de création (created_at) dekodée, sinon par id
+        const sorted = [...products].sort((a, b) => {
+            const da = a.created_at ? new Date(a.created_at) : 0;
+            const db = b.created_at ? new Date(b.created_at) : 0;
+            return db - da;
         });
+        const recent10 = sorted.slice(0, 10);
+
+        grid.innerHTML = recent10.length > 0
+            ? recent10.map(p => buildProductCardHTML(p)).join('')
+            : '<p class="col-span-5 text-center text-sm text-gray-400 py-8">Aucun produit disponible.</p>';
+
+        CurrencyManager.updateAllPrices();
+        grid.querySelectorAll('.product-card').forEach(el => {
+            el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        });
+    }
+
+    // 3. Tous les produits (avec filtre & tri)
+    let _currentFilter = 'all';
+
+    function renderAllProducts(filterCat, sortMode) {
+        const grid = document.getElementById('allProductGrid');
+        const noMsg = document.getElementById('noProductsMsg');
+        if (!grid) return;
+
+        filterCat = filterCat || _currentFilter || 'all';
+        sortMode = sortMode || document.getElementById('sortAllProducts')?.value || 'recent';
+
+        const products = ProductManager.getProducts();
+        let filtered = filterCat === 'all' ? [...products] : products.filter(p => p.category === filterCat);
+
+        // Tri
+        if (sortMode === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+        else if (sortMode === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+        else filtered.sort((a, b) => {
+            const da = a.created_at ? new Date(a.created_at) : 0;
+            const db = b.created_at ? new Date(b.created_at) : 0;
+            return db - da;
+        });
+
+        if (noMsg) noMsg.classList.toggle('hidden', filtered.length > 0);
+
+        grid.innerHTML = filtered.length > 0
+            ? filtered.map(p => buildProductCardHTML(p)).join('')
+            : '';
+
+        CurrencyManager.updateAllPrices();
+        grid.querySelectorAll('.product-card').forEach(el => {
+            el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        });
+    }
+
+    // Expose filter & sort handlers globally
+    window.filterAllProducts = function (cat) {
+        _currentFilter = cat;
+        // Update active button style
+        document.querySelectorAll('#filterBar .filter-btn').forEach(btn => {
+            const isActive = btn.dataset.filter === cat;
+            btn.classList.toggle('bg-gray-900', isActive);
+            btn.classList.toggle('text-white', isActive);
+            btn.classList.toggle('bg-gray-100', !isActive);
+            btn.classList.toggle('text-gray-700', !isActive);
+        });
+        renderAllProducts(cat);
+    };
+
+    window.sortAndRenderAll = function () {
+        renderAllProducts(_currentFilter);
+    };
+
+    // Backward compat - ancienne fonction (si appelée ailleurs)
+    function renderProducts() {
+        renderPinnedProducts();
+        renderRecentProducts();
+        renderAllProducts();
     }
 
     // Expose helpers for onclick
@@ -2185,11 +2505,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // Seed default users if empty
                 const defaults = [
-                    { id: 'owner-1', name: 'Beni MAKIESE', email: 'benimakiese@enova.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'BM' },
-                    { id: 'owner-2', name: 'Propriétaire 2', email: 'owner2@enova.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'P2' },
-                    { id: 'owner-3', name: 'Propriétaire 3', email: 'owner3@enova.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'P3' },
-                    { id: 'owner-4', name: 'Propriétaire 4', email: 'owner4@enova.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'P4' },
-                    { id: 'owner-5', name: 'Propriétaire 5', email: 'owner5@enova.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'P5' }
+                    { id: 'owner-1', name: 'Beni MAKIESE', email: 'benimakiese1234@gmail.com', role: 'admin', date_joined: new Date().toISOString(), avatar: 'BM' }
                 ];
                 for (const u of defaults) {
                     await window.SupabaseAdapter.upsert('users', u);
@@ -2234,6 +2550,80 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.UserManager = UserManager;
 
+    // ========== SIDEBAR RESIZER ==========
+    const SidebarResizer = {
+        init() {
+            const sidePanel = document.querySelector('aside .glass-panel.sticky') || document.querySelector('aside > div');
+            if (!sidePanel) return;
+
+            const aside = sidePanel.closest('aside');
+            if (!aside) return;
+
+            // Don't init on mobile
+            if (window.innerWidth < 768) return;
+
+            // Inject Resizer Handle
+            let resizer = sidePanel.querySelector('.sidebar-resizer');
+            if (!resizer) {
+                resizer = document.createElement('div');
+                resizer.className = 'sidebar-resizer';
+                sidePanel.appendChild(resizer);
+            }
+
+            // Restore width
+            const savedWidth = localStorage.getItem('enovaAdminSidebarWidth');
+            if (savedWidth) {
+                this.applyWidth(aside, savedWidth);
+            }
+
+            let isResizing = false;
+            let startX, startWidth;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startX = e.clientX;
+                startWidth = aside.offsetWidth;
+                document.body.classList.add('sidebar-resizing');
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                const deltaX = e.clientX - startX;
+                const newWidth = startWidth + deltaX;
+
+                // New limits: 60px (icons only) to 50% screen
+                if (newWidth > 60 && newWidth < (window.innerWidth / 2)) {
+                    this.applyWidth(aside, `${newWidth}px`);
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    document.body.classList.remove('sidebar-resizing');
+                    localStorage.setItem('enovaAdminSidebarWidth', aside.style.width);
+                }
+            });
+        },
+
+        applyWidth(aside, width) {
+            aside.style.setProperty('width', width, 'important');
+            aside.style.setProperty('min-width', width, 'important');
+            aside.style.setProperty('max-width', width, 'important');
+
+            // Toggle narrow class for CSS labels hiding
+            const widthVal = parseInt(width);
+            if (widthVal < 160) {
+                aside.classList.add('sidebar-narrow');
+            } else {
+                aside.classList.remove('sidebar-narrow');
+            }
+        }
+    };
+    window.SidebarResizer = SidebarResizer;
+
     // ========== GLOBAL INITIALIZATION ==========
     async function initializeApp() {
         console.log('Initializing NOVA V2 with Supabase...');
@@ -2251,6 +2641,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 NotificationManager.init(),
                 UserManager.init()
             ]);
+
+            // Initialize UI Components
+            SidebarResizer.init();
 
             console.log('NOVA V2 Initialized successfully');
 

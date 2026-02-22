@@ -61,9 +61,7 @@
     <script>
         // Check for Admin or Supplier Role
         const role = localStorage.getItem('enovaRole');
-        if (role !== 'admin' && role !== 'supplier') {
-            window.location.href = '../index.html';
-        }
+        // Check removed to allow AuthManager to handle it properly
 
         // Welcome Bonus Check (Display on Load)
         document.addEventListener('DOMContentLoaded', () => {
@@ -84,10 +82,10 @@
 
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+        <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <a href="dashboard.html" class="flex items-center gap-2 group">
-                    <span class="text-xl font-black tracking-tighter">ENova</span>
+                    <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
                     <span
                         class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
                 </a>
@@ -117,7 +115,7 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 flex-shrink-0">
             <div class="glass-panel p-6 sticky top-24">
@@ -148,7 +146,7 @@
                         <iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon>
                         Mes Clients
                     </a>
-                    <a href="users.html" class="sidebar-link">
+                    <a href="users.html" class="sidebar-link admin-only">
                         <iconify-icon icon="solar:user-bold" width="20"></iconify-icon>
                         Utilisateurs
                     </a>
@@ -175,11 +173,28 @@
                     <h1 class="text-3xl font-black tracking-tight text-gray-900">Tableau de bord</h1>
                     <p class="text-gray-500">Bienvenue, voici un aperçu de votre activité.</p>
                 </div>
-                <a href="products.html"
-                    class="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-xl shadow-black/10">
-                    <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
-                    Nouveau Produit
-                </a>
+
+                <div class="flex items-center gap-4">
+                    <!-- Timeframe Selector -->
+                    <div class="flex items-center bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+                        <button onclick="updateTimeframe('day', this)"
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Jour</button>
+                        <button onclick="updateTimeframe('week', this)"
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Semaine</button>
+                        <button onclick="updateTimeframe('month', this)"
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Mois</button>
+                        <button onclick="updateTimeframe('year', this)"
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Année</button>
+                        <button onclick="updateTimeframe('all', this)"
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all bg-black text-white">Tout</button>
+                    </div>
+
+                    <a href="products.html"
+                        class="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-xl shadow-black/10">
+                        <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
+                        Nouveau Produit
+                    </a>
+                </div>
             </div>
 
             <!-- Stats Grid -->
@@ -315,6 +330,32 @@
 
     <script src="../js/main.js"></script>
     <script>
+        let currentTimeframe = 'all';
+        const currentCharts = {};
+
+        function updateTimeframe(timeframe, btn) {
+            currentTimeframe = timeframe;
+            // Update active button styles
+            document.querySelectorAll('.time-btn').forEach(b => {
+                b.classList.remove('bg-black', 'text-white');
+                b.classList.add('text-gray-400');
+            });
+            if (btn) {
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('bg-black', 'text-white');
+            } else {
+                // Find by text or data if needed, but usually btn is provided
+                document.querySelectorAll('.time-btn').forEach(b => {
+                    if (b.textContent.toLowerCase().includes(timeframe.replace('all', 'tout'))) {
+                        b.classList.remove('text-gray-400');
+                        b.classList.add('bg-black', 'text-white');
+                    }
+                });
+            }
+
+            refreshDashboardData();
+        }
+
         function initializeDashboard() {
             refreshDashboardData();
 
@@ -329,6 +370,14 @@
 
                 // Update Labels
                 if (isAdmin) {
+                    document.title = "Administration | ENova";
+                    document.querySelector('h1').textContent = "Vue d'ensemble";
+                    document.querySelector('h1 + p').textContent = "Performances et activité globales de la plateforme.";
+
+                    // Hide Nouveau Produit button for admin
+                    const newProdBtn = document.querySelector('a[href="products.html"].bg-black');
+                    if (newProdBtn) newProdBtn.style.display = 'none';
+
                     document.querySelectorAll('.stat-label-sales').forEach(el => el.textContent = 'Volume Brut (Platform)');
                     document.querySelectorAll('.stat-label-comm').forEach(el => el.textContent = 'Commissions Perçues');
                     document.querySelectorAll('.stat-label-net').forEach(el => el.textContent = 'Profit Plateforme');
@@ -355,7 +404,7 @@
 
         function refreshDashboardData() {
             // Stats Update
-            const stats = OrderManager.getAdvancedStats();
+            const stats = OrderManager.getAdvancedStats(currentTimeframe);
             document.getElementById('statsOrders').textContent = stats.totalOrders;
 
             const salesEl = document.getElementById('statsSales');
@@ -368,8 +417,7 @@
             netEl.dataset.priceCdf = stats.netSales;
 
             // Clients count (advanced stats already has this if we want, or use getStats)
-            const basicStats = OrderManager.getStats();
-            document.getElementById('statsClients').textContent = basicStats.totalCustomers;
+            document.getElementById('statsClients').textContent = stats.totalCustomers;
 
             // Products count
             const products = ProductManager.getProducts();
@@ -380,7 +428,7 @@
             CurrencyManager.updateAllPrices();
 
             // Charts
-            initCharts();
+            initCharts(stats);
 
             // Stock
             populateLowStock(products);
@@ -389,21 +437,52 @@
             populateActivity();
 
             // Recent Orders
-            renderRecentOrders();
+            renderRecentOrders(stats);
 
             // Top Products
-            renderTopProducts();
+            renderTopProducts(stats);
 
             // Category Chart
-            initCategoryChart();
+            initCategoryChart(stats);
         }
 
-        function renderRecentOrders() {
+        function renderRecentOrders(stats) {
             const list = document.getElementById('recentOrdersList');
-            const orders = OrderManager.getOrders().slice(0, 5);
+            // stats.recentOrders might not exist in the current AdvancedStats implementation,
+            // let's filter manually or check if main.js can provide it.
+            // For now, let's just use the orders filtered by timeframe.
+
+            // Re-fetch orders for the timeframe to get the list
+            const allOrders = OrderManager.orders || [];
+            let filteredOrders = allOrders;
+
+            if (currentTimeframe !== 'all') {
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                filteredOrders = allOrders.filter(o => {
+                    const orderDate = new Date(o.date);
+                    if (currentTimeframe === 'day') return orderDate >= startOfDay;
+                    const diffDays = (now - orderDate) / (1000 * 86400);
+                    if (currentTimeframe === 'week') return diffDays <= 7;
+                    if (currentTimeframe === 'month') return diffDays <= 30;
+                    if (currentTimeframe === 'year') return diffDays <= 365;
+                    return true;
+                });
+            }
+
+            const role = localStorage.getItem('enovaRole');
+            const email = localStorage.getItem('enovaUserEmail');
+            if (role === 'supplier' && email) {
+                filteredOrders = filteredOrders.filter(o => (o.items || []).some(item => {
+                    const p = ProductManager.getProduct(item.id);
+                    return p && p.supplier_email === email;
+                }));
+            }
+
+            const orders = filteredOrders.slice(0, 5);
 
             if (orders.length === 0) {
-                list.innerHTML = `<div class="p-12 text-center text-gray-400 text-sm">Aucune commande pour le moment.</div>`;
+                list.innerHTML = `<div class="p-12 text-center text-gray-400 text-sm">Aucune commande pour cette période.</div>`;
                 return;
             }
 
@@ -437,47 +516,144 @@
             }
         }
 
-        function initCharts() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            const orders = OrderManager.getOrders();
+        function initCharts(stats) {
+            const canvas = document.getElementById('salesChart');
+            const ctx = canvas.getContext('2d');
+
+            if (currentCharts.sales) currentCharts.sales.destroy();
+
+            // Re-fetch orders for the timeframe to generate chart points
+            const allOrders = OrderManager.orders || [];
+            let filteredOrders = allOrders;
+
+            // Re-apply role filter
+            const role = localStorage.getItem('enovaRole');
+            const email = localStorage.getItem('enovaUserEmail');
+            if (role === 'supplier' && email) {
+                filteredOrders = filteredOrders.filter(o => (o.items || []).some(item => {
+                    const p = ProductManager.getProduct(item.id);
+                    return p && p.supplier_email === email;
+                }));
+            }
 
             const labels = [];
-            const data = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                labels.push(d.toLocaleDateString('fr-FR', { weekday: 'short' }));
+            const dataSales = [];
+            const dataObjectives = [];
+            const now = new Date();
 
-                const dayTotal = orders.filter(o => {
+            const calculatePoints = (i, d) => {
+                labels.push(currentTimeframe === 'day' ? d.getHours() + 'h' :
+                    (currentTimeframe === 'year' ? d.toLocaleDateString('fr-FR', { month: 'short' }) :
+                        d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' })));
+
+                const total = filteredOrders.filter(o => {
                     const orderDate = new Date(o.date);
+                    if (currentTimeframe === 'day') return orderDate.toDateString() === d.toDateString() && orderDate.getHours() === d.getHours();
+                    if (currentTimeframe === 'year') return orderDate.getMonth() === d.getMonth() && orderDate.getFullYear() === d.getFullYear();
                     return orderDate.toDateString() === d.toDateString();
                 }).reduce((sum, o) => sum + o.total, 0);
 
-                data.push(dayTotal);
+                dataSales.push(total);
+
+                // Objective Logic: 20% growth compared to sales, or a baseline based on average
+                const baseline = 50000; // Minimum baseline for chart
+                const objective = Math.max(baseline, total * 1.25);
+                dataObjectives.push(objective);
+            };
+
+            if (currentTimeframe === 'day') {
+                for (let i = 23; i >= 0; i--) {
+                    const d = new Date(now.getTime() - i * 3600000);
+                    calculatePoints(i, d);
+                }
+            } else if (currentTimeframe === 'week' || currentTimeframe === 'month') {
+                const days = currentTimeframe === 'week' ? 7 : 30;
+                for (let i = days - 1; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                    calculatePoints(i, d);
+                }
+            } else if (currentTimeframe === 'year') {
+                for (let i = 11; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    calculatePoints(i, d);
+                }
+            } else {
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                    calculatePoints(i, d);
+                }
             }
 
-            new Chart(ctx, {
-                type: 'line',
+            currentCharts.sales = new Chart(ctx, {
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Ventes (FC)',
-                        data: data,
-                        borderColor: '#000000',
-                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#000000',
-                        pointRadius: 4
-                    }]
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Objectifs',
+                            data: dataObjectives,
+                            borderColor: '#EF4444',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#EF4444',
+                            pointRadius: 2,
+                            tension: 0.4,
+                            fill: false,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Ventes',
+                            data: dataSales,
+                            backgroundColor: '#000000',
+                            hoverBackgroundColor: '#1a1a1a',
+                            borderRadius: 6,
+                            barThickness: currentTimeframe === 'day' ? 10 : (currentTimeframe === 'month' ? 15 : 25),
+                            order: 2
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 6,
+                                font: { size: 10, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#000',
+                            bodyColor: '#666',
+                            borderWidth: 1,
+                            borderColor: '#e2e8f0',
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + CurrencyManager.formatPrice(context.raw, 'CDF');
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                font: { size: 10 },
+                                callback: function (value) {
+                                    if (value >= 1000000) return (value / 1000000) + 'M';
+                                    if (value >= 1000) return (value / 1000) + 'K';
+                                    return value;
+                                }
+                            }
+                        },
                         x: { grid: { display: false }, ticks: { font: { size: 10 } } }
                     }
                 }
@@ -529,24 +705,12 @@
             `).join('');
         }
 
-        function renderTopProducts() {
+        function renderTopProducts(stats) {
             const list = document.getElementById('topProductsList');
-            const orders = OrderManager.getOrders();
-            const productSales = {};
+            const topProducts = stats.topProducts || [];
 
-            orders.forEach(o => {
-                (o.items || []).forEach(item => {
-                    productSales[item.id] = (productSales[item.id] || 0) + item.quantity;
-                });
-            });
-
-            const topProducts = ProductManager.getProducts()
-                .map(p => ({ ...p, sales: productSales[p.id] || 0 }))
-                .sort((a, b) => b.sales - a.sales)
-                .slice(0, 4);
-
-            if (topProducts.filter(p => p.sales > 0).length === 0) {
-                list.innerHTML = `<div class="col-span-2 text-center py-6 text-gray-400 text-sm italic">En attente des premières ventes...</div>`;
+            if (topProducts.length === 0) {
+                list.innerHTML = `<div class="col-span-2 text-center py-6 text-gray-400 text-sm italic">Aucune vente pour cette période.</div>`;
                 return;
             }
 
@@ -555,33 +719,28 @@
                     <img src="../${p.image}" class="w-10 h-10 rounded-lg object-contain bg-white">
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold truncate">${p.name}</div>
-                        <div class="text-[10px] text-gray-400 font-bold uppercase">${p.sales} ventes</div>
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">${p.salesCount} ventes</div>
                     </div>
                     <iconify-icon icon="solar:fire-bold" class="text-orange-500" width="16"></iconify-icon>
                 </div>
             `).join('');
         }
 
-        function initCategoryChart() {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            const orders = OrderManager.getOrders();
-            const categoryStats = {};
+        function initCategoryChart(stats) {
+            const canvas = document.getElementById('categoryChart');
+            const ctx = canvas.getContext('2d');
 
-            orders.forEach(o => {
-                (o.items || []).forEach(item => {
-                    // Try to get category from current products, or use a default
-                    const p = ProductManager.getProduct(item.id);
-                    const cat = p ? p.category : 'Autre';
-                    categoryStats[cat] = (categoryStats[cat] || 0) + (item.price * item.quantity);
-                });
-            });
+            if (currentCharts.category) currentCharts.category.destroy();
 
-            const labels = Object.keys(categoryStats);
-            const data = Object.values(categoryStats);
+            const labels = Object.keys(stats.categorySales || {});
+            const data = Object.values(stats.categorySales || {});
 
-            if (labels.length === 0) return;
+            if (labels.length === 0) {
+                // Show empty state if needed
+                return;
+            }
 
-            new Chart(ctx, {
+            currentCharts.category = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,

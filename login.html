@@ -10,6 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/supabase-adapter.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <style>
         :root {
@@ -119,7 +122,7 @@
     <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-1 group">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
+                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
             </a>
             <div class="flex items-center gap-6">
                 <!-- Currency Switch -->
@@ -379,7 +382,10 @@
 
         // Form Submit
         const form = document.getElementById('authForm');
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validation
             if (!isLogin) {
                 const signupFieldsList = [
                     { id: 'email', label: 'L\'adresse email' },
@@ -409,87 +415,131 @@
                 }
             }
 
-            const btn = form.querySelector('button[type="submit"]');
-            const span = btn.querySelector('span');
-            const icon = btn.querySelector('iconify-icon');
-            const loader = btn.querySelector('.loader-ring');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
             if (!isLogin) {
-                // Signup Validation
-                const pass = document.getElementById('password').value;
                 const confirm = document.getElementById('confirmPassword').value;
-                if (pass !== confirm) {
+                if (password !== confirm) {
                     showToast("Les mots de passe ne correspondent pas", "error");
                     return;
                 }
             }
 
+            // UI Loading State
+            const btn = form.querySelector('button[type="submit"]');
+            const span = btn.querySelector('span');
+            const icon = btn.querySelector('iconify-icon');
+            const loader = btn.querySelector('.loader-ring');
+
+            const originalText = span.textContent;
             span.textContent = 'Traitement...';
             icon.style.display = 'none';
             loader.style.display = 'block';
             btn.style.pointerEvents = 'none';
             btn.style.opacity = '0.8';
 
-            setTimeout(() => {
-                // Handle Auth Logic
+            try {
                 if (isLogin) {
-                    const email = document.getElementById('email').value;
-                    localStorage.setItem('enovaUserEmail', email);
-                    let role = localStorage.getItem('enovaRole') || 'customer';
+                    // --- LOGIN ---
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
 
-                    // Check if user is an owner/admin
-                    const adminEmails = ['benimakiese1234@gmail.com', 'owner2@enova.com', 'owner3@enova.com', 'owner4@enova.com', 'owner5@enova.com'];
+                    if (error) throw error;
+
+                    // Role & Redirection Logic using Metadata
+                    const user = data.user;
+                    let role = user.user_metadata.role || 'customer';
+
+                    // Admin Override Logic
+                    const adminEmails = window.ADMIN_EMAILS || [];
                     if (adminEmails.includes(email)) {
                         role = 'admin';
                     }
 
-                    // Restriction for Supplier Role
-                    if (role === 'supplier' && email === 'benimakiese1234@gmail.com') {
-                        // This case shouldn't happen anymore if they use the correct email, 
-                        // but let's be safe and upgrade them to admin if they were forced into supplier role.
-                        role = 'admin';
-                    }
+                    // Update UI/Storage via AuthManager (it will listen to state change, but we force redirect here for smoothness)
+                    localStorage.setItem('enovaUserEmail', email);
+                    // AuthManager.setRole will be triggered by onAuthStateChange in main.js usually, 
+                    // but we can set it here to be sure before redirect.
+                    localStorage.setItem('enovaRole', role);
 
-                    AuthManager.setRole(role);
-                    if (role === 'admin' || role === 'supplier') window.location.href = 'ADMIN NOVA/dashboard.html';
-                    else window.location.href = 'customer-dashboard.html';
+                    showToast("Connexion réussie !", "success");
+
+                    setTimeout(() => {
+                        if (role === 'admin') {
+                            window.location.href = 'ADMIN NOVA/dashboard.html';
+                        } else if (role === 'supplier') {
+                            window.location.href = 'vendor-dashboard.html';
+                        } else {
+                            window.location.href = 'customer-dashboard.html';
+                        }
+                    }, 1000);
 
                 } else {
-                    // Signup
+                    // --- SIGNUP ---
                     let role = document.querySelector('input[name="role"]:checked').value;
-                    const email = document.getElementById('email').value;
-                    localStorage.setItem('enovaUserEmail', email);
 
-                    // Restriction for Supplier Role Signup
-                    const adminEmails = ['benimakiese1234@gmail.com', 'owner2@enova.com', 'owner3@enova.com', 'owner4@enova.com', 'owner5@enova.com'];
+                    // Admin Override Check
+                    const adminEmails = window.ADMIN_EMAILS || [];
                     if (adminEmails.includes(email)) {
                         role = 'admin';
                     } else if (role === 'admin') {
-                        // Only predefined emails can be admin
-                        role = 'supplier';
+                        role = 'supplier'; // Prevent unauthorized admin signup
                     }
 
                     const name = email.split('@')[0];
-                    UserManager.signup({ name, email, role });
-                    AuthManager.setRole(role);
 
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: name,
+                                role: role
+                            }
+                        }
+                    });
+
+                    if (error) throw error;
+
+                    showToast("Inscription réussie ! Bienvenue.", "success");
+
+                    // Handle Bonuses (optional, keeps existing logic)
                     if (role === 'customer') {
                         localStorage.setItem('enovaWelcomeBonus', 'true');
                         PromoManager.addPromo('BIENVENUE', 'percent', 0.05, 1);
-                        showToast("Bienvenue dans l'univers ENova ! Votre privilège de -5% (code: BIENVENUE) vous attend.", "success");
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 2000);
                     } else {
                         localStorage.setItem('enovaSupplierBonus', 'true');
-                        const welcomeMsg = role === 'admin' ? "Espace Administration activé." : "Votre boutique ENova est prête. Félicitations pour ce nouveau départ !";
-                        showToast(welcomeMsg, "success");
-                        setTimeout(() => {
-                            window.location.href = 'ADMIN NOVA/dashboard.html';
-                        }, 2000);
                     }
+
+                    setTimeout(() => {
+                        if (role === 'admin') {
+                            window.location.href = 'ADMIN NOVA/dashboard.html';
+                        } else if (role === 'supplier') {
+                            window.location.href = 'vendor-dashboard.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1500);
                 }
-            }, 1500);
+            } catch (error) {
+                console.error("Auth Error:", error);
+
+                let msg = error.message;
+                if (msg.includes("Invalid login credentials")) msg = "Email ou mot de passe incorrect.";
+                if (msg.includes("User already registered")) msg = "Cet email est déjà utilisé.";
+
+                showToast(msg, "error");
+
+                // Reset UI
+                span.textContent = originalText;
+                icon.style.display = '';
+                loader.style.display = 'none';
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            }
         });
     </script>
 </body>

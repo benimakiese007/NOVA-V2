@@ -7,6 +7,9 @@
     <title>Centre de Notifications | ENova</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/supabase-adapter.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
@@ -67,7 +70,7 @@
     <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-1">
-                <span class="text-lg font-semibold tracking-tight">ENova</span>
+                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
             </a>
 
             <div class="flex items-center gap-2">
@@ -204,7 +207,11 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            renderNotifications();
+            if (window.enovaInitialized) {
+                renderNotifications();
+            } else {
+                window.addEventListener('enovaInitialized', renderNotifications);
+            }
 
             // Listen for updates from other tabs
             window.addEventListener('notificationsUpdated', renderNotifications);

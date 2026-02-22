@@ -2,9 +2,20 @@
  * Supabase Adapter for NOVA V2
  * Bridges the gap between the existing managers and the Supabase database.
  */
-const SupabaseAdapter = {
+window.SupabaseAdapter = {
+    getClient() {
+        if (!window.supabaseClient) {
+            console.error('Supabase client not initialized.');
+            return null;
+        }
+        return window.supabaseClient;
+    },
+
     async fetch(table, select = '*') {
-        const { data, error } = await window.supabaseClient
+        const client = this.getClient();
+        if (!client) return [];
+
+        const { data, error } = await client
             .from(table)
             .select(select);
 
@@ -16,7 +27,10 @@ const SupabaseAdapter = {
     },
 
     async insert(table, item) {
-        const { data, error } = await window.supabaseClient
+        const client = this.getClient();
+        if (!client) return null;
+
+        const { data, error } = await client
             .from(table)
             .insert(item)
             .select();
@@ -25,11 +39,14 @@ const SupabaseAdapter = {
             console.error(`Error inserting into ${table}:`, error);
             return null;
         }
-        return data[0];
+        return data && data.length > 0 ? data[0] : null;
     },
 
     async update(table, id, updates, idColumn = 'id') {
-        const { data, error } = await window.supabaseClient
+        const client = this.getClient();
+        if (!client) return null;
+
+        const { data, error } = await client
             .from(table)
             .update(updates)
             .eq(idColumn, id)
@@ -39,11 +56,14 @@ const SupabaseAdapter = {
             console.error(`Error updating items in ${table}:`, error);
             return null;
         }
-        return data[0];
+        return data && data.length > 0 ? data[0] : null;
     },
 
     async delete(table, id, idColumn = 'id') {
-        const { error } = await window.supabaseClient
+        const client = this.getClient();
+        if (!client) return false;
+
+        const { error } = await client
             .from(table)
             .delete()
             .eq(idColumn, id);
@@ -56,7 +76,10 @@ const SupabaseAdapter = {
     },
 
     async upsert(table, item, onConflict = 'id') {
-        const { data, error } = await window.supabaseClient
+        const client = this.getClient();
+        if (!client) return null;
+
+        const { data, error } = await client
             .from(table)
             .upsert(item, { onConflict })
             .select();
@@ -65,8 +88,7 @@ const SupabaseAdapter = {
             console.error(`Error upserting into ${table}:`, error);
             return null;
         }
-        return data[0];
+        return data && data.length > 0 ? data[0] : null;
     }
 };
 
-window.SupabaseAdapter = SupabaseAdapter;

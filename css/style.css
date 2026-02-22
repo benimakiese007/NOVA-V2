@@ -2383,3 +2383,84 @@ h6 {
 #enova-global-loader .animate-spin {
     border-top-color: #000;
 }
+
+/* Sidebar Resizing (Admin Only) */
+aside {
+    position: relative;
+    transition: width 0.1s ease-out;
+    /* Smoothness for small adjustments */
+}
+
+aside .glass-panel.sticky {
+    position: sticky !important;
+    overflow: hidden !important;
+    /* Hide label overflow when narrow */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10000;
+    background: transparent;
+}
+
+.sidebar-resizer::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 15%;
+    bottom: 15%;
+    width: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    border-radius: 99px;
+}
+
+.sidebar-resizer:hover::after,
+.sidebar-resizing .sidebar-resizer::after {
+    background: rgba(0, 0, 0, 0.2);
+    width: 4px;
+}
+
+/* Narrow mode hiding labels */
+aside[style*="width: 8"] .sidebar-link span,
+aside[style*="width: 7"] .sidebar-link span,
+aside[style*="width: 6"] .sidebar-link span,
+aside[style*="width: 5"] .sidebar-link span,
+aside[style*="width: 4"] .sidebar-link span,
+.sidebar-narrow .sidebar-link span {
+    display: none;
+}
+
+aside[style*="width: 8"] .sidebar-link,
+aside[style*="width: 7"] .sidebar-link,
+aside[style*="width: 6"] .sidebar-link,
+aside[style*="width: 5"] .sidebar-link,
+aside[style*="width: 4"] .sidebar-link,
+.sidebar-narrow .sidebar-link {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+body.sidebar-resizing {
+    cursor: col-resize !important;
+    user-select: none !important;
+}
+
+@media (max-width: 767px) {
+    .sidebar-resizer {
+        display: none !important;
+    }
+
+    aside {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+    }
+}

@@ -56,6 +56,26 @@
         .hero-gradient {
             background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
         }
+
+        /* Mobile Menu styles */
+        #mobileMenu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        #mobileMenu.active {
+            transform: translateX(0);
+        }
+
+        #mobileOverlay {
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        #mobileOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
 
@@ -63,38 +83,91 @@
     <div class="bg-mesh"></div>
 
     <!-- ========== HEADER ========== -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-1 group">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
-            </a>
-            <div class="flex items-center gap-6">
-                <!-- Currency Switch -->
-                <div class="currency-switch-segmented" id="currencyToggle" data-active="CDF">
+    <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <!-- Main header -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+            <!-- Left: Hamburger (Mobile) & Logo -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button id="mobileMenuBtn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors sm:hidden"
+                    title="Menu">
+                    <iconify-icon icon="solar:hamburger-menu-linear" width="24" class="text-gray-600"></iconify-icon>
+                </button>
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-1">
+                    <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 sm:h-10 w-auto invert">
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Currency Switch (Desktop Only) -->
+                <div class="hidden md:block currency-switch-segmented" id="currencyToggle" data-active="CDF">
                     <div class="segmented-track">
                         <div class="segmented-handle"></div>
                         <span class="segmented-label" data-currency="USD">USD</span>
                         <span class="segmented-label" data-currency="CDF">CDF</span>
                     </div>
                 </div>
-                <!-- Notification Bell -->
-                <a href="notifications.html" class="relative p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                    title="Notifications">
-                    <iconify-icon icon="solar:bell-linear" width="22" class="text-gray-600"></iconify-icon>
-                    <span
-                        class="notification-badge absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium hidden"
-                        style="font-size:10px; width:16px; height:16px; min-width: 16px;">0</span>
-                </a>
-                <span class="hidden md:block text-xs font-bold uppercase tracking-widest text-gray-400">Aide? +243 990
-                    924 254</span>
-                <a href="index.html"
-                    class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">Continuer
+
+                <span class="hidden lg:block text-[10px] font-bold uppercase tracking-widest text-gray-400">Aide? +243
+                    990 924 254</span>
+
+                <a href="catalog.html"
+                    class="hidden sm:block text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">Continuer
                     mes achats</a>
+
+                <a href="login.html" class="relative p-2 rounded-lg hover:bg-gray-50 transition-colors" title="Compte">
+                    <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
+                </a>
             </div>
         </div>
     </header>
 
-    <div class="h-24 sm:h-28"></div>
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobileOverlay"
+        class="fixed inset-0 bg-black/50 z-[60] opacity-0 pointer-events-none transition-opacity duration-300 sm:hidden">
+    </div>
+    <div id="mobileMenu"
+        class="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[70] shadow-2xl sm:hidden flex flex-col">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+            <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+            <button id="closeMobileMenu" class="p-2 rounded-lg hover:bg-gray-100">
+                <iconify-icon icon="solar:close-circle-linear" width="24" class="text-gray-600"></iconify-icon>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-4 mb-6">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Navigation</h3>
+                <nav class="flex flex-col gap-1">
+                    <a href="index.html"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:home-2-linear" width="20"></iconify-icon>
+                        Accueil
+                    </a>
+                    <a href="catalog.html"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:shop-linear" width="20"></iconify-icon>
+                        Continuer mes achats
+                    </a>
+                </nav>
+            </div>
+
+            <div class="px-4 mt-auto border-t border-gray-50 pt-6">
+                <div class="p-4 bg-gray-50 rounded-2xl">
+                    <p class="text-xs text-gray-500 mb-3">Devise d'affichage</p>
+                    <div class="currency-switch-segmented scale-90 origin-left" id="mobileCurrencyToggle"
+                        data-active="CDF">
+                        <div class="segmented-track">
+                            <div class="segmented-handle"></div>
+                            <span class="segmented-label" data-currency="USD">USD</span>
+                            <span class="segmented-label" data-currency="CDF">CDF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="h-16 sm:h-20 lg:h-24"></div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <h1 class="text-4xl font-black tracking-tighter text-gray-900 mb-10">Votre Panier</h1>
@@ -135,6 +208,33 @@
                             <span>Livraison</span>
                             <span class="text-green-600 font-medium">Gratuite</span>
                         </div>
+                        <!-- Points NOVA Section -->
+                        <div class="space-y-3 pb-4 border-b border-gray-100" id="pointsSection">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 flex items-center gap-1">
+                                    <iconify-icon icon="solar:star-bold" width="16"
+                                        class="text-gray-400"></iconify-icon>
+                                    Points NOVA
+                                </span>
+                                <span class="text-xs font-bold text-gray-400"
+                                    id="availablePointsText">Chargement...</span>
+                            </div>
+                            <div id="usePointsContainer" class="hidden">
+                                <button id="applyPointsBtn"
+                                    class="w-full flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-black transition-all group">
+                                    <span
+                                        class="text-xs font-bold uppercase tracking-wider text-gray-500 group-hover:text-black">Utiliser
+                                        mes points</span>
+                                    <div
+                                        class="w-10 h-6 bg-gray-100 rounded-full p-1 transition-all group-data-[active=true]:bg-black relative">
+                                        <div
+                                            class="w-4 h-4 bg-white rounded-full shadow-sm transition-all group-data-[active=true]:translate-x-4">
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="space-y-3" id="promoSection">
                             <div class="flex justify-between text-gray-600">
                                 <span>Code promo</span>
@@ -205,33 +305,121 @@
     <!-- Success Modal -->
     <div id="checkoutOverlay"
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
-        <div class="bg-white rounded-3xl w-full max-w-md p-8 text-center shadow-2xl transform scale-90 transition-all duration-300"
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-10 text-center shadow-2xl transform scale-95 transition-all duration-500 overflow-hidden"
             id="checkoutModal">
-            <!-- Processing -->
 
+            <!-- Step 1: Selection -->
+            <div id="step-selection" class="space-y-8">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:wallet-money-bold" width="32"></iconify-icon>
+                    </div>
+                    <h2 class="text-2xl font-black tracking-tight text-gray-900">Paiement Sécurisé</h2>
+                    <p class="text-gray-500 text-sm">Choisissez votre opérateur Mobile Money</p>
+                </div>
 
-            <!-- Success -->
-            <div id="successState" class="block">
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="selectOperator('M-Pesa', '#e11d48')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center group-hover:bg-rose-100">
+                                <span class="text-rose-600 font-black text-xs">M-P</span>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">M-Pesa</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+
+                    <button onclick="selectOperator('Orange Money', '#ea580c')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center group-hover:bg-orange-100">
+                                <span class="text-orange-600 font-black text-xs">OM</span>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">Orange Money</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+
+                    <button onclick="selectOperator('Airtel Money', '#dc2626')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100">
+                                <span class="text-red-600 font-black text-xs">AM</span>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">Airtel Money</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Phone Number -->
+            <div id="step-phone" class="hidden space-y-8 animate-in active">
+                <button onclick="backToSelection()"
+                    class="absolute left-6 top-6 text-gray-400 hover:text-black transition-colors">
+                    <iconify-icon icon="solar:alt-arrow-left-linear" width="24"></iconify-icon>
+                </button>
+
+                <div class="flex flex-col items-center">
+                    <div id="operatorLogo"
+                        class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 text-white font-black text-xl shadow-lg">
+                        <!-- Filled by JS -->
+                    </div>
+                    <h2 class="text-2xl font-black tracking-tight text-gray-900" id="selectedOperatorName">Opérateur
+                    </h2>
+                    <p class="text-gray-500 text-sm">Entrez votre numéro pour valider</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <span
+                            class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors">
+                            <iconify-icon icon="solar:phone-linear" width="22"></iconify-icon>
+                        </span>
+                        <input type="tel" id="checkoutPhone" placeholder="08XXXXXXXX"
+                            class="w-full pl-14 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-black transition-all font-bold tracking-widest">
+                    </div>
+                </div>
+
+                <button onclick="processFinalPayment()" id="finalPayBtn"
+                    class="w-full hero-gradient text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/20 hover:shadow-black/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-500 flex items-center justify-center gap-3">
+                    Confirmer le Paiement
+                    <iconify-icon icon="solar:check-read-bold" width="20"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="successState" class="hidden animate-in active">
                 <div
                     class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <iconify-icon icon="solar:check-circle-bold" width="48"></iconify-icon>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Votre commande est confirmée</h2>
-                <p class="text-gray-500 mb-8">Votre acquisition exclusive #<span id="orderNumber"
-                        class="font-bold text-gray-900">XXXX</span> est en route pour vous sublimer.</p>
-                <div class="bg-gray-50 rounded-2xl p-4 mb-8 space-y-2 text-sm">
-                    <div class="flex justify-between text-gray-600">
-                        <span>Mode de paiement</span>
-                        <span class="font-medium text-gray-900">Mobile Money</span>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Paiement Réussi</h2>
+                <p class="text-gray-500 text-sm mb-8 leading-relaxed">Votre acquisition exclusive #<span
+                        id="orderNumber" class="font-bold text-gray-900">XXXX</span> est en route. Un agent vous
+                    contactera sous peu.</p>
+
+                <div class="bg-gray-50 rounded-2xl p-5 mb-8 space-y-3 text-sm">
+                    <div class="flex justify-between text-gray-500 uppercase tracking-widest text-[10px] font-black">
+                        <span>Opérateur</span>
+                        <span class="text-gray-900" id="receiptOperator">-</span>
                     </div>
-                    <div class="flex justify-between text-gray-600">
-                        <span>Total payé</span>
-                        <span class="font-bold text-gray-900" id="modalTotal">0 FC</span>
+                    <div class="flex justify-between text-gray-500 uppercase tracking-widest text-[10px] font-black">
+                        <span>Montant</span>
+                        <span class="text-gray-900 font-black" id="modalTotal">0 FC</span>
                     </div>
                 </div>
+
                 <button onclick="closeCheckoutModal()"
-                    class="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-bold transition-all shadow-xl">
-                    Retour aux achats
+                    class="w-full bg-black hover:bg-zinc-800 text-white py-4 rounded-xl font-bold transition-all shadow-xl">
+                    Retour à l'accueil
                 </button>
             </div>
         </div>
@@ -246,7 +434,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                 <div class="col-span-2 lg:col-span-1">
                     <a href="index.html" class="flex items-center gap-2 mb-8">
-                        <span class="text-lg font-bold tracking-tight">ENova</span>
+                        <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-12 w-auto">
                     </a>
                     <p class="text-slate-400 text-sm leading-relaxed mb-8 max-w-xs">
                         La destination ultime pour le luxe accessible et les tendances du futur.
@@ -377,31 +565,71 @@
         }
 
         let currentPromo = null;
+        let pointsUsed = 0;
+        let usePointsActive = false;
+        let availablePoints = 0;
+
+        async function initPoints() {
+            const email = localStorage.getItem('enovaUserEmail');
+            if (!email) {
+                document.getElementById('availablePointsText').textContent = 'Connectez-vous';
+                return;
+            }
+
+            const stats = OrderManager.getCustomerStats(email);
+            availablePoints = stats.novaPoints;
+            document.getElementById('availablePointsText').textContent = availablePoints + ' PTS';
+
+            if (availablePoints > 0) {
+                document.getElementById('usePointsContainer').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('applyPointsBtn').addEventListener('click', () => {
+            const btn = document.getElementById('applyPointsBtn');
+            usePointsActive = !usePointsActive;
+            btn.setAttribute('data-active', usePointsActive);
+
+            if (usePointsActive) {
+                pointsUsed = availablePoints;
+                if (window.showToast) showToast(`Remise de ${pointsUsed} FC appliquée !`, 'success');
+            } else {
+                pointsUsed = 0;
+            }
+
+            const cart = CartManager.getCart();
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            updateSummary(total);
+        });
 
         function updateSummary(subtotal) {
             document.getElementById('summarySubtotal').textContent = CurrencyManager.formatPrice(subtotal);
 
-            let discount = 0;
+            let promoDiscount = 0;
             if (currentPromo) {
                 if (currentPromo.type === 'percent') {
-                    discount = subtotal * currentPromo.value;
+                    promoDiscount = subtotal * currentPromo.value;
                 } else {
-                    discount = currentPromo.value;
+                    promoDiscount = currentPromo.value;
                 }
             }
 
-            const total = Math.max(0, subtotal - discount);
+            const pointsDiscount = usePointsActive ? pointsUsed : 0;
+            const totalDiscount = promoDiscount + pointsDiscount;
+            const finalTotal = Math.max(0, subtotal - totalDiscount);
 
             const discountRow = document.getElementById('summaryDiscountRow');
-            if (discount > 0) {
+            if (totalDiscount > 0) {
                 discountRow.classList.remove('hidden');
-                document.getElementById('summaryDiscount').textContent = '-' + CurrencyManager.formatPrice(discount);
+                document.getElementById('summaryDiscount').textContent = '-' + CurrencyManager.formatPrice(totalDiscount);
             } else {
                 discountRow.classList.add('hidden');
             }
 
-            document.getElementById('summaryTotal').textContent = CurrencyManager.formatPrice(total);
+            document.getElementById('summaryTotal').textContent = CurrencyManager.formatPrice(finalTotal);
         }
+
+        let selectedOperator = null;
 
         function checkout() {
             const cart = CartManager.getCart();
@@ -410,29 +638,92 @@
                 return;
             }
 
-            // Using Global LoaderManager instead of local overlay
-            if (window.LoaderManager) {
-                LoaderManager.show('Vérification de la transaction...');
+            const email = localStorage.getItem('enovaUserEmail');
+            if (!email) {
+                if (window.showToast) showToast('Veuillez vous connecter pour commander', 'error');
+                window.location.href = 'login.html';
+                return;
             }
 
-            setTimeout(() => {
-                if (window.LoaderManager) LoaderManager.hide();
+            // Show Modal and Reset to Selection Step
+            const overlay = document.getElementById('checkoutOverlay');
+            overlay.classList.remove('invisible', 'opacity-0');
+            backToSelection();
+        }
 
-                // Show Success Modal (Keep local modal for now as it's custom for checkout)
-                const overlay = document.getElementById('checkoutOverlay');
-                const succ = document.getElementById('successState');
-                overlay.classList.remove('invisible', 'opacity-0');
-                succ.classList.remove('hidden');
+        function selectOperator(name, color) {
+            selectedOperator = name;
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('step-phone').classList.remove('hidden');
 
-                // Finalize order
-                const orderNum = 'EN-' + Math.random().toString(36).substring(3, 9).toUpperCase();
-                document.getElementById('orderNumber').textContent = orderNum;
-                document.getElementById('modalTotal').textContent = document.getElementById('summaryTotal').textContent;
+            const logo = document.getElementById('operatorLogo');
+            logo.style.backgroundColor = color;
+            logo.textContent = name.split(' ').map(n => n[0]).join('');
+            document.getElementById('selectedOperatorName').textContent = name;
+        }
 
-                // Clear cart only after success
-                CartManager.clear();
-                createConfetti();
-            }, 2500);
+        function backToSelection() {
+            selectedOperator = null;
+            document.getElementById('step-phone').classList.add('hidden');
+            document.getElementById('successState').classList.add('hidden');
+            document.getElementById('step-selection').classList.remove('hidden');
+        }
+
+        async function processFinalPayment() {
+            const phone = document.getElementById('checkoutPhone').value.trim();
+            if (!phone || phone.length < 10) {
+                if (window.showToast) showToast('Veuillez entrer un numéro Mobile Money valide.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('finalPayBtn');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon> Traitement...';
+
+            try {
+                const cart = CartManager.getCart();
+                const totalText = document.getElementById('summaryTotal').textContent;
+
+                const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                let promoDiscount = 0;
+                if (currentPromo) {
+                    promoDiscount = currentPromo.type === 'percent' ? subtotal * currentPromo.value : currentPromo.value;
+                }
+                const pointsDiscount = usePointsActive ? pointsUsed : 0;
+                const finalAmount = Math.max(0, subtotal - (promoDiscount + pointsDiscount));
+
+                const orderData = {
+                    total: finalAmount,
+                    customer_email: localStorage.getItem('enovaUserEmail'),
+                    items: cart,
+                    paymentMethod: selectedOperator,
+                    phoneNumber: phone,
+                    pointsUsed: pointsDiscount
+                };
+
+                const order = await OrderManager.addOrder(orderData);
+
+                if (order) {
+                    ActivityManager.log(`Commande ${order.id} payée avec ${pointsDiscount} PTS et ${selectedOperator}`, 'order');
+
+                    document.getElementById('step-phone').classList.add('hidden');
+                    document.getElementById('successState').classList.remove('hidden');
+                    document.getElementById('orderNumber').textContent = order.id;
+                    document.getElementById('receiptOperator').textContent = selectedOperator;
+                    document.getElementById('modalTotal').textContent = totalText;
+
+                    CartManager.clear();
+                    createConfetti();
+                } else {
+                    throw new Error("Creation fail");
+                }
+            } catch (err) {
+                console.error(err);
+                if (window.showToast) showToast('Erreur lors du traitement.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         }
 
         function closeCheckoutModal() {
@@ -475,7 +766,10 @@
                 document.getElementById('appliedCodeText').textContent = code;
                 document.getElementById('activePromoBadge').classList.remove('hidden');
                 document.getElementById('promoInputContainer').classList.add('hidden');
-                renderCart();
+
+                const cart = CartManager.getCart();
+                const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                updateSummary(total);
                 if (window.showToast) showToast('Code promo appliqué !', 'success');
             } else {
                 if (window.showToast) showToast(res.message, 'error');
@@ -487,14 +781,21 @@
             document.getElementById('activePromoBadge').classList.add('hidden');
             document.getElementById('addPromoBtn').classList.remove('hidden');
             document.getElementById('promoInput').value = '';
-            renderCart();
+
+            const cart = CartManager.getCart();
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            updateSummary(total);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             if (window.enovaInitialized) {
                 renderCart();
+                initPoints();
             } else {
-                window.addEventListener('enovaInitialized', renderCart);
+                window.addEventListener('enovaInitialized', () => {
+                    renderCart();
+                    initPoints();
+                });
             }
             window.addEventListener('currencyChanged', renderCart);
         });

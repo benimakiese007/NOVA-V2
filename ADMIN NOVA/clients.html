@@ -50,18 +50,16 @@
     <script>
         // Check for Admin or Supplier Role
         const role = localStorage.getItem('enovaRole');
-        if (role !== 'admin' && role !== 'supplier') {
-            window.location.href = '../index.html';
-        }
+        // Check removed to allow AuthManager to handle it properly
     </script>
 </head>
 
 <body class="text-gray-900">
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+        <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <a href="dashboard.html" class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
+                <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
                 <span
                     class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
             </a>
@@ -72,7 +70,7 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 flex-shrink-0">
             <div class="glass-panel p-6 sticky top-24">
@@ -101,7 +99,7 @@
                         <iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon>
                         Mes Clients
                     </a>
-                    <a href="users.html" class="sidebar-link">
+                    <a href="users.html" class="sidebar-link admin-only">
                         <iconify-icon icon="solar:user-bold" width="20"></iconify-icon>
                         Utilisateurs
                     </a>
@@ -187,7 +185,7 @@
             }
 
             tbody.innerHTML = clients.map(c => `
-                <tr class="group hover:bg-gray-50/50 transition-colors">
+                <tr onclick="window.open('user-details.html?email=' + encodeURIComponent('${c.email}'), '_blank')" class="group hover:bg-gray-50/50 cursor-pointer transition-colors">
                     <td class="p-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xs font-black text-gray-400">

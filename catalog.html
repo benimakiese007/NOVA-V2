@@ -122,8 +122,32 @@
             animation: fadeIn 0.6s ease forwards;
         }
 
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
         .sticky-sidebar {
             top: 110px;
+        }
+
+        /* Mobile Menu styles */
+        #mobileMenu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        #mobileMenu.active {
+            transform: translateX(0);
+        }
+
+        #mobileOverlay {
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        #mobileOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
     </style>
 </head>
@@ -131,15 +155,24 @@
 <body class="text-slate-900 antialiased">
 
     <!-- ========== HEADER ========== -->
-    <header class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-8">
-            <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
-                <span class="text-xl font-bold tracking-tight text-slate-900 hidden sm:block">ENova</span>
-            </a>
+    <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <!-- Main header -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+            <!-- Left: Hamburger (Mobile) & Logo -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button id="mobileMenuBtn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors sm:hidden"
+                    title="Menu">
+                    <iconify-icon icon="solar:hamburger-menu-linear" width="24" class="text-gray-600"></iconify-icon>
+                </button>
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-1">
+                    <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 sm:h-10 w-auto invert">
+                </a>
+            </div>
 
-            <div class="flex-1 max-w-xl relative hidden md:block">
+            <!-- Center: Search (Desktop) -->
+            <div class="hidden sm:flex flex-1 max-w-2xl mx-auto relative group">
                 <div
-                    class="flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300">
+                    class="search-bar w-full flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300">
                     <iconify-icon icon="solar:magnifer-linear" width="20" class="ml-4 text-slate-400"></iconify-icon>
                     <input type="text" id="searchInput" placeholder="Rechercher une pièce, un style..."
                         class="w-full py-3 px-3 bg-transparent text-sm outline-none placeholder-slate-400 font-medium">
@@ -148,48 +181,51 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <div class="currency-switch-segmented" id="currencyToggle" data-active="CDF">
+            <!-- Right: Icons -->
+            <div class="flex items-center gap-1 sm:gap-2">
+                <!-- Search Icon (Mobile Only) -->
+                <button class="p-2 rounded-lg hover:bg-gray-50 transition-colors sm:hidden" title="Rechercher"
+                    id="mobileSearchBtn">
+                    <iconify-icon icon="solar:magnifer-linear" width="22" class="text-gray-600"></iconify-icon>
+                </button>
+
+                <!-- Currency Switch (Desktop Only) -->
+                <div class="hidden md:block currency-switch-segmented" id="currencyToggle" data-active="CDF">
                     <div class="segmented-track">
                         <div class="segmented-handle"></div>
                         <span class="segmented-label" data-currency="USD">USD</span>
                         <span class="segmented-label" data-currency="CDF">CDF</span>
                     </div>
                 </div>
-                <!-- Notification Bell -->
-                <a href="notifications.html"
-                    class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all relative"
-                    title="Notifications">
-                    <iconify-icon icon="solar:bell-linear" width="24" class="text-slate-600"></iconify-icon>
-                    <span
-                        class="notification-badge absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold hidden">0</span>
+
+                <!-- Account -->
+                <a href="login.html" class="relative p-2 rounded-lg hover:bg-gray-50 transition-colors" title="Compte"
+                    id="accountLink">
+                    <iconify-icon icon="solar:user-linear" width="22" style="stroke-width:1.5"
+                        class="text-gray-600"></iconify-icon>
                 </a>
-                <a href="login.html"
-                    class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all"
-                    title="Compte">
-                    <iconify-icon icon="solar:user-circle-linear" width="24" class="text-slate-600"></iconify-icon>
-                </a>
-                <a href="favorites.html"
-                    class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all relative"
-                    title="Favoris">
-                    <iconify-icon icon="solar:heart-linear" width="24" class="text-slate-600"></iconify-icon>
+
+                <!-- Cart -->
+                <a href="cart.html" class="relative p-2 rounded-lg hover:bg-gray-50 transition-colors" title="Panier">
+                    <iconify-icon icon="solar:bag-3-linear" width="22" class="text-gray-600"></iconify-icon>
                     <span
-                        class="absolute top-1.5 right-1.5 w-4 h-4 bg-gray-900 text-white text-[9px] rounded-full flex items-center justify-center font-bold"
-                        id="favoritesBadge">0</span>
-                </a>
-                <a href="cart.html"
-                    class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-900 hover:bg-slate-800 transition-all relative group"
-                    title="Panier">
-                    <iconify-icon icon="solar:bag-3-bold" width="20"
-                        class="text-white group-hover:scale-110 transition-transform"></iconify-icon>
-                    <span
-                        class="absolute -top-1 -right-1 w-5 h-5 bg-white border-2 border-slate-900 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-bold"
-                        id="cart-count">0</span>
+                        class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
+                        style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
                 </a>
             </div>
         </div>
 
-        <nav class="max-w-7xl mx-auto px-6 border-t border-slate-100 pb-1">
+        <!-- Mobile Search Bar (Expandable) -->
+        <div id="mobileSearchContainer" class="hidden px-4 pb-3 sm:hidden">
+            <div class="flex items-center bg-slate-100 border border-slate-200 rounded-xl overflow-hidden">
+                <iconify-icon icon="solar:magnifer-linear" width="18" class="ml-3 text-slate-400"></iconify-icon>
+                <input type="text" id="mobileSearchInput" placeholder="Rechercher..."
+                    class="w-full py-2.5 px-3 bg-transparent text-sm outline-none placeholder-slate-400">
+            </div>
+        </div>
+
+        <!-- Category nav (Desktop) -->
+        <nav class="max-w-7xl mx-auto px-6 border-t border-slate-100 hidden sm:block">
             <div class="flex items-center gap-8 overflow-x-auto no-scrollbar py-3">
                 <a href="index.html" class="nav-link text-sm font-semibold text-slate-500 whitespace-nowrap">Accueil</a>
                 <a href="catalog.html" class="nav-link text-sm font-bold text-gray-900 whitespace-nowrap">Toutes les
@@ -207,7 +243,92 @@
         </nav>
     </header>
 
-    <div class="h-32 md:h-36"></div>
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobileOverlay"
+        class="fixed inset-0 bg-black/50 z-[60] opacity-0 pointer-events-none transition-opacity duration-300 sm:hidden">
+    </div>
+    <div id="mobileMenu"
+        class="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[70] shadow-2xl sm:hidden flex flex-col">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+            <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+            <button id="closeMobileMenu" class="p-2 rounded-lg hover:bg-gray-100">
+                <iconify-icon icon="solar:close-circle-linear" width="24" class="text-gray-600"></iconify-icon>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-4 mb-6">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Catégories</h3>
+                <nav class="flex flex-col gap-1">
+                    <a href="catalog.html"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:shop-linear" width="20"></iconify-icon>
+                        Toutes les pièces
+                    </a>
+                    <a href="catalog.html?category=Collections Femme"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:woman-linear" width="20"></iconify-icon>
+                        Collections Femme
+                    </a>
+                    <a href="catalog.html?category=Style Homme"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:man-linear" width="20"></iconify-icon>
+                        Style Homme
+                    </a>
+                    <a href="catalog.html?category=Tech & Gadgets"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:cpu-linear" width="20"></iconify-icon>
+                        Tech & Gadgets
+                    </a>
+                    <a href="catalog.html?category=Art de vivre"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <iconify-icon icon="solar:home-2-linear" width="20"></iconify-icon>
+                        Art de vivre
+                    </a>
+                </nav>
+            </div>
+
+            <div class="px-4 mb-6 border-t border-gray-50 pt-1">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 my-4">Personnel</h3>
+                <nav class="flex flex-col gap-1">
+                    <a href="notifications.html"
+                        class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <span class="flex items-center gap-3">
+                            <iconify-icon icon="solar:bell-linear" width="20"></iconify-icon>
+                            Notifications
+                        </span>
+                        <span
+                            class="notification-badge bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full hidden">0</span>
+                    </a>
+                    <a href="favorites.html"
+                        class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
+                        <span class="flex items-center gap-3">
+                            <iconify-icon icon="solar:heart-linear" width="20"></iconify-icon>
+                            Favoris
+                        </span>
+                        <span id="mobileFavoritesBadge"
+                            class="bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="px-4 mt-auto border-t border-gray-50 pt-6">
+                <div class="p-4 bg-gray-50 rounded-2xl">
+                    <p class="text-xs text-gray-500 mb-3">Devise d'affichage</p>
+                    <div class="currency-switch-segmented scale-90 origin-left" id="mobileCurrencyToggle"
+                        data-active="CDF">
+                        <div class="segmented-track">
+                            <div class="segmented-handle"></div>
+                            <span class="segmented-label" data-currency="USD">USD</span>
+                            <span class="segmented-label" data-currency="CDF">CDF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="h-16 sm:h-32 lg:h-36"></div>
 
     <main class="max-w-7xl mx-auto px-6 pb-20">
         <div class="mb-10 animate-fade-in" style="animation-delay: 0.1s;">
@@ -330,7 +451,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                 <div class="col-span-2 lg:col-span-1">
                     <a href="#" class="flex items-center gap-2 mb-8">
-                        <span class="text-lg font-bold tracking-tight">ENova</span>
+                        <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-12 w-auto">
                     </a>
                     <p class="text-slate-400 text-sm leading-relaxed mb-8 max-w-xs">
                         La destination ultime pour le luxe accessible et les tendances du futur.
@@ -420,7 +541,19 @@
             renderCatalog();
 
             // Bind Events
-            document.getElementById('searchInput').addEventListener('input', debounce(renderCatalog, 300));
+            const searchInput = document.getElementById('searchInput');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+
+            const handleSearch = (e) => {
+                const value = e.target.value;
+                if (searchInput && e.target !== searchInput) searchInput.value = value;
+                if (mobileSearchInput && e.target !== mobileSearchInput) mobileSearchInput.value = value;
+                debounce(renderCatalog, 300)();
+            };
+
+            if (searchInput) searchInput.addEventListener('input', handleSearch);
+            if (mobileSearchInput) mobileSearchInput.addEventListener('input', handleSearch);
+
             document.getElementById('searchBtn').addEventListener('click', renderCatalog);
 
             document.querySelectorAll('.category-filter').forEach(cb => {
@@ -454,7 +587,10 @@
         });
 
         function renderCatalog() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const query = (searchInput?.value || mobileSearchInput?.value || "").toLowerCase();
+
             const activeCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
             const sortBy = document.getElementById('sortSelect').value;
             const minInput = document.getElementById('minPrice');

@@ -37,7 +37,7 @@
     <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-1 group">
-                <span class="text-lg font-semibold tracking-tight">ENova</span>
+                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
             </a>
             <div class="flex items-center gap-4">
                 <!-- Currency Switch -->
@@ -206,13 +206,13 @@
     <script>
         const priceInput = document.getElementById('priceInput');
         const currencyInput = document.getElementById('currencyInput');
-        const exchangeRate = 2500;
         const estimatedPriceEl = document.getElementById('estimatedPrice');
         const otherCurrencyNameEl = document.getElementById('otherCurrencyName');
 
         function updateEstimate() {
             const price = parseFloat(priceInput.value) || 0;
             const currency = currencyInput.value;
+            const exchangeRate = ConfigManager ? ConfigManager.getExchangeRate() : 2500;
 
             if (currency === 'CDF') {
                 const estimatedAmount = price / exchangeRate;
@@ -228,35 +228,53 @@
         priceInput.addEventListener('input', updateEstimate);
         currencyInput.addEventListener('change', updateEstimate);
 
-        document.getElementById('publishForm').addEventListener('submit', function (e) {
+        document.getElementById('publishForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // Custom Validation
             const titleInput = this.querySelector('input[type="text"]');
-            const priceVal = priceInput.value.trim();
+            const categorySelect = this.querySelector('select');
             const descInput = this.querySelector('textarea');
+            const priceVal = parseFloat(priceInput.value);
+            const currency = currencyInput.value;
 
+            // Custom Validation
             if (!titleInput.value.trim()) {
-                showToast("Un titre est nécessaire pour identifier votre pièce d'exception.", "error");
+                showToast("Un titre est nécessaire pour votre produit.", "error");
                 titleInput.focus();
                 return;
             }
-            if (!priceVal || parseFloat(priceVal) <= 0) {
-                showToast("Veuillez définir une valeur à la hauteur de votre article.", "error");
+            if (!priceVal || priceVal <= 0) {
+                showToast("Veuillez définir un prix valide.", "error");
                 priceInput.focus();
-                return;
-            }
-            if (!descInput.value.trim()) {
-                showToast("Une description est requise pour sublimer votre annonce.", "error");
-                descInput.focus();
                 return;
             }
 
             if (window.LoaderManager) {
-                LoaderManager.show('Préparation de votre annonce...');
+                LoaderManager.show('Publication de votre annonce...');
             }
 
-            setTimeout(() => {
+            try {
+                const exchangeRate = ConfigManager ? ConfigManager.getExchangeRate() : 2500;
+                // Normalize price to CDF for internal storage if needed, or keep as is
+                // For NOVA, we usually store in CDF or have a price_usd field. 
+                // Let's assume the price field in DB is the primary price.
+                const finalPrice = currency === 'USD' ? priceVal * exchangeRate : priceVal;
+
+                const newProduct = {
+                    id: 'prod-' + Date.now(),
+                    name: titleInput.value.trim(),
+                    category: categorySelect.value,
+                    price: finalPrice,
+                    description: descInput.value.trim(),
+                    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop', // Placeholder
+                    supplier_email: localStorage.getItem('enovaUserEmail') || 'anonymous',
+                    stock: 10,
+                    is_new: true,
+                    created_at: new Date().toISOString()
+                };
+
+                await ProductManager.addProduct(newProduct);
+
                 if (window.LoaderManager) LoaderManager.hide();
 
                 const overlay = document.getElementById('publishOverlay');
@@ -265,7 +283,16 @@
                 overlay.classList.remove('invisible', 'opacity-0');
                 succ.classList.remove('hidden');
                 createConfetti();
-            }, 2000);
+
+                // Clear form
+                this.reset();
+                updateEstimate();
+
+            } catch (error) {
+                console.error('Publish error:', error);
+                if (window.LoaderManager) LoaderManager.hide();
+                showToast("Erreur lors de la publication.", "error");
+            }
         });
 
         function createConfetti() {
@@ -283,6 +310,7 @@
                     c.style.opacity = '0';
                     c.style.transform = `translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 360}deg)`;
                 }, 10);
+                setTimeout(() => c.remove(), 3000);
             }
         }
     </script>

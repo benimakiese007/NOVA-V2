@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/supabase-adapter.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <style>
         :root {
@@ -64,7 +68,7 @@
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-2 group">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
+                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
             </a>
             <div class="flex items-center gap-4">
                 <a href="index.html" class="text-sm font-medium text-gray-500 hover:text-black transition-colors">Retour
@@ -148,7 +152,7 @@
             <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-8 animate-in active">
                 <!-- Stats Grid for Customers -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
                         <div
                             class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-2">
@@ -172,6 +176,24 @@
                         </div>
                         <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Moyenne / Panier</p>
                         <div class="text-2xl font-black text-gray-900" id="customer-avg-order">0 FC</div>
+                    </div>
+                    <div class="bg-black text-white p-6 rounded-3xl shadow-xl shadow-black/10 flex flex-col gap-1">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:star-square-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Points NOVA</p>
+                        <div class="text-2xl font-black" id="customer-nova-points">0 PTS</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-bold">Activités Récentes</h2>
+                        <iconify-icon icon="solar:history-bold" width="20" class="text-gray-300"></iconify-icon>
+                    </div>
+                    <div id="customer-activity-feed" class="space-y-4">
+                        <!-- Activities injected here -->
                     </div>
                 </div>
             </div>
@@ -453,10 +475,33 @@
             const spentEl = document.getElementById('customer-total-spent');
             const countEl = document.getElementById('customer-order-count');
             const avgEl = document.getElementById('customer-avg-order');
+            const pointsEl = document.getElementById('customer-nova-points');
 
             if (spentEl) spentEl.textContent = CurrencyManager.formatPrice(stats.totalSpent);
             if (countEl) countEl.textContent = stats.totalOrders;
             if (avgEl) avgEl.textContent = CurrencyManager.formatPrice(stats.avgOrderValue);
+            if (pointsEl) pointsEl.textContent = stats.novaPoints + ' PTS';
+
+            // Render Activity Feed
+            const feed = document.getElementById('customer-activity-feed');
+            if (feed) {
+                const activities = ActivityManager.getRecentActivity(4);
+                if (activities.length === 0) {
+                    feed.innerHTML = '<p class="text-sm text-gray-400 py-4">Aucune activité pour le moment.</p>';
+                } else {
+                    feed.innerHTML = activities.map(a => `
+                        <div class="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-2xl transition-all">
+                            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs flex-shrink-0">
+                                ${a.type === 'stock' ? '📦' : '✨'}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">${a.text}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${ActivityManager.formatTime(a.time)}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
         }
 
         function renderOrders() {

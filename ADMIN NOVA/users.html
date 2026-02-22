@@ -71,21 +71,14 @@
             color: #ea580c;
         }
     </style>
-    <script>
-        // Check for Admin Role
-        const role = localStorage.getItem('enovaRole');
-        if (role !== 'admin') {
-            window.location.href = 'dashboard.html';
-        }
-    </script>
 </head>
 
 <body class="text-gray-900">
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+        <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <a href="dashboard.html" class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tighter">ENova</span>
+                <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
                 <span
                     class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
             </a>
@@ -96,7 +89,7 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
         <aside class="w-full md:w-64 flex-shrink-0">
             <div class="glass-panel p-6 sticky top-24">
@@ -125,7 +118,7 @@
                         <iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon>
                         Mes Clients
                     </a>
-                    <a href="users.html" class="sidebar-link active">
+                    <a href="users.html" class="sidebar-link active admin-only">
                         <iconify-icon icon="solar:user-bold" width="20"></iconify-icon>
                         Utilisateurs
                     </a>
@@ -148,8 +141,10 @@
         <main class="flex-1 min-w-0 space-y-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-gray-900">Utilisateurs</h1>
-                    <p class="text-gray-500">Gérez tous les comptes enregistrés sur la plateforme.</p>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900" id="pageTitle">Fournisseurs Plateforme
+                    </h1>
+                    <p class="text-gray-500" id="pageSubtitle">Gérez les comptes vendeurs enregistrés sur la plateforme.
+                    </p>
                 </div>
             </div>
 
@@ -158,16 +153,8 @@
                 <div class="flex-1 relative">
                     <iconify-icon icon="solar:magnifer-linear"
                         class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon>
-                    <input type="text" id="userSearch" placeholder="Rechercher par nom ou email..."
+                    <input type="text" id="userSearch" placeholder="Rechercher un vendeur par nom ou email..."
                         class="w-full pl-11 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-black transition-all text-sm">
-                </div>
-                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <button onclick="filterUsers('all')"
-                        class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest bg-black text-white whitespace-nowrap">Tous</button>
-                    <button onclick="filterUsers('customer')"
-                        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest bg-gray-50 text-gray-500 hover:text-black transition-all whitespace-nowrap">Clients</button>
-                    <button onclick="filterUsers('supplier')"
-                        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest bg-gray-50 text-gray-500 hover:text-black transition-all whitespace-nowrap">Vendeurs</button>
                 </div>
             </div>
 
@@ -179,9 +166,10 @@
                             <tr class="bg-gray-50 border-b border-gray-100">
                                 <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                     Utilisateur</th>
-                                <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Rôle</th>
-                                <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date
-                                    d'inscription</th>
+                                <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Produits
+                                </th>
+                                <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Ventes
+                                    Totales</th>
                                 <th
                                     class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">
                                     Actions</th>
@@ -198,23 +186,130 @@
                     <p class="text-gray-400">Aucun utilisateur trouvé.</p>
                 </div>
             </div>
+
+            <!-- User Details Modal -->
+            <div id="userDetailsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+                aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
+                    onclick="closeUserDetailsModal()"></div>
+
+                <div class="relative w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] scale-95 opacity-0 transition-all duration-200"
+                    id="userDetailsModalContent">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
+                        <div class="flex items-center gap-4">
+                            <div id="modalUserAvatar"
+                                class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-xl font-black shadow-lg">
+                                U</div>
+                            <div>
+                                <h3 id="modalUserName" class="text-xl font-black text-gray-900 tracking-tight">Nom
+                                    d'utilisateur</h3>
+                                <p id="modalUserEmail" class="text-sm text-gray-500 font-medium">email@example.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span id="modalUserRole" class="role-badge">Rôle</span>
+                            <button onclick="closeUserDetailsModal()"
+                                class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors shadow-sm">
+                                <iconify-icon icon="solar:close-circle-bold" width="20"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6 overflow-y-auto flex-1 space-y-8 bg-gray-50/30">
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="glass-panel p-4 flex flex-col gap-1">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Inscrit
+                                    le</span>
+                                <span id="modalUserDate" class="text-lg font-black text-gray-900">1 Jan 2024</span>
+                            </div>
+                            <div class="glass-panel p-4 flex flex-col gap-1">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total des
+                                    commandes</span>
+                                <span id="modalUserOrderCount" class="text-lg font-black text-gray-900">0</span>
+                            </div>
+                            <div class="glass-panel p-4 flex flex-col gap-1" id="modalUserRevenueContainer">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest text-[#059669]"
+                                    id="modalUserRevenueLabel">Montant Dépensé</span>
+                                <span id="modalUserRevenue" class="text-lg font-black text-[#059669]">0 FC</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="flex gap-4 border-b border-gray-200">
+                            <button onclick="switchTab('orders')" id="tabBtn-orders"
+                                class="px-4 py-2 text-sm font-bold text-black border-b-2 border-black pb-3">Commandes
+                                (<span id="tabOrderCount">0</span>)</button>
+                            <button onclick="switchTab('products')" id="tabBtn-products"
+                                class="hidden px-4 py-2 text-sm font-bold text-gray-500 border-b-2 border-transparent pb-3 hover:text-black hover:border-gray-300">Produits
+                                (<span id="tabProductCount">0</span>)</button>
+                        </div>
+
+                        <!-- Tab Content : Orders -->
+                        <div id="tabContent-orders" class="space-y-4">
+                            <div class="glass-panel overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-gray-50 border-b border-gray-100">
+                                                <th
+                                                    class="p-3 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                    Date</th>
+                                                <th
+                                                    class="p-3 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                    Statut</th>
+                                                <th
+                                                    class="p-3 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                    Articles</th>
+                                                <th
+                                                    class="p-3 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">
+                                                    Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="modalUserOrdersList" class="divide-y divide-gray-50">
+                                            <!-- Orders loaded via JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="modalUserOrdersEmpty" class="hidden p-8 text-center text-gray-400 text-sm">
+                                    Aucune commande trouvée.</div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content : Products -->
+                        <div id="tabContent-products" class="hidden space-y-4">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="modalUserProductsList">
+                                <!-- Products loaded via JS -->
+                            </div>
+                            <div id="modalUserProductsEmpty" class="hidden p-8 text-center text-gray-400 text-sm">Aucun
+                                produit listé.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <script src="../js/main.js"></script>
     <script>
-        let currentFilter = 'all';
+        let currentFilter = 'supplier';
         let searchQuery = '';
 
         function renderUsers() {
             const tbody = document.getElementById('usersBody');
             const emptyState = document.getElementById('emptyState');
             const allUsers = UserManager.getUsers();
+            const allProducts = ProductManager.getProducts();
+            const allOrders = OrderManager.getOrders();
 
             const filteredUsers = allUsers.filter(u => {
                 const matchesRole = currentFilter === 'all' || u.role === currentFilter;
-                const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    u.email.toLowerCase().includes(searchQuery.toLowerCase());
+                const userName = u.name || 'Utilisateur sans nom';
+                const userEmail = u.email || '';
+                const matchesSearch = userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    userEmail.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesRole && matchesSearch;
             });
 
@@ -225,32 +320,41 @@
             }
 
             emptyState.classList.add('hidden');
-            tbody.innerHTML = filteredUsers.map(u => `
-                <tr class="group hover:bg-gray-50/50 transition-colors">
+            tbody.innerHTML = filteredUsers.map(u => {
+                const userProducts = allProducts.filter(p => p.supplier_email === u.email);
+                const userSales = allOrders.reduce((sum, o) => {
+                    const mine = (o.items || []).filter(item => userProducts.some(p => p.id === item.id));
+                    return sum + mine.reduce((s, it) => s + (it.price * it.quantity), 0);
+                }, 0);
+
+                return `
+                <tr class="group hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="window.open('user-details.html?email=' + encodeURIComponent('${u.email}'), '_blank')">
                     <td class="p-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-xs font-black">
-                                ${u.avatar || u.name.substring(0, 2).toUpperCase()}
+                                ${u.avatar || (u.name ? u.name.substring(0, 2).toUpperCase() : 'U')}
                             </div>
                             <div>
-                                <div class="font-bold text-gray-900">${u.name}</div>
-                                <div class="text-[10px] text-gray-400 font-medium">${u.email}</div>
+                                <div class="font-bold text-gray-900">${u.name || 'Utilisateur sans nom'}</div>
+                                <div class="text-[10px] text-gray-400 font-medium">${u.email || 'Pas d\'email'}</div>
                             </div>
                         </div>
                     </td>
                     <td class="p-4">
-                        <span class="role-badge ${getRoleClass(u.role)}">${getRoleLabel(u.role)}</span>
+                        <span class="font-black text-gray-900">${userProducts.length}</span>
+                        <span class="text-[8px] text-gray-400 font-bold uppercase block">Article(s)</span>
                     </td>
-                    <td class="p-4 text-sm text-gray-500">
-                        ${new Date(u.dateJoined).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <td class="p-4">
+                        <span class="font-black text-gray-900">${CurrencyManager.formatPrice(userSales)}</span>
                     </td>
                     <td class="p-4 text-right">
-                        <button onclick="confirmDelete('${u.id}', '${u.name}')" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <button onclick="event.stopPropagation(); confirmDelete('${u.id}', '${u.name}')" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
                             <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function getRoleClass(role) {
@@ -306,6 +410,178 @@
             searchQuery = e.target.value;
             renderUsers();
         });
+
+        // --- Modals Functions ---
+        function openUserDetailsModal(userId) {
+            const user = UserManager.getUsers().find(u => u.id === userId);
+            if (!user) return;
+
+            // Populate base info
+            document.getElementById('modalUserName').textContent = user.name || 'Utilisateur sans nom';
+            document.getElementById('modalUserEmail').textContent = user.email || 'Pas d\'email';
+            document.getElementById('modalUserAvatar').textContent = user.avatar || (user.name ? user.name.substring(0, 2).toUpperCase() : 'U');
+            document.getElementById('modalUserDate').textContent = new Date(user.dateJoined).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            const roleBadge = document.getElementById('modalUserRole');
+            roleBadge.className = `role-badge ${getRoleClass(user.role)}`;
+            roleBadge.textContent = getRoleLabel(user.role);
+
+            // Fetch relations
+            const allOrders = window.OrderManager ? OrderManager.getOrders() : [];
+            const allProducts = window.ProductManager ? ProductManager.getProducts() : [];
+
+            // Orders (Filter by user id/email)
+            const userOrders = allOrders.filter(o =>
+                o.customerId === user.id ||
+                (o.customer && o.customer.email === user.email) ||
+                o.user_email === user.email ||
+                o.customerEmail === user.email
+            ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            document.getElementById('modalUserOrderCount').textContent = userOrders.length;
+            document.getElementById('tabOrderCount').textContent = userOrders.length;
+
+            if (user.role === 'supplier') {
+                document.getElementById('modalUserRevenueLabel').textContent = "Chiffre d'Affaires";
+                const revenue = userOrders.filter(o => o.status === 'delivered' || o.status === 'completed').reduce((sum, o) => sum + (o.total || 0), 0);
+                document.getElementById('modalUserRevenue').textContent = CurrencyManager ? CurrencyManager.formatPrice(revenue) : `${revenue} FC`;
+            } else {
+                document.getElementById('modalUserRevenueLabel').textContent = "Montant Dépensé";
+                const spent = userOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + (o.total || 0), 0);
+                document.getElementById('modalUserRevenue').textContent = CurrencyManager ? CurrencyManager.formatPrice(spent) : `${spent} FC`;
+            }
+
+            // Products (if supplier)
+            const productsBtn = document.getElementById('tabBtn-products');
+            if (user.role === 'supplier') {
+                productsBtn.classList.remove('hidden');
+                const userProducts = allProducts.filter(p => p.supplierId === user.id || p.ownerId === user.id);
+                document.getElementById('tabProductCount').textContent = userProducts.length;
+                renderModalProducts(userProducts);
+            } else {
+                productsBtn.classList.add('hidden');
+            }
+
+            renderModalOrders(userOrders);
+            switchTab('orders'); // Default tab
+
+            // Show Modal
+            const modal = document.getElementById('userDetailsModal');
+            const modalContent = document.getElementById('userDetailsModalContent');
+            modal.classList.remove('hidden');
+            // Small trigger force layout
+            void modal.offsetWidth;
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeUserDetailsModal() {
+            const modal = document.getElementById('userDetailsModal');
+            const modalContent = document.getElementById('userDetailsModalContent');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function switchTab(tabId) {
+            // Update buttons
+            ['orders', 'products'].forEach(id => {
+                const btn = document.getElementById(`tabBtn-${id}`);
+                const content = document.getElementById(`tabContent-${id}`);
+                if (!btn || !content) return;
+
+                if (id === tabId) {
+                    btn.classList.add('text-black', 'border-black');
+                    btn.classList.remove('text-gray-500', 'border-transparent');
+                    content.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('text-black', 'border-black');
+                    btn.classList.add('text-gray-500', 'border-transparent');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderModalOrders(orders) {
+            const tbody = document.getElementById('modalUserOrdersList');
+            const empty = document.getElementById('modalUserOrdersEmpty');
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            const statusColors = {
+                'pending': 'bg-yellow-50 text-yellow-600',
+                'processing': 'bg-blue-50 text-blue-600',
+                'shipped': 'bg-purple-50 text-purple-600',
+                'delivered': 'bg-green-50 text-green-600',
+                'completed': 'bg-green-50 text-green-600',
+                'cancelled': 'bg-red-50 text-red-600'
+            };
+            const statusLabels = {
+                'pending': 'En attente',
+                'processing': 'En cours',
+                'shipped': 'Expédiée',
+                'delivered': 'Livrée',
+                'completed': 'Terminée',
+                'cancelled': 'Annulée'
+            };
+
+            tbody.innerHTML = orders.map(o => {
+                const date = o.date ? new Date(o.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+                const statusColor = statusColors[o.status] || 'bg-gray-100 text-gray-600';
+                const statusLabel = statusLabels[o.status] || o.status;
+                const itemsCount = o.items ? o.items.reduce((s, i) => s + (i.quantity || 1), 0) : 0;
+
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="p-3 text-sm font-medium text-gray-900">${date}</td>
+                        <td class="p-3">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${statusColor}">
+                                ${statusLabel}
+                            </span>
+                        </td>
+                        <td class="p-3 text-sm text-gray-500">${itemsCount} article(s)</td>
+                        <td class="p-3 text-sm font-bold text-gray-900 text-right">${CurrencyManager ? CurrencyManager.formatPrice(o.total) : o.total + ' FC'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderModalProducts(products) {
+            const list = document.getElementById('modalUserProductsList');
+            const empty = document.getElementById('modalUserProductsEmpty');
+
+            if (products.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            list.innerHTML = products.map(p => {
+                const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : '../Images/placeholder.png';
+                return `
+                    <div class="glass-panel overflow-hidden group">
+                        <div class="aspect-square bg-gray-100 relative">
+                            <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover">
+                            ${!p.isActive ? '<div class="absolute inset-x-0 bottom-0 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest text-center py-1">Inactif</div>' : ''}
+                        </div>
+                        <div class="p-3">
+                            <h4 class="text-xs font-bold text-gray-900 truncate" title="${p.name}">${p.name}</h4>
+                            <p class="text-xs text-gray-500 font-medium mt-1">${CurrencyManager ? CurrencyManager.formatPrice(p.price) : p.price + ' FC'}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         function initializeUsers() {
             renderUsers();
