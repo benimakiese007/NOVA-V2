@@ -1528,12 +1528,6 @@ h6 {
         font-size: 1.75rem;
     }
 
-    /* Product Grid - 3 columns on tablet */
-    .product-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-    }
-
     /* Hero Section */
     .hero-section {
         height: 450px;
@@ -1584,14 +1578,6 @@ h6 {
     .btn-sm {
         padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
-    }
-
-    /* Product Grid - 2 columns on mobile */
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        overflow-x: visible;
     }
 
     .product-card {
