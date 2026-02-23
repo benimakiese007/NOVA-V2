@@ -1,7 +1,7 @@
 import os
 import re
 
-directory = r"c:\Users\tmaut\Downloads\THE PHOENIX\NOVA V2"
+directory = r"c:\Users\tmaut\Downloads\THE PHOENIX\NewKet"
 
 replacements = [
     # Top wrapper padding
@@ -9,8 +9,8 @@ replacements = [
      r'<div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-4">'),
      
     # Logo height
-    (r'<img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 sm:h-10 w-auto invert">',
-     r'<img src="Images/LOGO ENOVA.png" alt="ENova" class="h-6 sm:h-8 w-auto invert">'),
+    (r'<img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 sm:h-10 w-auto invert">',
+     r'<img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-6 sm:h-8 w-auto invert">'),
      
     # Mobile Search padding
     (r'<div id="mobileSearchContainer" class="hidden px-4 pb-3 sm:hidden">',

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livraisons | ENova Admin</title>
+    <title>Livraisons | NewKet Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -62,15 +62,18 @@
             animation: pulse-dot 2s ease-in-out infinite;
         }
     </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900">
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
-            <a href="dashboard.html" class="flex items-center gap-2">
-                <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
-                <span
-                    class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
+            <a href="dashboard.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="solar:star-bold" width="24" class="text-white"></iconify-icon>
+                </div>
+                <span class="text-xl font-bold tracking-tighter text-gray-900">NEWKET</span>
+                <span class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
             </a>
             <div class="flex items-center gap-4">
                 <div class="currency-switch-segmented" id="currencyToggle" data-active="CDF">
@@ -215,8 +218,8 @@
             showToast('Statut de livraison mis à jour !', 'success');
         }
         function getFilteredOrders() {
-            const role = localStorage.getItem('enovaRole');
-            const email = localStorage.getItem('enovaUserEmail');
+            const role = localStorage.getItem('newketRole');
+            const email = localStorage.getItem('newketUserEmail');
             let orders = OrderManager.getOrders();
             if (role === 'supplier' && email) {
                 orders = orders.filter(o => (o.items || []).some(item => {
@@ -284,18 +287,18 @@
             const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
             const link = document.createElement('a');
             link.setAttribute('href', URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })));
-            link.setAttribute('download', `enova-livraisons-${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', `newket-livraisons-${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
             showToast('Export réussi !', 'success');
         }
         function initPage() {
             renderDeliveries(); updateStats();
-            const role = localStorage.getItem('enovaRole');
+            const role = localStorage.getItem('newketRole');
             document.querySelectorAll('.admin-only').forEach(el => { if (role === 'admin') el.classList.remove('hidden'); else el.classList.add('hidden'); });
         }
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.enovaInitialized) { initPage(); } else { window.addEventListener('enovaInitialized', initPage); }
+            if (window.newketInitialized) { initPage(); } else { window.addEventListener('newketInitialized', initPage); }
         });
     </script>
 </body>

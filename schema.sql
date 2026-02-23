@@ -1,4 +1,4 @@
--- Create tables for NOVA V2
+-- Create tables for NewKet V2
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

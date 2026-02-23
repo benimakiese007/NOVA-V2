@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Vendeur | ENova</title>
+    <title>Espace Vendeur | NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -52,11 +52,13 @@
         }
     </style>
     <script>
-        const role = localStorage.getItem('enovaRole');
+        const role = localStorage.getItem('newketRole');
         if (!role || role !== 'supplier') {
             window.location.href = 'index.html';
         }
     </script>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900 antialiased">
@@ -64,7 +66,7 @@
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-2">
-                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+                <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
             </a>
             <div class="flex items-center gap-4">
                 <a href="index.html"
@@ -138,7 +140,7 @@
                 <div class="glass-panel p-8">
                     <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Produits en ligne</p>
                     <div class="text-3xl font-black text-gray-900" id="vendorProducts">0</div>
-                    <p class="text-xs text-blue-500 mt-2 font-bold">Actifs sur NOVA</p>
+                    <p class="text-xs text-blue-500 mt-2 font-bold">Actifs sur NewKet</p>
                 </div>
             </div>
 
@@ -209,7 +211,8 @@
                                 class="text-sm px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-black transition-all">
                         </div>
                     </div>
-                    <div id="vendor-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="vendor-products-grid"
+                        class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
                         <!-- Products injected here -->
                     </div>
                 </div>
@@ -307,10 +310,10 @@
                 }
 
                 document.addEventListener('DOMContentLoaded', () => {
-                    if (window.enovaInitialized) {
+                    if (window.newketInitialized) {
                         renderVendorDashboard();
                     } else {
-                        window.addEventListener('enovaInitialized', () => {
+                        window.addEventListener('newketInitialized', () => {
                             renderVendorDashboard();
                         });
                     }
@@ -323,7 +326,7 @@
 
                         // Populate Settings
                         if (document.getElementById('vSetStoreName')) document.getElementById('vSetStoreName').value = profile.name;
-                        if (document.getElementById('vSetEmail')) document.getElementById('vSetEmail').value = localStorage.getItem('enovaUserEmail') || profile.email;
+                        if (document.getElementById('vSetEmail')) document.getElementById('vSetEmail').value = localStorage.getItem('newketUserEmail') || profile.email;
                     }
 
                     // Handle Settings Form
@@ -347,7 +350,7 @@
                 });
 
                 function renderVendorDashboard() {
-                    const email = localStorage.getItem('enovaUserEmail');
+                    const email = localStorage.getItem('newketUserEmail');
                     const stats = OrderManager.getVendorStats(email);
 
                     // Update Stats Slates
@@ -447,7 +450,7 @@
                 }
 
                 function renderVendorProducts() {
-                    const email = localStorage.getItem('enovaUserEmail');
+                    const email = localStorage.getItem('newketUserEmail');
                     const myProducts = ProductManager.getProducts().filter(p => p.supplier_email === email);
                     const grid = document.getElementById('vendor-products-grid');
 
@@ -455,15 +458,15 @@
                         grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400">Vous n'avez pas encore de produits.</div>`;
                     } else {
                         grid.innerHTML = myProducts.map(p => `
-                    <div class="glass-panel p-4 flex flex-col group">
-                        <div class="aspect-square bg-gray-50 rounded-xl mb-4 overflow-hidden relative">
-                             <img src="${p.image}" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform">
+                    <div class="glass-panel p-3 sm:p-4 flex flex-col group">
+                        <div class="aspect-square bg-gray-50 rounded-xl mb-3 overflow-hidden relative">
+                             <img src="${p.image}" class="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-110 transition-transform">
                              <div class="absolute top-2 right-2 flex gap-1">
                                  <button class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center hover:bg-black hover:text-white transition-all"><iconify-icon icon="solar:pen-linear"></iconify-icon></button>
                              </div>
                         </div>
-                        <h3 class="font-bold text-sm mb-1">${p.name}</h3>
-                        <div class="flex items-center justify-between text-xs mt-auto">
+                        <h3 class="font-bold text-[10px] sm:text-sm mb-1 truncate">${p.name}</h3>
+                        <div class="flex items-center justify-between text-[9px] sm:text-xs mt-auto">
                             <span class="font-black">${CurrencyManager.formatPrice(p.price)}</span>
                             <span class="text-gray-400">Stock: ${p.stock || 0}</span>
                         </div>
@@ -473,13 +476,148 @@
                 }
 
                 function renderVendorGains() {
-                    const email = localStorage.getItem('enovaUserEmail');
+                    const email = localStorage.getItem('newketUserEmail');
                     const stats = OrderManager.getVendorStats(email);
 
                     document.getElementById('gains-available').textContent = CurrencyManager.formatPrice(stats.netGains);
                     document.getElementById('gains-commission').textContent = CurrencyManager.formatPrice(stats.commission);
                 }
             </script>
+            <!-- ========== FOOTER ========== -->
+            <footer class="bg-gray-900 text-white mt-16 pt-16 pb-8 border-t border-white/5 text-left">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                        <!-- Brand Section -->
+                        <div class="lg:col-span-4 space-y-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                                    <iconify-icon icon="solar:star-bold" width="24"
+                                        class="text-gray-900"></iconify-icon>
+                                </div>
+                                <span class="text-xl font-bold tracking-tight">NEWKET</span>
+                            </div>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                                L'excellence de la marketplace moderne. Découvrez une sélection rigoureuse d'articles de
+                                luxe et
+                                profitez d'une expérience shopping sans compromis.
+                            </p>
+                            <div class="flex items-center gap-4">
+                                <a href="#"
+                                    class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                                    <iconify-icon icon="line-md:instagram" width="20"></iconify-icon>
+                                </a>
+                                <a href="#"
+                                    class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                                    <iconify-icon icon="line-md:facebook" width="20"></iconify-icon>
+                                </a>
+                                <a href="#"
+                                    class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                                    <iconify-icon icon="line-md:twitter-x" width="20"></iconify-icon>
+                                </a>
+                                <a href="#"
+                                    class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                                    <iconify-icon icon="line-md:linkedin" width="20"></iconify-icon>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Fast Links -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Boutique</h4>
+                            <ul class="space-y-4">
+                                <li><a href="catalog.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Collections
+                                        Femme</a>
+                                </li>
+                                <li><a href="catalog.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a>
+                                </li>
+                                <li><a href="catalog.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                                        & Gadgets</a></li>
+                                <li><a href="catalog.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                                        de vivre</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Account & Support -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
+                            <ul class="space-y-4">
+                                <li><a href="customer-dashboard.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a>
+                                </li>
+                                <li><a href="customer-dashboard.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de
+                                        Commande</a>
+                                </li>
+                                <li><a href="about.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Aide &
+                                        FAQ</a></li>
+                                <li><a href="publish.html"
+                                        class="text-gray-400 hover:text-white text-sm transition-colors">Vendre un
+                                        article</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="lg:col-span-4 space-y-6">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Inspiration & Offres
+                            </h4>
+                            <p class="text-gray-400 text-sm">Inscrivez-vous pour recevoir nos sélections exclusives et
+                                avant-premières.</p>
+                            <form class="relative group"
+                                onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
+                                <input type="email" placeholder="Votre email"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all">
+                                <button type="submit"
+                                    class="absolute right-2 top-2 bg-white text-black text-xs font-bold uppercase px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                                    S'inscrire
+                                </button>
+                            </form>
+                            <div class="flex items-center gap-4 pt-2">
+                                <iconify-icon icon="logos:visa" width="35"></iconify-icon>
+                                <iconify-icon icon="logos:mastercard" width="35"></iconify-icon>
+                                <iconify-icon icon="simple-icons:mpesa" width="35"
+                                    class="text-[#2eb44b]"></iconify-icon>
+                                <iconify-icon icon="simple-icons:orange" width="35"
+                                    class="text-[#ff7900]"></iconify-icon>
+                                <iconify-icon icon="simple-icons:airtel" width="35" class="text-red-500"></iconify-icon>
+                                <iconify-icon icon="logos:stripe" width="35"
+                                    class="grayscale brightness-200"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Bottom -->
+                    <div
+                        class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="flex flex-col items-center md:items-start gap-1">
+                            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">© 2026 NEWKET —
+                                Expérience
+                                Luxe</p>
+                            <p class="text-gray-600 text-[9px] uppercase tracking-wider">Tous droits réservés</p>
+                        </div>
+
+                        <div class="flex gap-8">
+                            <a href="privacy.html"
+                                class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
+                            <a href="terms.html"
+                                class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="text-gray-500 text-[10px] uppercase tracking-widest font-semibold italic">Designed
+                                by</span>
+                            <span
+                                class="text-white text-[11px] font-black tracking-tighter hover:text-red-500 transition-colors cursor-pointer">SITYZEN</span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
 </body>
 
 </html>

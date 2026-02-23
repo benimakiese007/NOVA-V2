@@ -1,4 +1,4 @@
-/* ENova EMarket Main Scripts */
+/* newket EMarket Main Scripts */
 
 document.addEventListener('DOMContentLoaded', () => {
     // ========== DATA MIGRATION ==========
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const keys = ['currency', 'Cart', 'Favorites', 'Promos', 'Products', 'Orders'];
         keys.forEach(k => {
             const oldKey = 'nova' + k;
-            const newKey = 'enova' + k;
+            const newKey = 'newket' + k;
             if (localStorage.getItem(oldKey) && !localStorage.getItem(newKey)) {
                 localStorage.setItem(newKey, localStorage.getItem(oldKey));
                 console.log(`Migrated ${oldKey} to ${newKey}`);
@@ -55,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     initMobileControls();
 
-    console.log('ENova EMarket Loaded');
+    console.log('newket EMarket Loaded');
 
     // ========== CURRENCY MANAGER ==========
     const CurrencyManager = {
-        currentCurrency: localStorage.getItem('enovaCurrency') || 'CDF',
+        currentCurrency: localStorage.getItem('newketCurrency') || 'CDF',
         defaultRate: 2500, // 1 USD = 2500 CDF
 
         init() {
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setCurrency(currency) {
             this.currentCurrency = currency;
-            localStorage.setItem('enovaCurrency', currency);
+            localStorage.setItem('newketCurrency', currency);
             this.updateCurrencyUI();
             this.updateAllPrices();
             this.updatePriceFilter();
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If fromCDF is true, converts CDF -> USD
         // If fromCDF is false, converts USD -> CDF
         convert(amount, toUSD = true) {
-            const config = window.enovaConfig || this.getConfigFallback();
+            const config = window.newketConfig || this.getConfigFallback();
             const rate = config.exchangeRate || 2500;
             if (toUSD) return amount / rate;
             return amount * rate;
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ========== AUTH MANAGER (New) ==========
     const AuthManager = {
-        role: localStorage.getItem('enovaRole') || null, // 'customer' | 'supplier' | null
+        role: localStorage.getItem('newketRole') || null, // 'customer' | 'supplier' | null
 
         async init() {
             this._authChecking = true; // Set flag: auth check in progress
@@ -256,16 +256,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         // Sync LocalStorage
-                        if (localStorage.getItem('enovaRole') !== finalRole) {
+                        if (localStorage.getItem('newketRole') !== finalRole) {
                             this.setRole(finalRole);
                         }
-                        if (localStorage.getItem('enovaUserEmail') !== email) {
-                            localStorage.setItem('enovaUserEmail', email);
+                        if (localStorage.getItem('newketUserEmail') !== email) {
+                            localStorage.setItem('newketUserEmail', email);
                         }
                     } else if (event === 'SIGNED_OUT') {
                         this.role = null;
-                        localStorage.removeItem('enovaRole');
-                        localStorage.removeItem('enovaUserEmail');
+                        localStorage.removeItem('newketRole');
+                        localStorage.removeItem('newketUserEmail');
                         this.enforcePermissions();
                         this.updateAccountLink();
                         // Redirect to home if on protected page
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.setRole(finalRole);
                 } else {
                     // No Supabase session — but respect the localStorage role if admin auth was done via PHOENIX password
-                    const localRole = localStorage.getItem('enovaRole');
+                    const localRole = localStorage.getItem('newketRole');
                     const adminAuth = sessionStorage.getItem('adminAuth') === 'true';
                     if (!localRole || (!adminAuth && localRole === 'admin')) {
                         this.setRole(null);
@@ -305,18 +305,18 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         checkWelcomeBonus() {
-            if (localStorage.getItem('enovaWelcomeBonus') === 'true') {
+            if (localStorage.getItem('newketWelcomeBonus') === 'true') {
                 // Check if showToast is available, otherwise alert or log
                 if (typeof showToast === 'function') {
                     showToast('🎉 Bienvenue ! Profitez de -5% avec le code BIENVENUE', 'success');
                 }
-                localStorage.removeItem('enovaWelcomeBonus');
+                localStorage.removeItem('newketWelcomeBonus');
             }
-            if (localStorage.getItem('enovaSupplierBonus') === 'true') {
+            if (localStorage.getItem('newketSupplierBonus') === 'true') {
                 if (typeof showToast === 'function') {
                     showToast('🎉 Bienvenue ! 0% de commission sur votre première vente', 'success');
                 }
-                localStorage.removeItem('enovaSupplierBonus');
+                localStorage.removeItem('newketSupplierBonus');
             }
         },
 
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setRole(role) {
             this.role = role;
-            localStorage.setItem('enovaRole', role);
+            localStorage.setItem('newketRole', role);
             this.enforcePermissions();
             this.updateAccountLink();
 
@@ -339,8 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 await window.supabaseClient.auth.signOut();
             }
             this.role = null;
-            localStorage.removeItem('enovaRole');
-            localStorage.removeItem('enovaUserEmail');
+            localStorage.removeItem('newketRole');
+            localStorage.removeItem('newketUserEmail');
             window.location.href = 'index.html';
         },
 
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Redirect if on admin-folder pages (Vendeurs have their own dashboard now)
-                if (window.location.pathname.includes('/ADMIN%20NOVA/') || window.location.pathname.includes('/ADMIN NOVA/')) {
+                if (window.location.pathname.includes('/ADMIN%20NewKet/') || window.location.pathname.includes('/ADMIN NewKet/')) {
                     window.location.href = '../vendor-dashboard.html';
                 }
 
@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Redirect if on forbidden pages (customer in Admin folder)
-                if (window.location.pathname.includes('/ADMIN%20NOVA/') || window.location.pathname.includes('/ADMIN NOVA/')) {
+                if (window.location.pathname.includes('/ADMIN%20NewKet/') || window.location.pathname.includes('/ADMIN NewKet/')) {
                     window.location.href = '../customer-dashboard.html';
                 }
 
@@ -426,11 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Not Logged In Restrictions (Protection for Admin folder)
             if (this.role === null) {
                 const path = window.location.pathname;
-                const isAdminFolder = path.includes('/ADMIN%20NOVA/') || path.includes('/ADMIN NOVA/');
-                const isLoginPage = path.endsWith('ADMIN%20NOVA/') || path.endsWith('ADMIN NOVA/') || path.endsWith('index.html');
+                const isAdminFolder = path.includes('/ADMIN%20NewKet/') || path.includes('/ADMIN NewKet/');
+                const isLoginPage = path.endsWith('ADMIN%20NewKet/') || path.endsWith('ADMIN NewKet/') || path.endsWith('index.html');
 
                 if (isAdminFolder && !isLoginPage) {
-                    window.location.href = 'index.html'; // In Admin Nova, index.html is the login
+                    window.location.href = 'index.html'; // In Admin NewKet, index.html is the login
                 }
             }
         },
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = accountLink.querySelector('iconify-icon');
 
             if (this.role === 'admin') {
-                accountLink.href = 'ADMIN NOVA/dashboard.html';
+                accountLink.href = 'ADMIN NewKet/dashboard.html';
                 accountLink.title = 'Admin Panel';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
@@ -520,13 +520,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const CartManager = {
         // Get cart from localStorage
         getCart() {
-            const cart = localStorage.getItem('enovaCart');
+            const cart = localStorage.getItem('newketCart');
             return cart ? JSON.parse(cart) : [];
         },
 
         // Save cart to localStorage
         saveCart(cart) {
-            localStorage.setItem('enovaCart', JSON.stringify(cart));
+            localStorage.setItem('newketCart', JSON.stringify(cart));
             this.updateBadge();
             window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
         },
@@ -618,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clear cart
         clear() {
-            localStorage.removeItem('enovaCart');
+            localStorage.removeItem('newketCart');
             this.updateBadge();
         }
     };
@@ -633,13 +633,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const FavoritesManager = {
         // Get favorites from localStorage
         getFavorites() {
-            const favorites = localStorage.getItem('enovaFavorites');
+            const favorites = localStorage.getItem('newketFavorites');
             return favorites ? JSON.parse(favorites) : [];
         },
 
         // Save favorites to localStorage
         saveFavorites(favorites) {
-            localStorage.setItem('enovaFavorites', JSON.stringify(favorites));
+            localStorage.setItem('newketFavorites', JSON.stringify(favorites));
             this.updateUI();
             window.dispatchEvent(new CustomEvent('favoritesUpdated'));
         },
@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clear all favorites
         clearAll() {
-            localStorage.removeItem('enovaFavorites');
+            localStorage.removeItem('newketFavorites');
             this.updateUI();
         },
 
@@ -1127,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalSpent: totalSpent,
                 avgOrderValue: allOrders.length > 0 ? totalSpent / allOrders.length : 0,
                 lastOrder: allOrders.length > 0 ? allOrders[0] : null,
-                novaPoints: currentBalance,
+                newketPoints: currentBalance,
                 pointsEarned,
                 pointsUsed
             };
@@ -1189,8 +1189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         getAdvancedStats(timeframe = 'all') {
-            const role = localStorage.getItem('enovaRole');
-            const email = localStorage.getItem('enovaUserEmail');
+            const role = localStorage.getItem('newketRole');
+            const email = localStorage.getItem('newketUserEmail');
             let orders = this.orders;
 
             // Apply timeframe filter
@@ -1270,7 +1270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         getStats() {
-            const role = localStorage.getItem('enovaRole');
+            const role = localStorage.getItem('newketRole');
             const stats = this.getAdvancedStats();
 
             if (role === 'admin') {
@@ -1417,11 +1417,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ========== TOAST NOTIFICATION SYSTEM ==========
     window.showToast = function (message, type = 'success') {
-        const existingToast = document.querySelector('.enova-toast');
+        const existingToast = document.querySelector('.newket-toast');
         if (existingToast) existingToast.remove();
 
         const toast = document.createElement('div');
-        toast.className = `enova-toast ${type}`;
+        toast.className = `newket-toast ${type}`;
 
         // Define icons based on type
         let icon = 'solar:check-circle-bold';
@@ -1463,14 +1463,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ========== PREMIUM OVERLAY & MODAL SYSTEM ==========
     window.showConfirm = function (title, message, onConfirm, confirmText = 'Confirmer', cancelText = 'Annuler') {
-        const existingOverlay = document.getElementById('enova-global-overlay');
+        const existingOverlay = document.getElementById('newket-global-overlay');
         if (existingOverlay) existingOverlay.remove();
 
         const overlay = document.createElement('div');
-        overlay.id = 'enova-global-overlay';
+        overlay.id = 'newket-global-overlay';
         overlay.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all duration-300 opacity-0 invisible';
         overlay.innerHTML = `
-            <div class="enova-modal-card bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl transform scale-90 transition-all duration-300">
+            <div class="newket-modal-card bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl transform scale-90 transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-900">
                         <iconify-icon icon="solar:question-circle-bold" width="32"></iconify-icon>
@@ -1495,12 +1495,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show animation
         requestAnimationFrame(() => {
             overlay.classList.remove('invisible', 'opacity-0');
-            overlay.querySelector('.enova-modal-card').classList.remove('scale-90');
+            overlay.querySelector('.newket-modal-card').classList.remove('scale-90');
         });
 
         const close = () => {
             overlay.classList.add('opacity-0');
-            overlay.querySelector('.enova-modal-card').classList.add('scale-90');
+            overlay.querySelector('.newket-modal-card').classList.add('scale-90');
             setTimeout(() => {
                 overlay.classList.add('invisible');
                 overlay.remove();
@@ -1527,11 +1527,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========== GLOBAL LOADER SYSTEM ==========
     const LoaderManager = {
         show(message = 'Traitement en cours...') {
-            const existing = document.getElementById('enova-global-loader');
+            const existing = document.getElementById('newket-global-loader');
             if (existing) return;
 
             const loader = document.createElement('div');
-            loader.id = 'enova-global-loader';
+            loader.id = 'newket-global-loader';
             loader.className = 'fixed inset-0 z-[2000] flex items-center justify-center bg-white/80 backdrop-blur-md transition-all duration-300 opacity-0 invisible';
             loader.innerHTML = `
                 <div class="flex flex-col items-center gap-6">
@@ -1546,7 +1546,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
         hide() {
-            const loader = document.getElementById('enova-global-loader');
+            const loader = document.getElementById('newket-global-loader');
             if (loader) {
                 loader.classList.add('opacity-0');
                 setTimeout(() => {
@@ -1559,14 +1559,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.LoaderManager = LoaderManager;
 
     function showPasswordConfirm(title, message, onConfirm) {
-        const existingOverlay = document.getElementById('enova-global-overlay');
+        const existingOverlay = document.getElementById('newket-global-overlay');
         if (existingOverlay) existingOverlay.remove();
 
         const overlay = document.createElement('div');
-        overlay.id = 'enova-global-overlay';
+        overlay.id = 'newket-global-overlay';
         overlay.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all duration-300 opacity-0 invisible';
         overlay.innerHTML = `
-            <div class="enova-modal-card bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl transform scale-90 transition-all duration-300">
+            <div class="newket-modal-card bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl transform scale-90 transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-900">
                         <iconify-icon icon="solar:lock-password-bold" width="32"></iconify-icon>
@@ -1595,13 +1595,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(() => {
             overlay.classList.remove('invisible', 'opacity-0');
-            overlay.querySelector('.enova-modal-card').classList.remove('scale-90');
+            overlay.querySelector('.newket-modal-card').classList.remove('scale-90');
             overlay.querySelector('#modal-password-input').focus();
         });
 
         const close = () => {
             overlay.classList.add('opacity-0');
-            overlay.querySelector('.enova-modal-card').classList.add('scale-90');
+            overlay.querySelector('.newket-modal-card').classList.add('scale-90');
             setTimeout(() => {
                 overlay.classList.add('invisible');
                 overlay.remove();
@@ -2290,21 +2290,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for storage changes (Cross-tab synchronization)
     window.addEventListener('storage', (e) => {
-        if (e.key === 'enovaProducts') {
+        if (e.key === 'newketProducts') {
             console.log('Produits mis à jour depuis un autre onglet');
             renderProducts(); // Re-render main grid
             // Render cart if needed (though cart items might be stale if product details changed)
         }
-        if (e.key === 'enovaCurrency') {
-            CurrencyManager.currentCurrency = localStorage.getItem('enovaCurrency') || 'CDF';
+        if (e.key === 'newketCurrency') {
+            CurrencyManager.currentCurrency = localStorage.getItem('newketCurrency') || 'CDF';
             CurrencyManager.updateCurrencyUI();
             CurrencyManager.updateAllPrices();
             CurrencyManager.updatePriceFilter();
         }
-        if (e.key === 'enovaCart') {
+        if (e.key === 'newketCart') {
             CartManager.updateBadge();
         }
-        if (e.key === 'enovaFavorites') {
+        if (e.key === 'newketFavorites') {
             FavoritesManager.updateUI();
         }
     });
@@ -2313,10 +2313,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const ConfigManager = {
         getConfig() {
             try {
-                const config = localStorage.getItem('enovaConfig');
+                const config = localStorage.getItem('newketConfig');
                 const defaults = {
-                    shopName: 'ENova EMarket',
-                    email: 'contact@enova-emarket.com',
+                    shopName: 'newket EMarket',
+                    email: 'contact@newket-emarket.com',
                     currencySymbol: 'FC',
                     shippingFee: 2,
                     freeShippingThreshold: 50,
@@ -2348,7 +2348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         saveConfig(config) {
-            localStorage.setItem('enovaConfig', JSON.stringify(config));
+            localStorage.setItem('newketConfig', JSON.stringify(config));
             this.applyConfig();
         },
 
@@ -2356,7 +2356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const config = this.getConfig();
 
             // Store for other parts to access
-            window.enovaConfig = config;
+            window.newketConfig = config;
 
             // Update Page Titles
             if (!document.title.includes('|')) {
@@ -2365,8 +2365,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update Logotype / Headers
             document.querySelectorAll('.logo span, a.logo span, .brand-name, header .font-black, a[href="index.html"] span, a[href="../index.html"] span').forEach(el => {
-                // Only update if it contains "ENova" or similar to avoid overwriting other spans
-                if (el.textContent.includes('ENova') || el.classList.contains('brand-name')) {
+                // Only update if it contains "newket" or similar to avoid overwriting other spans
+                if (el.textContent.includes('newket') || el.classList.contains('brand-name')) {
                     el.textContent = config.shopName;
                 }
             });
@@ -2398,7 +2398,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Handle Maintenance Mode
-            if (config.maintenanceMode && !window.location.pathname.includes('ADMIN NOVA') && !window.location.pathname.includes('login.html')) {
+            if (config.maintenanceMode && !window.location.pathname.includes('ADMIN NewKet') && !window.location.pathname.includes('login.html')) {
                 // Simples redirection or overlay could be added here
                 console.warn('MAINTENANCE MODE ACTIVE');
             }
@@ -2409,10 +2409,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========== PROFILE MANAGER (New) ==========
     const ProfileManager = {
         getProfile() {
-            const profile = localStorage.getItem('enovaUserProfile');
+            const profile = localStorage.getItem('newketUserProfile');
             if (!profile) {
                 const defaults = {
-                    name: 'Client ENova',
+                    name: 'Client newket',
                     email: 'client@example.com',
                     phone: '+243 000 000 000'
                 };
@@ -2422,7 +2422,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         saveProfile(profile) {
-            localStorage.setItem('enovaUserProfile', JSON.stringify(profile));
+            localStorage.setItem('newketUserProfile', JSON.stringify(profile));
             this.updateUI();
         },
 
@@ -2456,7 +2456,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const CookieManager = {
         init() {
             // Check if user has already made a choice
-            if (!localStorage.getItem('enovaCookieConsent')) {
+            if (!localStorage.getItem('newketCookieConsent')) {
                 // Delay showing for better UX
                 setTimeout(() => {
                     this.showConsentModal();
@@ -2511,7 +2511,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         setConsent(accepted) {
-            localStorage.setItem('enovaCookieConsent', JSON.stringify({
+            localStorage.setItem('newketCookieConsent', JSON.stringify({
                 accepted: accepted,
                 timestamp: new Date().toISOString()
             }));
@@ -2595,7 +2595,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Restore width
-            const savedWidth = localStorage.getItem('enovaAdminSidebarWidth');
+            const savedWidth = localStorage.getItem('newketAdminSidebarWidth');
             if (savedWidth) {
                 this.applyWidth(aside, savedWidth);
             }
@@ -2627,7 +2627,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isResizing) {
                     isResizing = false;
                     document.body.classList.remove('sidebar-resizing');
-                    localStorage.setItem('enovaAdminSidebarWidth', aside.style.width);
+                    localStorage.setItem('newketAdminSidebarWidth', aside.style.width);
                 }
             });
         },
@@ -2650,7 +2650,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ========== GLOBAL INITIALIZATION ==========
     async function initializeApp() {
-        console.log('Initializing NOVA V2 with Supabase...');
+        console.log('Initializing NewKet with Supabase...');
 
         try {
             // Show loader during initial fetch
@@ -2670,18 +2670,18 @@ document.addEventListener('DOMContentLoaded', () => {
             results.forEach((result, i) => {
                 if (result.status === 'rejected') {
                     const names = ['ProductManager', 'OrderManager', 'PromoManager', 'ActivityManager', 'NotificationManager', 'UserManager'];
-                    console.warn(`[NOVA] ${names[i]}.init() failed (likely RLS):`, result.reason);
+                    console.warn(`[NewKet] ${names[i]}.init() failed (likely RLS):`, result.reason);
                 }
             });
 
             // Initialize UI Components
             SidebarResizer.init();
 
-            console.log('NOVA V2 Initialized successfully');
+            console.log('NewKet Initialized successfully');
 
             // Dispatch global ready event
-            window.enovaInitialized = true;
-            window.dispatchEvent(new CustomEvent('enovaInitialized'));
+            window.newketInitialized = true;
+            window.dispatchEvent(new CustomEvent('newketInitialized'));
 
             // Initial render for homepage / components
             if (typeof renderProducts === 'function') renderProducts();
@@ -2702,5 +2702,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Run initialization
-    window.enovaInitializationPromise = initializeApp();
+    window.newketInitializationPromise = initializeApp();
 });

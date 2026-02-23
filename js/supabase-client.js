@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 if (typeof supabase !== 'undefined') {
     const { createClient } = supabase;
     window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('Supabase Client Initialized');
+    console.log('NewKet Client Initialized');
 } else {
     console.error('Supabase SDK not loaded. Please check your internet connection or script tags.');
 }

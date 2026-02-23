@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Utilisateur | ENova</title>
+    <title>Profil Utilisateur | NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -44,6 +44,7 @@
             display: none;
         }
     </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900">
@@ -364,10 +365,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.enovaInitialized) {
+            if (window.newketInitialized) {
                 loadUserDetails();
             } else {
-                window.addEventListener('enovaInitialized', loadUserDetails);
+                window.addEventListener('newketInitialized', loadUserDetails);
             }
         });
     </script>

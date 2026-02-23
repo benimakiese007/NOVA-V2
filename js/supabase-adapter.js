@@ -1,5 +1,5 @@
 /**
- * Supabase Adapter for NOVA V2
+ * Supabase Adapter for NewKet
  * Bridges the gap between the existing managers and the Supabase database.
  */
 window.SupabaseAdapter = {

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | ENova EMarket</title>
+    <title>Admin Login | NewKet EMarket</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-client.js"></script>
@@ -88,13 +88,14 @@
             display: none;
         }
     </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body>
 
     <div class="admin-login-container">
         <div class="admin-logo">
-            <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 mx-auto mb-2 invert">
+            <img src="../Images/LOGO NEWKET.png" alt="NewKet" class="h-10 mx-auto mb-2 invert">
             <span class="text-xs font-bold uppercase tracking-widest text-gray-400">ADMINISTRATION</span>
         </div>
         <form id="loginForm">
@@ -119,7 +120,7 @@
     <script>
         // Auto-redirection logic
         const checkRedirect = () => {
-            const role = localStorage.getItem('enovaRole');
+            const role = localStorage.getItem('newketRole');
             const adminAuth = sessionStorage.getItem('adminAuth') === 'true';
 
             if (role === 'admin' || role === 'supplier' || adminAuth) {
@@ -152,7 +153,7 @@
             if (pass === 'PHOENIX') {
                 // Success
                 sessionStorage.setItem('adminAuth', 'true');
-                localStorage.setItem('enovaRole', 'admin');
+                localStorage.setItem('newketRole', 'admin');
                 window.location.href = 'dashboard.html';
             } else {
                 // Failure

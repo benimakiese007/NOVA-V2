@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion — ENova</title>
+    <title>Connexion — NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -124,6 +124,7 @@
             transform: scaleX(1);
         }
     </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-brand-900 antialiased h-screen flex relative">
@@ -131,7 +132,7 @@
     <!-- Left Side: Immersive Image (Hidden on smaller screens) -->
     <div class="hidden lg:flex lg:w-1/2 relative split-image overflow-hidden items-end p-16">
         <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1920&fm=jpg&fit=crop"
-            alt="ENova Experience" class="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center"
+            alt="NewKet Experience" class="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center"
             id="bgImage">
 
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-10"></div>
@@ -174,7 +175,7 @@
             class="absolute top-0 left-0 right-0 z-50 glass-panel lg:bg-transparent lg:backdrop-filter-none lg:border-none">
             <div class="p-6 md:px-10 flex items-center justify-between">
                 <a href="index.html" class="flex items-center">
-                    <img src="Images/LOGO ENOVA.png" alt="ENova"
+                    <img src="Images/LOGO NEWKET.png" alt="NewKet"
                         class="h-6 w-auto invert lg:opacity-0 transition-opacity" id="mobileLogo">
                 </a>
                 <div class="flex items-center gap-6">
@@ -194,7 +195,7 @@
 
                 <!-- Logo for Desktop inside form -->
                 <div class="hidden lg:block mb-10 animate-item">
-                    <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+                    <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
                 </div>
 
                 <!-- Header Texts -->
@@ -605,10 +606,10 @@
                     if (typeof showToast !== 'undefined') showToast("Inscription réussie ! Bienvenue.", "success");
 
                     if (role === 'customer') {
-                        localStorage.setItem('enovaWelcomeBonus', 'true');
+                        localStorage.setItem('newketWelcomeBonus', 'true');
                         if (typeof PromoManager !== 'undefined') PromoManager.addPromo('BIENVENUE', 'percent', 0.05, 1);
                     } else {
-                        localStorage.setItem('enovaSupplierBonus', 'true');
+                        localStorage.setItem('newketSupplierBonus', 'true');
                     }
 
                     finalizeAuth(data?.user || { user_metadata: { role } }, email);
@@ -631,11 +632,11 @@
             const adminEmails = window.ADMIN_EMAILS || [];
             if (adminEmails.includes(email)) role = 'admin';
 
-            localStorage.setItem('enovaUserEmail', email);
-            localStorage.setItem('enovaRole', role);
+            localStorage.setItem('newketUserEmail', email);
+            localStorage.setItem('newketRole', role);
 
             setTimeout(() => {
-                if (role === 'admin') window.location.href = 'ADMIN NOVA/dashboard.html';
+                if (role === 'admin') window.location.href = 'ADMIN NewKet/dashboard.html';
                 else if (role === 'supplier') window.location.href = 'vendor-dashboard.html';
                 else window.location.href = 'index.html';
             }, 800);

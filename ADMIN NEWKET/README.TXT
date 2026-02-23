@@ -1,15 +1,23 @@
 NOVA V2 - Plateforme E-commerce
+NewKet V2 - Plateforme E-commerce
 ================================
 
-Bienvenue dans le projet NOVA V2. Ceci est une application web de commerce électronique moderne.
+Bienvenue dans le projet NewKet V2. Ceci est une application web de commerce électronique moderne.
 
-STRUCTURE DU PROJET
+Structure du Projet :
 -------------------
 - / (Racine) : Contient les pages principales du site client (Accueil, Catalogue, Panier, etc.)
-- /ADMIN NOVA : Contient le panneau d'administration pour gérer les produits, commandes et paramètres.
-- /css : Feuilles de style pour le design (thèmes, animations, etc.).
-- /js : Scripts JavaScript pour la logique applicative (panier, favoris, gestion produits).
+- /ADMIN NEWKET : Contient le panneau d'administration pour gérer les produits, commandes et paramètres.
+- /css : Fichiers de style.
+- /js : Scripts frontend, incluant l'intégration Supabase.
 - /Images : Ressources graphiques.
+
+Technologies Utilisées :
+-----------------------
+- HTML5 / CSS3 (Tailwind CSS)
+- JavaScript (ES6+)
+- Supabase (Backend-as-a-Service)
+- Iconify (Icônes)
 
 PAGES PRINCIPALES
 -----------------
@@ -21,7 +29,7 @@ PAGES PRINCIPALES
 - favorites.html : Liste des favoris.
 - publish.html : Page de publication (vendeur).
 
-INSTALLATION ET UTILISATION
+Installation et Utilisation :
 ---------------------------
 1. Aucun serveur backend n'est requis pour la version de base (utilise LocalStorage).
 2. Ouvrez simplement le fichier `index.html` dans votre navigateur web pour lancer le site.

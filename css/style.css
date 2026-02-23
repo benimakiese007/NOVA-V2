@@ -1,5 +1,5 @@
 /* 
-   ENova EMarket - Premium E-commerce Design 
+   NewKet EMarket - Premium E-commerce Design 
    Style Guide & Core CSS
 */
 
@@ -581,8 +581,8 @@ h6 {
 /* Product Grid */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 2.5rem;
+    gap: 1.5rem;
+    /* Reduced gap for better tablet/mobile fit */
 }
 
 .product-card {
@@ -601,6 +601,8 @@ h6 {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-width: 0;
+    /* Ensures the card can shrink in grid layouts */
 }
 
 .product-card::before {
@@ -1454,53 +1456,6 @@ h6 {
         font-size: 1rem;
     }
 
-    /* Product Grid - Refined Horizontal Scroll */
-    .product-grid {
-        display: flex;
-        overflow-x: auto;
-        gap: 0.75rem;
-        padding: 0.5rem 0.5rem 1.5rem 0.5rem;
-        /* Padding for shadow/scroll */
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        margin: 0 -1rem;
-        /* Negative margin to scroll edge-to-edge */
-        padding-left: 1rem;
-        /* Restore padding start */
-        padding-right: 1rem;
-        /* Restore padding end */
-    }
-
-    .product-card {
-        min-width: 150px;
-        /* Slightly narrower for mobile */
-        width: 150px;
-        scroll-snap-align: center;
-        /* Snap to center looks premium */
-        border: 1px solid #eee;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-    }
-
-    .product-image {
-        height: 150px;
-        /* Square image area */
-        padding-top: 0;
-    }
-
-    .product-image img {
-        position: relative;
-        height: 100%;
-        width: 100%;
-    }
-
-    .hero-section {
-        height: 250px;
-        /* More compact hero */
-        border-radius: 8px;
-        /* Slightly rounded corners */
-        margin: 0 0 1.5rem 0;
-    }
-
     .hero-content h1 {
         font-size: 1.8rem;
     }
@@ -1556,7 +1511,7 @@ h6 {
 }
 
 /* =====================================================
-   RESPONSIVE ENHANCEMENTS - ENOVA EMARKET
+   RESPONSIVE ENHANCEMENTS - NEWKET EMARKET
    ===================================================== */
 
 /* Tablet Breakpoint - 1024px */
@@ -2294,7 +2249,7 @@ h6 {
 }
 
 /* ========== PREMIUM TOAST NOTIFICATIONS ========== */
-.enova-toast {
+.newket-toast {
     position: fixed;
     bottom: 30px;
     left: 50%;
@@ -2320,32 +2275,32 @@ h6 {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.enova-toast.active {
+.newket-toast.active {
     transform: translateX(-50%) translateY(0);
 }
 
-.enova-toast.success {
+.newket-toast.success {
     background: rgba(16, 185, 129, 0.9);
     /* Emerald */
 }
 
-.enova-toast.info {
+.newket-toast.info {
     background: rgba(59, 130, 246, 0.9);
     /* Blue */
 }
 
-.enova-toast.error {
+.newket-toast.error {
     background: rgba(239, 68, 68, 0.9);
     /* Red */
 }
 
-.enova-toast i,
-.enova-toast iconify-icon {
+.newket-toast i,
+.newket-toast iconify-icon {
     font-size: 1.25rem;
     flex-shrink: 0;
 }
 
-.enova-toast .toast-icon-bg {
+.newket-toast .toast-icon-bg {
     width: 32px;
     height: 32px;
     background: rgba(255, 255, 255, 0.2);
@@ -2356,7 +2311,7 @@ h6 {
 }
 
 @media (max-width: 640px) {
-    .enova-toast {
+    .newket-toast {
         width: calc(100% - 40px);
         white-space: normal;
         bottom: 20px;
@@ -2365,22 +2320,22 @@ h6 {
 }
 
 /* ========== GLOBAL MODAL & LOADER ========== */
-#enova-global-overlay,
-#enova-global-loader {
+#newket-global-overlay,
+#newket-global-loader {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.enova-modal-card {
+.newket-modal-card {
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
 }
 
-#enova-global-overlay.opacity-0 .enova-modal-card {
+#newket-global-overlay.opacity-0 .newket-modal-card {
     transform: scale(0.9) translateY(20px);
 }
 
-#enova-global-loader .animate-spin {
+#newket-global-loader .animate-spin {
     border-top-color: #000;
 }
 

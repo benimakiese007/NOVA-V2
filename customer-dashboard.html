@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Espace Client | ENova</title>
+    <title>Mon Espace Client | NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -55,11 +55,13 @@
     </style>
     <script>
         // Check for Valid Role
-        const role = localStorage.getItem('enovaRole');
+        const role = localStorage.getItem('newketRole');
         if (!role || (role !== 'customer' && role !== 'supplier')) {
             window.location.href = 'index.html';
         }
     </script>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900">
@@ -68,7 +70,7 @@
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-2 group">
-                <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+                <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
             </a>
             <div class="flex items-center gap-4">
                 <a href="index.html" class="text-sm font-medium text-gray-500 hover:text-black transition-colors">Retour
@@ -121,7 +123,7 @@
                     <!-- Admin Link for Suppliers -->
                     <div id="supplier-link-container" class="hidden">
                         <div class="h-px bg-gray-100 my-4 mx-2"></div>
-                        <a href="ADMIN NOVA/dashboard.html"
+                        <a href="ADMIN NewKet/dashboard.html"
                             class="sidebar-link bg-red-50 text-red-600 hover:bg-red-100">
                             <iconify-icon icon="solar:shield-user-bold" width="20"></iconify-icon>
                             Espace Vendeur
@@ -144,7 +146,8 @@
             <!-- Favorites Tab -->
             <div id="tab-favorites" class="space-y-6 hidden">
                 <h1 class="text-2xl font-bold tracking-tight">Mes produits favoris</h1>
-                <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="favorites-grid"
+                    class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Favorites injected here -->
                 </div>
             </div>
@@ -181,8 +184,8 @@
                         <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center mb-2">
                             <iconify-icon icon="solar:star-square-bold" width="24"></iconify-icon>
                         </div>
-                        <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Points NOVA</p>
-                        <div class="text-2xl font-black" id="customer-nova-points">0 PTS</div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Points NewKet</p>
+                        <div class="text-2xl font-black" id="customer-newket-points">0 PTS</div>
                     </div>
                 </div>
 
@@ -317,7 +320,7 @@
         <div style="padding: 40px; font-family: sans-serif; color: #333;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
                 <div>
-                    <h1 style="margin: 0; font-size: 24px; font-weight: 900;">ENOVA EMARKET</h1>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900;">NEWKET EMARKET</h1>
                     <p style="color: #666; font-size: 14px;">Marketplace Premium</p>
                 </div>
                 <div style="text-align: right;">
@@ -358,7 +361,7 @@
             </div>
 
             <div style="margin-top: 80px; text-align: center; color: #999; font-size: 12px;">
-                Merci de votre confiance chez ENova !<br>
+                Merci de votre confiance chez NewKet !<br>
                 Ceci est une facture générée automatiquement.
             </div>
         </div>
@@ -392,7 +395,7 @@
             renderDashboardNotifications(); // Keep this line as it was in the original
 
             // Show Admin Link for Suppliers
-            const role = localStorage.getItem('enovaRole');
+            const role = localStorage.getItem('newketRole');
             if (role === 'supplier') {
                 const supplierLink = document.getElementById('supplier-link-container');
                 if (supplierLink) supplierLink.classList.remove('hidden');
@@ -467,7 +470,7 @@
         }
 
         function renderCustomerDashboardStats() {
-            const email = localStorage.getItem('enovaUserEmail');
+            const email = localStorage.getItem('newketUserEmail');
             if (!email) return;
 
             const stats = OrderManager.getCustomerStats(email);
@@ -475,12 +478,12 @@
             const spentEl = document.getElementById('customer-total-spent');
             const countEl = document.getElementById('customer-order-count');
             const avgEl = document.getElementById('customer-avg-order');
-            const pointsEl = document.getElementById('customer-nova-points');
+            const pointsEl = document.getElementById('customer-newket-points');
 
             if (spentEl) spentEl.textContent = CurrencyManager.formatPrice(stats.totalSpent);
             if (countEl) countEl.textContent = stats.totalOrders;
             if (avgEl) avgEl.textContent = CurrencyManager.formatPrice(stats.avgOrderValue);
-            if (pointsEl) pointsEl.textContent = stats.novaPoints + ' PTS';
+            if (pointsEl) pointsEl.textContent = stats.newketPoints + ' PTS';
 
             // Render Activity Feed
             const feed = document.getElementById('customer-activity-feed');
@@ -559,16 +562,16 @@
                 `;
             } else {
                 favoritesGrid.innerHTML = favorites.map(item => `
-                    <div class="glass-panel p-6 flex flex-col relative group">
+                    <div class="glass-panel p-3 sm:p-6 flex flex-col relative group">
                         <button onclick="removeFavorite('${item.id}')" class="absolute top-2 right-2 p-2 text-gray-300 hover:text-red-500 transition-colors z-10">
                             <iconify-icon icon="solar:trash-bin-minimalistic-bold" width="18"></iconify-icon>
                         </button>
                         <div class="aspect-square bg-gray-50 rounded-xl mb-4 overflow-hidden">
-                             <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500">
+                             <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-110 transition-transform duration-500">
                         </div>
-                        <h3 class="font-bold text-gray-900 mb-1 truncate">${item.name}</h3>
-                        <div class="text-sm text-gray-500 mb-4">${CurrencyManager.formatPrice(item.price)}</div>
-                        <button onclick="addToCart('${item.id}')" class="w-full py-2 bg-black text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                        <h3 class="font-bold text-gray-900 text-[10px] sm:text-base mb-1 truncate">${item.name}</h3>
+                        <div class="text-[9px] sm:text-sm text-gray-500 mb-4">${CurrencyManager.formatPrice(item.price)}</div>
+                        <button onclick="addToCart('${item.id}')" class="w-full py-2 bg-black text-white rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
                             Ajouter au panier
                         </button>
                     </div>
@@ -631,7 +634,7 @@
             const o = currentSelectedOrder;
             document.getElementById('invId').textContent = '#' + o.id;
             document.getElementById('invDate').textContent = new Date(o.date).toLocaleDateString();
-            document.getElementById('invClient').textContent = o.customer?.name || 'Client ENova';
+            document.getElementById('invClient').textContent = o.customer?.name || 'Client NewKet';
             document.getElementById('invEmail').textContent = o.customer?.email || '';
 
             const invItems = document.getElementById('invItems');
@@ -651,10 +654,10 @@
             const printContent = document.getElementById('invoiceTemplate').innerHTML;
             const originalContent = document.body.innerHTML;
 
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write('<html><head><title>Facture Nova</title></head><body>');
+            printWindow.document.write('<html><head><title>Facture NewKet</title>    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'><path fill=\'%23000\' d=\'m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z\'/></svg>">');
+            printWindow.document.write('</head><body>');
             printWindow.document.write(printContent);
-            printWindow.document.write('</body></html>');
+            printWindow.document.write('</body></html > ');
             printWindow.document.close();
             printWindow.focus();
             setTimeout(() => {
@@ -677,6 +680,124 @@
             }
         }
     </script>
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-gray-900 text-white mt-16 pt-16 pb-8 border-t border-white/5 text-left">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                <!-- Brand Section -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:star-bold" width="24" class="text-gray-900"></iconify-icon>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight">NEWKET</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        L'excellence de la marketplace moderne. Découvrez une sélection rigoureuse d'articles de luxe et
+                        profitez d'une expérience shopping sans compromis.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:instagram" width="20"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:facebook" width="20"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:twitter-x" width="20"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:linkedin" width="20"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Fast Links -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Boutique</h4>
+                    <ul class="space-y-4">
+                        <li><a href="catalog.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Collections Femme</a>
+                        </li>
+                        <li><a href="catalog.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                                & Gadgets</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                                de vivre</a></li>
+                    </ul>
+                </div>
+
+                <!-- Account & Support -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
+                    <ul class="space-y-4">
+                        <li><a href="customer-dashboard.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
+                        <li><a href="customer-dashboard.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a>
+                        </li>
+                        <li><a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide &
+                                FAQ</a></li>
+                        <li><a href="publish.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Vendre un article</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="lg:col-span-4 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Inspiration & Offres</h4>
+                    <p class="text-gray-400 text-sm">Inscrivez-vous pour recevoir nos sélections exclusives et
+                        avant-premières.</p>
+                    <form class="relative group"
+                        onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
+                        <input type="email" placeholder="Votre email"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all">
+                        <button type="submit"
+                            class="absolute right-2 top-2 bg-white text-black text-xs font-bold uppercase px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                            S'inscrire
+                        </button>
+                    </form>
+                    <div class="flex items-center gap-4 pt-2">
+                        <iconify-icon icon="logos:visa" width="35"></iconify-icon>
+                        <iconify-icon icon="logos:mastercard" width="35"></iconify-icon>
+                        <iconify-icon icon="simple-icons:mpesa" width="35" class="text-[#2eb44b]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:orange" width="35" class="text-[#ff7900]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:airtel" width="35" class="text-red-500"></iconify-icon>
+                        <iconify-icon icon="logos:stripe" width="35" class="grayscale brightness-200"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col items-center md:items-start gap-1">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">© 2026 NEWKET — Expérience
+                        Luxe</p>
+                    <p class="text-gray-600 text-[9px] uppercase tracking-wider">Tous droits réservés</p>
+                </div>
+
+                <div class="flex gap-8">
+                    <a href="privacy.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
+                    <a href="terms.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-[10px] uppercase tracking-widest font-semibold italic">Designed
+                        by</span>
+                    <span
+                        class="text-white text-[11px] font-black tracking-tighter hover:text-red-500 transition-colors cursor-pointer">SITYZEN</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Vendeur | ENova</title>
+    <title>Espace Vendeur | NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -60,22 +60,23 @@
     </style>
     <script>
         // Check for Admin or Supplier Role
-        const role = localStorage.getItem('enovaRole');
+        const role = localStorage.getItem('newketRole');
         // Check removed to allow AuthManager to handle it properly
 
         // Welcome Bonus Check (Display on Load)
         document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('enovaSupplierBonus') === 'true') {
+            if (localStorage.getItem('newketSupplierBonus') === 'true') {
                 // The showToast function is in main.js
                 setTimeout(() => {
                     if (window.showToast) {
                         showToast("Bienvenue ! Votre privilège de 0% de commission sur votre première vente est activé.", "success");
                     }
                 }, 1000);
-                localStorage.removeItem('enovaSupplierBonus');
+                localStorage.removeItem('newketSupplierBonus');
             }
         });
     </script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900">
@@ -85,7 +86,7 @@
         <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <a href="dashboard.html" class="flex items-center gap-2 group">
-                    <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
+                    <img src="../Images/LOGO NEWKET.png" alt="NewKet" class="h-10 w-auto invert">
                     <span
                         class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
                 </a>
@@ -339,7 +340,7 @@
             refreshDashboardData();
 
             // Handle role-based UI
-            const role = localStorage.getItem('enovaRole');
+            const role = localStorage.getItem('newketRole');
             if (role === 'supplier' || role === 'admin') {
                 const isAdmin = role === 'admin';
                 document.querySelectorAll('.admin-only').forEach(el => {
@@ -349,7 +350,7 @@
 
                 // Update Labels
                 if (isAdmin) {
-                    document.title = "Administration | ENova";
+                    document.title = "Administration | NewKet";
                     document.querySelector('h1').textContent = "Vue d'ensemble";
                     document.querySelector('h1 + p').textContent = "Performances et activité globales de la plateforme.";
 
@@ -374,10 +375,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.enovaInitialized) {
+            if (window.newketInitialized) {
                 initializeDashboard();
             } else {
-                window.addEventListener('enovaInitialized', initializeDashboard);
+                window.addEventListener('newketInitialized', initializeDashboard);
             }
         });
 
@@ -449,8 +450,8 @@
                 });
             }
 
-            const role = localStorage.getItem('enovaRole');
-            const email = localStorage.getItem('enovaUserEmail');
+            const role = localStorage.getItem('newketRole');
+            const email = localStorage.getItem('newketUserEmail');
             if (role === 'supplier' && email) {
                 filteredOrders = filteredOrders.filter(o => (o.items || []).some(item => {
                     const p = ProductManager.getProduct(item.id);
@@ -506,8 +507,8 @@
             let filteredOrders = allOrders;
 
             // Re-apply role filter
-            const role = localStorage.getItem('enovaRole');
-            const email = localStorage.getItem('enovaUserEmail');
+            const role = localStorage.getItem('newketRole');
+            const email = localStorage.getItem('newketUserEmail');
             if (role === 'supplier' && email) {
                 filteredOrders = filteredOrders.filter(o => (o.items || []).some(item => {
                     const p = ProductManager.getProduct(item.id);

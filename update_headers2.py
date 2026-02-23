@@ -1,7 +1,7 @@
 import os
 import re
 
-directory = r"c:\Users\tmaut\Downloads\THE PHOENIX\NOVA V2"
+directory = r"c:\Users\tmaut\Downloads\THE PHOENIX\NewKet"
 
 replacements = [
     # Top wrapper padding for simpler pages (py-4)
@@ -32,8 +32,8 @@ for filename in os.listdir(directory):
         new_content = re.sub(r'<div class="h-20"></div>', r'<div class="h-16"></div>', new_content) # Be careful, only replaces first match? No, replaces all. Actually, let's just make it h-16.
         
         # Logo height for other pages
-        new_content = new_content.replace(r'<img src="Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">',
-                                          r'<img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">')
+        new_content = new_content.replace(r'<img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-10 w-auto invert">',
+                                          r'<img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">')
 
         if content != new_content:
             with open(filepath, 'w', encoding='utf-8') as f:

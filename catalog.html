@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalogue Luxe — ENova</title>
+    <title>Catalogue Luxe — NewKet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -150,6 +150,8 @@
             pointer-events: auto;
         }
     </style>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-slate-900 antialiased">
@@ -164,8 +166,11 @@
                     title="Menu">
                     <iconify-icon icon="solar:hamburger-menu-linear" width="24" class="text-gray-600"></iconify-icon>
                 </button>
-                <a href="index.html" class="flex-shrink-0 flex items-center gap-1">
-                    <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-6 sm:h-8 w-auto invert">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                        <iconify-icon icon="solar:star-bold" width="22" class="text-white"></iconify-icon>
+                    </div>
+                    <span class="text-xl font-bold tracking-tighter text-gray-900">NEWKET</span>
                 </a>
             </div>
 
@@ -250,7 +255,7 @@
     <div id="mobileMenu"
         class="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[70] shadow-2xl sm:hidden flex flex-col">
         <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-            <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+            <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
             <button id="closeMobileMenu" class="p-2 rounded-lg hover:bg-gray-100">
                 <iconify-icon icon="solar:close-circle-linear" width="24" class="text-gray-600"></iconify-icon>
             </button>
@@ -438,7 +443,8 @@
                 </div>
 
                 <!-- Product grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-8" id="catalog-grid">
+                <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-8"
+                    id="catalog-grid">
                     <!-- Products injected by JS -->
                 </div>
             </div>
@@ -446,73 +452,120 @@
     </main>
 
     <!-- ========== FOOTER ========== -->
-    <footer class="bg-slate-950 text-white">
-        <div class="max-w-7xl mx-auto px-6 py-20">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-                <div class="col-span-2 lg:col-span-1">
-                    <a href="#" class="flex items-center gap-2 mb-8">
-                        <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-12 w-auto">
-                    </a>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-8 max-w-xs">
-                        La destination ultime pour le luxe accessible et les tendances du futur.
+    <footer class="bg-gray-900 text-white mt-16 pt-16 pb-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                <!-- Brand Section -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:star-bold" width="24" class="text-gray-900"></iconify-icon>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight">NEWKET</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        L'excellence de la marketplace moderne. Découvrez une sélection rigoureuse d'articles de luxe et
+                        profitez d'une expérience shopping sans compromis.
                     </p>
-                    <div class="flex gap-4">
-                        <a href="https://instagram.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:instagram-line" width="18"></iconify-icon>
+                    <div class="flex items-center gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:instagram" width="20"></iconify-icon>
                         </a>
-                        <a href="https://facebook.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:facebook-fill" width="18"></iconify-icon>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:facebook" width="20"></iconify-icon>
                         </a>
-                        <a href="https://twitter.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:twitter-x-fill" width="18"></iconify-icon>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:twitter-x" width="20"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:linkedin" width="20"></iconify-icon>
                         </a>
                     </div>
                 </div>
 
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Navigation</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li><a href="about.html" class="hover:text-white transition-colors">À Propos</a></li>
-                        <li><a href="catalog.html" class="hover:text-white transition-colors">Nouveautés</a></li>
-                        <li><a href="catalog.html" class="hover:text-white transition-colors">Ventes Flash</a></li>
-                        <li><a href="about.html" class="hover:text-white transition-colors">Ambassadeurs</a></li>
+                <!-- Fast Links -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Boutique</h4>
+                    <ul class="space-y-4">
+                        <li><a href="catalog.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Collections Femme</a>
+                        </li>
+                        <li><a href="catalog.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                                & Gadgets</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                                de vivre</a></li>
                     </ul>
                 </div>
 
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Support Client</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li><a href="about.html" class="hover:text-white transition-colors">Centre d'Aide</a></li>
-                        <li><a href="customer-dashboard.html" class="hover:text-white transition-colors">Suivi
-                                Commande</a></li>
-                        <li><a href="terms.html" class="hover:text-white transition-colors">Retours & Échanges</a></li>
-                        <li><a href="about.html" class="hover:text-white transition-colors">Nous Contacter</a></li>
+                <!-- Account & Support -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
+                    <ul class="space-y-4">
+                        <li><a href="customer-dashboard.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
+                        <li><a href="customer-dashboard.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a>
+                        </li>
+                        <li><a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide &
+                                FAQ</a></li>
+                        <li><a href="publish.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Vendre un article</a>
+                        </li>
                     </ul>
                 </div>
 
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Newsletter</h4>
-                    <p class="text-sm text-slate-400 mb-6">Inscrivez-vous pour des offres privées.</p>
-                    <div class="flex flex-col gap-3">
+                <!-- Newsletter -->
+                <div class="lg:col-span-4 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Inspiration & Offres</h4>
+                    <p class="text-gray-400 text-sm">Inscrivez-vous pour recevoir nos sélections exclusives et
+                        avant-premières.</p>
+                    <form class="relative group"
+                        onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
                         <input type="email" placeholder="Votre email"
-                            class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-gray-900 outline-none w-full">
-                        <button
-                            class="bg-white text-slate-950 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-all">S'abonner</button>
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all">
+                        <button type="submit"
+                            class="absolute right-2 top-2 bg-white text-black text-xs font-bold uppercase px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                            S'inscrire
+                        </button>
+                    </form>
+                    <div class="flex items-center gap-4 pt-2">
+                        <iconify-icon icon="logos:visa" width="35"></iconify-icon>
+                        <iconify-icon icon="logos:mastercard" width="35"></iconify-icon>
+                        <iconify-icon icon="simple-icons:mpesa" width="35" class="text-[#2eb44b]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:orange" width="35" class="text-[#ff7900]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:airtel" width="35" class="text-red-500"></iconify-icon>
+                        <iconify-icon icon="logos:stripe" width="35" class="grayscale brightness-200"></iconify-icon>
                     </div>
                 </div>
             </div>
 
-            <div
-                class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                <p>© 2026 ENova — EXPÉRIENCE LUXE</p>
-                <div class="flex gap-8">
-                    <a href="privacy.html" class="hover:text-white">Confidentialité</a>
-                    <a href="terms.html" class="hover:text-white">Conditions</a>
+            <!-- Footer Bottom -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col items-center md:items-start gap-1">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">© 2026 NEWKET — Expérience
+                        Luxe</p>
+                    <p class="text-gray-600 text-[9px] uppercase tracking-wider">Tous droits réservés</p>
                 </div>
-                <p>Designed by <span class="text-white">SITYZEN</span></p>
+
+                <div class="flex gap-8">
+                    <a href="privacy.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
+                    <a href="terms.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-[10px] uppercase tracking-widest font-semibold italic">Designed
+                        by</span>
+                    <span
+                        class="text-white text-[11px] font-black tracking-tighter hover:text-red-500 transition-colors cursor-pointer">SITYZEN</span>
+                </div>
             </div>
         </div>
     </footer>
@@ -579,10 +632,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.enovaInitialized) {
+            if (window.newketInitialized) {
                 initializeCatalog();
             } else {
-                window.addEventListener('enovaInitialized', initializeCatalog);
+                window.addEventListener('newketInitialized', initializeCatalog);
             }
         });
 

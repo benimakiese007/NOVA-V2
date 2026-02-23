@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENova — Marketplace Moderne</title>
+    <title>NewKet — Marketplace Moderne</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -134,6 +134,8 @@
             pointer-events: auto;
         }
     </style>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="bg-white text-gray-900 antialiased">
@@ -148,8 +150,11 @@
                     title="Menu">
                     <iconify-icon icon="solar:hamburger-menu-linear" width="24" class="text-gray-600"></iconify-icon>
                 </button>
-                <a href="index.html" class="flex-shrink-0 flex items-center gap-1">
-                    <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-6 sm:h-8 w-auto invert">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                        <iconify-icon icon="solar:star-bold" width="22" class="text-white"></iconify-icon>
+                    </div>
+                    <span class="text-xl font-bold tracking-tighter text-gray-900">NEWKET</span>
                 </a>
             </div>
 
@@ -249,7 +254,7 @@
     <div id="mobileMenu"
         class="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[70] shadow-2xl sm:hidden flex flex-col">
         <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-            <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-8 w-auto invert">
+            <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
             <button id="closeMobileMenu" class="p-2 rounded-lg hover:bg-gray-100">
                 <iconify-icon icon="solar:close-circle-linear" width="24" class="text-gray-600"></iconify-icon>
             </button>
@@ -349,7 +354,7 @@
                 Voir tout <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
             </a>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="pinnedProductGrid">
+        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="pinnedProductGrid">
             <!-- Produits épinglés chargés dynamiquement -->
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
@@ -423,7 +428,7 @@
                 Voir tout <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
             </a>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="recentProductGrid">
+        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="recentProductGrid">
             <!-- 10 produits récents chargés dynamiquement -->
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
@@ -549,69 +554,120 @@
     </section>
 
     <!-- ========== FOOTER ========== -->
-    <footer class="bg-gray-900 text-white mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
-                <!-- Brand -->
-                <div class="col-span-2 sm:col-span-3 lg:col-span-1">
-                    <div class="flex items-center gap-2 mb-4">
-                        <img src="Images/LOGO ENOVA.png" alt="ENova" class="h-12 w-auto">
-                    </div>
-                    <p class="text-sm text-gray-400 mb-4 max-w-xs">Votre destination premium pour des produits de
-                        qualité et une expérience shopping exceptionnelle.</p>
+    <footer class="bg-gray-900 text-white mt-16 pt-16 pb-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                <!-- Brand Section -->
+                <div class="lg:col-span-4 space-y-6">
                     <div class="flex items-center gap-3">
-                        <a href="https://facebook.com" target="_blank"
-                            class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <iconify-icon icon="mdi:facebook" width="18" class="text-gray-400"></iconify-icon>
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:star-bold" width="24" class="text-gray-900"></iconify-icon>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight">NEWKET</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        L'excellence de la marketplace moderne. Découvrez une sélection rigoureuse d'articles de luxe et
+                        profitez d'une expérience shopping sans compromis.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:instagram" width="20"></iconify-icon>
                         </a>
-                        <a href="https://instagram.com" target="_blank"
-                            class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <iconify-icon icon="mdi:instagram" width="18" class="text-gray-400"></iconify-icon>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:facebook" width="20"></iconify-icon>
                         </a>
-                        <a href="https://twitter.com" target="_blank"
-                            class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <iconify-icon icon="mdi:twitter" width="18" class="text-gray-400"></iconify-icon>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:twitter-x" width="20"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <iconify-icon icon="line-md:linkedin" width="20"></iconify-icon>
                         </a>
                     </div>
                 </div>
-                <!-- Links -->
-                <div>
-                    <h4 class="text-sm font-semibold mb-4">Boutique</h4>
-                    <ul class="space-y-2.5">
+
+                <!-- Fast Links -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Boutique</h4>
+                    <ul class="space-y-4">
                         <li><a href="catalog.html"
-                                class="text-sm text-gray-400 hover:text-white transition-colors">Nouveautés</a></li>
-                        <li><a href="catalog.html"
-                                class="text-sm text-gray-400 hover:text-white transition-colors">Meilleures
-                                ventes</a>
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Collections Femme</a>
                         </li>
                         <li><a href="catalog.html"
-                                class="text-sm text-gray-400 hover:text-white transition-colors">Promotions</a></li>
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                                & Gadgets</a></li>
+                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                                de vivre</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="text-sm font-semibold mb-4 text-white">Support</h4>
-                    <ul class="space-y-2.5">
-                        <li><a href="about.html" class="text-sm text-gray-400 hover:text-white transition-colors">Centre
-                                d'aide</a></li>
+
+                <!-- Account & Support -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
+                    <ul class="space-y-4">
                         <li><a href="customer-dashboard.html"
-                                class="text-sm text-gray-400 hover:text-white transition-colors">Suivi Commande</a></li>
-                        <li><a href="terms.html"
-                                class="text-sm text-gray-400 hover:text-white transition-colors">Conditions
-                                Générales</a></li>
-                        <li><a href="about.html" class="text-sm text-gray-400 hover:text-white transition-colors">Nous
-                                Contacter</a></li>
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
+                        <li><a href="customer-dashboard.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a>
+                        </li>
+                        <li><a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide &
+                                FAQ</a></li>
+                        <li><a href="publish.html"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Vendre un article</a>
+                        </li>
                     </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="lg:col-span-4 space-y-6">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Inspiration & Offres</h4>
+                    <p class="text-gray-400 text-sm">Inscrivez-vous pour recevoir nos sélections exclusives et
+                        avant-premières.</p>
+                    <form class="relative group"
+                        onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
+                        <input type="email" placeholder="Votre email"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-all">
+                        <button type="submit"
+                            class="absolute right-2 top-2 bg-white text-black text-xs font-bold uppercase px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                            S'inscrire
+                        </button>
+                    </form>
+                    <div class="flex items-center gap-4 pt-2">
+                        <iconify-icon icon="logos:visa" width="35"></iconify-icon>
+                        <iconify-icon icon="logos:mastercard" width="35"></iconify-icon>
+                        <iconify-icon icon="simple-icons:mpesa" width="35" class="text-[#2eb44b]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:orange" width="35" class="text-[#ff7900]"></iconify-icon>
+                        <iconify-icon icon="simple-icons:airtel" width="35" class="text-red-500"></iconify-icon>
+                        <iconify-icon icon="logos:stripe" width="35" class="grayscale brightness-200"></iconify-icon>
+                    </div>
                 </div>
             </div>
-            <!-- Copyright -->
-            <div
-                class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                <p>© 2026 ENova — EXPÉRIENCE LUXE</p>
-                <div class="flex gap-8">
-                    <a href="privacy.html" class="hover:text-white transition-colors">Confidentialité</a>
-                    <a href="terms.html" class="hover:text-white transition-colors">Conditions</a>
+
+            <!-- Footer Bottom -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col items-center md:items-start gap-1">
+                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">© 2026 NEWKET — Expérience
+                        Luxe</p>
+                    <p class="text-gray-600 text-[9px] uppercase tracking-wider">Tous droits réservés</p>
                 </div>
-                <p>Designed by <span class="text-white">SITYZEN</span></p>
+
+                <div class="flex gap-8">
+                    <a href="privacy.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
+                    <a href="terms.html"
+                        class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-[10px] uppercase tracking-widest font-semibold italic">Designed
+                        by</span>
+                    <span
+                        class="text-white text-[11px] font-black tracking-tighter hover:text-red-500 transition-colors cursor-pointer">SITYZEN</span>
+                </div>
             </div>
         </div>
     </footer>

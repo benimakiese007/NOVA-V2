@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avis & Évaluations | ENova Admin</title>
+    <title>Support & Tickets | NewKet Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -46,15 +46,18 @@
             color: white;
         }
     </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
 </head>
 
 <body class="text-gray-900">
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
-            <a href="dashboard.html" class="flex items-center gap-2">
-                <img src="../Images/LOGO ENOVA.png" alt="ENova" class="h-10 w-auto invert">
-                <span
-                    class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
+            <a href="dashboard.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="solar:star-bold" width="24" class="text-white"></iconify-icon>
+                </div>
+                <span class="text-xl font-bold tracking-tighter text-gray-900">NEWKET</span>
+                <span class="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Admin</span>
             </a>
             <div class="flex items-center gap-4">
                 <div class="currency-switch-segmented" id="currencyToggle" data-active="CDF">
@@ -105,53 +108,44 @@
         <main class="flex-1 min-w-0 space-y-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-gray-900">⭐ Avis & Évaluations</h1>
-                    <p class="text-gray-500">Moférez et analysez les retours clients sur vos produits.</p>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900">🔔 Support / Tickets</h1>
+                    <p class="text-gray-500">Gérez les demandes d'assistance et répondez aux utilisateurs.</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <select id="filterRating" onchange="renderReviews()"
+                    <select id="filterStatus" onchange="renderTickets()"
                         class="text-xs font-black uppercase tracking-widest bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-black cursor-pointer">
-                        <option value="all">Toutes les notes</option>
-                        <option value="5">5 Étoiles</option>
-                        <option value="4">4 Étoiles</option>
-                        <option value="3">3 Étoiles</option>
-                        <option value="low">1-2 Étoiles</option>
+                        <option value="all">Tous les statuts</option>
+                        <option value="ouvert">Ouvert</option>
+                        <option value="resolu">Résolu</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Dashboard Stats for Reviews -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <!-- Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div class="glass-panel p-5 flex flex-col gap-1">
-                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Avis</div>
-                    <div class="text-2xl font-black text-gray-900" id="statTotalReviews">0</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Tickets</div>
+                    <div class="text-2xl font-black text-gray-900" id="statTotalTickets">0</div>
                 </div>
                 <div class="glass-panel p-5 flex flex-col gap-1">
-                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Note Moyenne</div>
-                    <div class="text-2xl font-black text-orange-500 flex items-center gap-2" id="statAvgRating">0.0
-                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon></div>
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Tickets Ouverts</div>
+                    <div class="text-2xl font-black text-red-500" id="statOpenTickets">0</div>
                 </div>
                 <div class="glass-panel p-5 flex flex-col gap-1">
-                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Avis 5 Étoiles</div>
-                    <div class="text-2xl font-black text-green-500" id="stat5Star">0</div>
-                </div>
-                <div class="glass-panel p-5 flex flex-col gap-1">
-                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">À modérer</div>
-                    <div class="text-2xl font-black text-red-500" id="statLowStar">0</div>
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Tickets Résolus</div>
+                    <div class="text-2xl font-black text-green-500" id="statResolvedTickets">0</div>
                 </div>
             </div>
 
             <div class="glass-panel overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                     <h2 class="font-bold text-gray-900 flex items-center gap-2">
-                        <iconify-icon icon="solar:list-bold-duotone" width="20"
-                            class="text-gray-400"></iconify-icon>Derniers Avis
+                        <iconify-icon icon="solar:inbox-bold-duotone" width="20"
+                            class="text-blue-500"></iconify-icon>Boîte de Réception
                     </h2>
                 </div>
-                <div id="reviewsContainer">
-                    <div class="divide-y divide-gray-50" id="reviewsBody">
-                        <div class="p-12 text-center text-gray-400">Chargement...</div>
-                    </div>
+                <div id="ticketsContainer" class="divide-y divide-gray-50">
+                    <div class="p-12 text-center text-gray-400">Chargement...</div>
                 </div>
             </div>
         </main>
@@ -159,75 +153,87 @@
 
     <script src="../js/main.js"></script>
     <script>
-        // Simulons des avis puisqu'ils ne sont pas stockés de manière globale dans appState actuellement
-        function getMockReviews() {
+        // Simulons des tickets
+        function getMockTickets() {
             return [
-                { id: '1', productId: 'p1', productName: 'iPhone 15 Pro Max', customer: 'Alice M.', rating: 5, comment: 'Excellent produit, livraison rapide !', date: new Date().toISOString() },
-                { id: '2', productId: 'p2', productName: 'Sneakers Nike', customer: 'Bob K.', rating: 4, comment: 'Très confortable, mais un peu cher.', date: new Date(Date.now() - 86400000).toISOString() },
-                { id: '3', productId: 'p3', productName: 'MacBook Pro', customer: 'Charlie T.', rating: 2, comment: 'La batterie se décharge vite.', date: new Date(Date.now() - 172800000).toISOString() },
-                { id: '4', productId: 'p1', productName: 'iPhone 15 Pro Max', customer: 'David L.', rating: 5, comment: 'Magnifique design.', date: new Date(Date.now() - 259200000).toISOString() },
+                { id: 'TKT-001', subject: 'Problème avec ma commande #1024', customer: 'Alice M.', message: 'Je n\'ai toujours pas reçu ma commande, pouvez-vous me donner une mise à jour ?', status: 'ouvert', date: new Date().toISOString() },
+                { id: 'TKT-002', subject: 'Comment utiliser mes points NewKet ?', customer: 'Bob K.', message: 'Je ne trouve pas l\'option pour payer avec mes points lors du checkout.', status: 'ouvert', date: new Date(Date.now() - 3600000).toISOString() },
+                { id: 'TKT-003', subject: 'Remboursement', customer: 'Charlie T.', message: 'Merci pour le remboursement rapide.', status: 'resolu', date: new Date(Date.now() - 86400000).toISOString() },
             ];
         }
 
-        let allReviews = getMockReviews(); // Replace with real DB fetch if needed
+        let tickets = getMockTickets();
 
-        function renderReviews() {
-            const tbody = document.getElementById('reviewsBody');
-            const filterRating = document.getElementById('filterRating').value;
+        function renderTickets() {
+            const container = document.getElementById('ticketsContainer');
+            const filterStatus = document.getElementById('filterStatus').value;
 
-            let filtered = allReviews;
-            if (filterRating === 'low') filtered = filtered.filter(r => r.rating <= 2);
-            else if (filterRating !== 'all') filtered = filtered.filter(r => r.rating == filterRating);
+            let filtered = tickets;
+            if (filterStatus !== 'all') filtered = filtered.filter(t => t.status === filterStatus);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<div class="p-12 text-center text-gray-400 text-sm italic">Aucun avis trouvé.</div>`;
+                container.innerHTML = `<div class="p-12 text-center text-gray-400 text-sm italic">Aucun ticket trouvé.</div>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(r => `
+            container.innerHTML = filtered.map(t => {
+                const isResolved = t.status === 'resolu';
+                return `
                 <div class="p-6 hover:bg-gray-50 transition-colors flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-2">
-                            <div class="font-bold text-gray-900">${r.customer}</div>
-                            <div class="flex text-orange-400 text-xs">
-                                ${Array(5).fill(0).map((_, i) => `<iconify-icon icon="solar:star-${i < r.rating ? 'bold' : 'linear'}"></iconify-icon>`).join('')}
-                            </div>
-                            <div class="text-[10px] text-gray-400">${new Date(r.date).toLocaleDateString()}</div>
+                            <span class="text-xs font-black uppercase text-gray-400">${t.id}</span>
+                            <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded-full ${isResolved ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}">${isResolved ? 'Résolu' : 'Ouvert'}</span>
+                            <div class="text-[10px] text-gray-400 ml-auto">${new Date(t.date).toLocaleDateString()}</div>
                         </div>
-                        <div class="text-sm text-gray-600 mb-1">"${r.comment}"</div>
-                        <div class="text-[10px] font-black uppercase text-gray-400">Sur le produit: <span class="text-black">${r.productName}</span></div>
+                        <h3 class="font-bold text-gray-900 mb-1">${t.subject}</h3>
+                        <div class="text-sm text-gray-600 mb-2">${t.message}</div>
+                        <div class="text-[10px] font-black uppercase text-gray-400">Client: <span class="text-black">${t.customer}</span></div>
                     </div>
                     <div class="flex items-center gap-2 mt-4 md:mt-0">
-                        <button onclick="deleteReview('${r.id}')" class="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors">Supprimer</button>
+                        ${!isResolved ? `<button onclick="resolveTicket('${t.id}')" class="text-[10px] font-black uppercase tracking-widest bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">Marquer Résolu</button>` : `<button onclick="reopenTicket('${t.id}')" class="text-[10px] font-black uppercase tracking-widest border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">Rouvrir</button>`}
+                        <button onclick="deleteTicket('${t.id}')" class="text-gray-300 hover:text-red-400 p-2 transition-colors"><iconify-icon icon="solar:trash-bin-minimalistic-bold" width="18"></iconify-icon></button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             updateStats();
         }
 
-        function deleteReview(id) {
-            if (!confirm('Supprimer cet avis ?')) return;
-            allReviews = allReviews.filter(r => r.id !== id);
-            renderReviews();
-            showToast('Avis supprimé', 'success');
+        function resolveTicket(id) {
+            const t = tickets.find(t => t.id === id);
+            if (t) t.status = 'resolu';
+            renderTickets();
+            showToast('Ticket résolu', 'success');
+        }
+
+        function reopenTicket(id) {
+            const t = tickets.find(t => t.id === id);
+            if (t) t.status = 'ouvert';
+            renderTickets();
+            showToast('Ticket rouvert', 'info');
+        }
+
+        function deleteTicket(id) {
+            if (!confirm('Supprimer ce ticket ?')) return;
+            tickets = tickets.filter(t => t.id !== id);
+            renderTickets();
+            showToast('Ticket supprimé', 'success');
         }
 
         function updateStats() {
-            document.getElementById('statTotalReviews').textContent = allReviews.length;
-            const avg = allReviews.length ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1) : '0.0';
-            document.getElementById('statAvgRating').innerHTML = `${avg} <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>`;
-            document.getElementById('stat5Star').textContent = allReviews.filter(r => r.rating === 5).length;
-            document.getElementById('statLowStar').textContent = allReviews.filter(r => r.rating <= 2).length;
+            document.getElementById('statTotalTickets').textContent = tickets.length;
+            document.getElementById('statOpenTickets').textContent = tickets.filter(t => t.status === 'ouvert').length;
+            document.getElementById('statResolvedTickets').textContent = tickets.filter(t => t.status === 'resolu').length;
         }
 
         function initPage() {
-            renderReviews();
-            const role = localStorage.getItem('enovaRole');
+            renderTickets();
+            const role = localStorage.getItem('newketRole');
             document.querySelectorAll('.admin-only').forEach(el => { if (role === 'admin') el.classList.remove('hidden'); else el.classList.add('hidden'); });
         }
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.enovaInitialized) { initPage(); } else { window.addEventListener('enovaInitialized', initPage); }
+            if (window.newketInitialized) { initPage(); } else { window.addEventListener('newketInitialized', initPage); }
         });
     </script>
 </body>
