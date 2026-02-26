@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" sizes="512x512" href="Images/LOGO NEWKET.png">
-    <link rel="icon" type="image/png" href="Images/LOGO NEWKET.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="Images/Logo NewKet V2.jpeg">
     <meta name="theme-color" content="#111827">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -47,11 +47,11 @@
     <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-1 group">
-                <img src="Images/LOGO NEWKET.png" alt="NewKet" class="h-8 w-auto invert">
+                <img src="Images/Logo NewKet V2.jpeg" alt="NewKet" class="h-8 w-auto invert">
             </a>
             <div class="flex items-center gap-4">
                 <!-- Currency Switch -->
-                <div class="currency-switch-segmented" id="currencyToggle" data-active="CDF">
+                <div class="hidden md:block currency-switch-segmented" id="currencyToggle" data-active="CDF">
                     <div class="segmented-track">
                         <div class="segmented-handle"></div>
                         <span class="segmented-label" data-currency="USD">USD</span>
@@ -170,8 +170,10 @@
                 <div id="imagePreviewContainer" class="hidden flex gap-4 overflow-x-auto pb-2"></div>
 
                 <div class="flex items-center gap-2 mt-4 px-2" id="bgRemovalContainer" style="display: none;">
-                    <input type="checkbox" id="removeBackgroundCheck" class="w-5 h-5 rounded border-gray-300 text-black focus:ring-black cursor-pointer">
-                    <label for="removeBackgroundCheck" class="text-sm font-semibold text-gray-700 flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="removeBackgroundCheck"
+                        class="w-5 h-5 rounded border-gray-300 text-black focus:ring-black cursor-pointer">
+                    <label for="removeBackgroundCheck"
+                        class="text-sm font-semibold text-gray-700 flex items-center gap-2 cursor-pointer">
                         <iconify-icon icon="solar:magic-stick-3-linear" class="text-purple-500 text-lg"></iconify-icon>
                         Transformer en PNG (Détourage transparent par intelligence artificielle)
                     </label>
@@ -256,11 +258,11 @@
         const uploadZone = document.getElementById('uploadZone');
         let selectedProductImage = null;
 
-        pImageUpload.addEventListener('change', function(e) {
+        pImageUpload.addEventListener('change', function (e) {
             if (e.target.files && e.target.files[0]) {
                 const file = e.target.files[0];
                 const reader = new FileReader();
-                reader.onload = function(evt) {
+                reader.onload = function (evt) {
                     selectedProductImage = evt.target.result;
                     uploadZone.classList.add('hidden');
                     imagePreviewContainer.innerHTML = `
@@ -383,7 +385,7 @@
                 <div class="lg:col-span-4 space-y-6">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 flex items-center justify-center">
-                            <img src="Images/LOGO NEWKET.png" alt="NewKet" class="w-full h-full object-contain">
+                            <img src="Images/Logo NewKet V2.jpeg" alt="NewKet" class="w-full h-full object-contain">
                         </div>
                         <span class="text-xl font-bold tracking-tight">NEWKET</span>
                     </div>

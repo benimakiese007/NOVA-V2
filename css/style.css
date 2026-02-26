@@ -832,9 +832,9 @@ h6 {
 
 /* Modern Segmented Currency Selector */
 .currency-switch-segmented {
-    display: inline-flex !important;
-    align-items: center !important;
-    cursor: pointer !important;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
     user-select: none !important;
     margin-right: 1.5rem !important;
     position: relative !important;
