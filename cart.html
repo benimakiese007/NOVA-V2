@@ -463,81 +463,12 @@
     <!-- Confetti Container -->
     <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-[101]"></div>
 
-    <!-- ========== FOOTER ========== -->
-    <footer class="bg-slate-950 text-white mt-auto">
-        <div class="max-w-7xl mx-auto px-6 py-20">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-                <div class="col-span-2 lg:col-span-1">
-                    <a href="index.html" class="flex items-center gap-2 mb-8">
-                        <img src="Images/Logo NewKet V2.jpeg" alt="NewKet" class="h-12 w-auto">
-                    </a>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-8 max-w-xs">
-                        La destination ultime pour le luxe accessible et les tendances du futur.
-                    </p>
-                    <div class="flex gap-4">
-                        <a href="https://instagram.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:instagram-line" width="18"></iconify-icon>
-                        </a>
-                        <a href="https://facebook.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:facebook-fill" width="18"></iconify-icon>
-                        </a>
-                        <a href="https://twitter.com" target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gray-900 transition-all">
-                            <iconify-icon icon="ri:twitter-x-fill" width="18"></iconify-icon>
-                        </a>
-                    </div>
-                </div>
 
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Navigation</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li><a href="about.html" class="hover:text-white transition-colors">À Propos</a></li>
-                        <li><a href="catalog.html" class="hover:text-white transition-colors">Nouveautés</a></li>
-                        <li><a href="catalog.html" class="hover:text-white transition-colors">Ventes Flash</a></li>
-                        <li><a href="about.html" class="hover:text-white transition-colors">Ambassadeurs</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Support Client</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li><a href="about.html" class="hover:text-white transition-colors">Centre d'Aide</a></li>
-                        <li><a href="customer-dashboard.html" class="hover:text-white transition-colors">Suivi Comman
-                                de</a></li>
-                        <li><a href="terms.html" class="hover:text-white transition-colors">Retours & Échanges</a></li>
-                        <li><a href="about.html" class="hover:text-white transition-colors">Nous Contacter</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-[0.2em] mb-8">Newsletter</h4>
-                    <p class="text-sm text-slate-400 mb-6">Inscrivez-vous pour des offres privées.</p>
-                    <div class="flex flex-col gap-3">
-                        <input type="email" placeholder="Votre email"
-                            class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-gray-900 outline-none w-full">
-                        <button
-                            class="bg-white text-slate-950 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-all">S'abonner</button>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                <p>© 2026 NewKet — EXPÉRIENCE LUXE</p>
-                <div class="flex gap-8">
-                    <a href="privacy.html" class="hover:text-white">Confidentialité</a>
-                    <a href="terms.html" class="hover:text-white">Conditions</a>
-                </div>
-                <p>Designed by <span class="text-white">SITYZEN</span></p>
-            </div>
-        </div>
-    </footer>
 
     <script src="js/main.js"></script>
     <script>
         function renderCart() {
+            console.log('[NewKet] Rendering cart...');
             const container = document.getElementById('cartItemsContainer');
             const emptyMsg = document.getElementById('emptyCartMessage');
             const cart = window.CartManager ? CartManager.getCart() : [];
@@ -562,20 +493,20 @@
                         <div class="flex-1 text-center sm:text-left">
                             <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">${item.category || 'Collection'}</h4>
                             <h3 class="text-lg font-bold text-gray-900 mb-1">${item.name}</h3>
-                            <div class="text-gray-900 font-bold">${CurrencyManager.formatPrice(item.price)}</div>
+                            <div class="text-gray-900 font-bold">${CurrencyManager.formatPrice(item.price, CurrencyManager.currentCurrency, false)}</div>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10 w-32 shadow-sm">
-                                <button onclick="updateQty('${item.id}', -1)" class="w-10 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-r border-gray-200 text-gray-900">
-                                    <iconify-icon icon="solar:minus-linear" width="16" class="text-gray-900"></iconify-icon>
+                                <button onclick="updateQty('${item.id}', -1)" class="w-10 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-r border-gray-200 text-gray-900 text-lg font-bold">
+                                    -
                                 </button>
                                 <input type="number" value="${item.quantity}" 
                                     oninput="handleManualQtyInput('${item.id}', this)"
                                     onblur="handleManualQty('${item.id}', this.value)"
                                     onfocus="this.select()"
                                     class="flex-1 min-w-0 h-full text-center bg-transparent border-none text-sm font-bold focus:ring-0 p-0 text-gray-900">
-                                <button onclick="updateQty('${item.id}', 1)" class="w-10 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-l border-gray-200 text-gray-900">
-                                    <iconify-icon icon="solar:plus-linear" width="16" class="text-gray-900"></iconify-icon>
+                                <button onclick="updateQty('${item.id}', 1)" class="w-10 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-l border-gray-200 text-gray-900 text-lg font-bold">
+                                    +
                                 </button>
                             </div>
                             <button onclick="removeItem('${item.id}')" class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
@@ -605,8 +536,9 @@
         }
 
         function updateQty(id, delta) {
+            console.log(`[NewKet] updateQty: ${id}, delta: ${delta}`);
             CartManager.updateQuantity(id, delta);
-            renderCart();
+            // No need to call renderCart() here, the cartUpdated event will trigger it
         }
 
         function removeItem(id) {
@@ -654,7 +586,7 @@
         });
 
         function updateSummary(subtotal) {
-            document.getElementById('summarySubtotal').textContent = CurrencyManager.formatPrice(subtotal);
+            document.getElementById('summarySubtotal').textContent = CurrencyManager.formatPrice(subtotal, CurrencyManager.currentCurrency, false);
 
             let promoDiscount = 0;
             if (currentPromo) {
@@ -672,12 +604,12 @@
             const discountRow = document.getElementById('summaryDiscountRow');
             if (totalDiscount > 0) {
                 discountRow.classList.remove('hidden');
-                document.getElementById('summaryDiscount').textContent = '-' + CurrencyManager.formatPrice(totalDiscount);
+                document.getElementById('summaryDiscount').textContent = '-' + CurrencyManager.formatPrice(totalDiscount, CurrencyManager.currentCurrency, false);
             } else {
                 discountRow.classList.add('hidden');
             }
 
-            document.getElementById('summaryTotal').textContent = CurrencyManager.formatPrice(finalTotal);
+            document.getElementById('summaryTotal').textContent = CurrencyManager.formatPrice(finalTotal, CurrencyManager.currentCurrency, false);
         }
 
         let selectedOperator = null;
@@ -816,7 +748,7 @@
                     document.getElementById('successState').classList.remove('hidden');
                     document.getElementById('orderNumber').textContent = order.id;
                     document.getElementById('receiptOperator').textContent = selectedOperator;
-                    document.getElementById('modalTotal').textContent = CurrencyManager.formatPrice(finalAmount);
+                    document.getElementById('modalTotal').textContent = CurrencyManager.formatPrice(finalAmount, CurrencyManager.currentCurrency, false);
 
                     CartManager.clear();
                     createConfetti();
@@ -905,6 +837,7 @@
                 });
             }
             window.addEventListener('currencyChanged', renderCart);
+            window.addEventListener('cartUpdated', renderCart);
         });
     </script>
     <!-- ========== FOOTER ========== -->

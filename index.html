@@ -562,6 +562,17 @@
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
             <div class="animate-pulse bg-gray-50 rounded-2xl shadow-sm h-80"></div>
         </div>
+
+        <!-- Button Voir Plus -->
+        <div id="voirPlusContainer" class="mt-12 flex justify-center hidden">
+            <button onclick="showMoreProducts()"
+                class="group relative px-8 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex items-center gap-2">
+                <span>Voir plus d'articles</span>
+                <iconify-icon icon="solar:alt-arrow-down-linear" width="18"
+                    class="group-hover:translate-y-0.5 transition-transform"></iconify-icon>
+            </button>
+        </div>
+
         <div id="noProductsMsg" class="hidden text-center py-12 text-gray-400 text-sm">Aucun produit trouvé.</div>
     </section>
 

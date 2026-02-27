@@ -178,16 +178,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formatPrice(amount, currency = this.currentCurrency, isBaseAmount = true) {
             let value = amount;
-            // If amount is in CDF (isBaseAmount=true) and we want USD, convert it
-            if (isBaseAmount && currency === 'USD' && this.currentCurrency === 'USD') {
-                value = this.convert(amount, true);
-            }
-            // If specified currency is USD but we didn't specify isBaseAmount=false, 
-            // and we are currently in USD mode, it might have been already converted or not.
-            // Let's make it simpler: if isBaseAmount is true, we always treat 'amount' as CDF.
 
-            if (isBaseAmount && currency === 'USD') {
-                value = this.convert(amount, true);
+            // If isBaseAmount is true, input is CDF. If false, input is USD.
+            if (isBaseAmount) {
+                // If input is CDF and we want USD, convert it
+                if (currency === 'USD') {
+                    value = this.convert(amount, true);
+                }
+            } else {
+                // If input is USD and we want CDF, convert it
+                if (currency === 'CDF') {
+                    value = this.convert(amount, false);
+                } else {
+                    // Current currency is USD, we already have USD, no change needed
+                    value = amount;
+                }
             }
 
             if (currency === 'CDF') {
@@ -205,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         // Convert between currencies
-        // If fromCDF is true, converts CDF -> USD
-        // If fromCDF is false, converts USD -> CDF
+        // If toUSD is true, converts CDF -> USD
+        // If toUSD is false, converts USD -> CDF
         convert(amount, toUSD = true) {
             const config = window.newketConfig || this.getConfigFallback();
             const rate = config.exchangeRate || 2500;
@@ -220,8 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateAllPrices() {
             document.querySelectorAll('[data-price-cdf]').forEach(el => {
-                const cdfPrice = parseFloat(el.dataset.priceCdf);
-                el.textContent = this.formatPrice(cdfPrice);
+                const price = parseFloat(el.dataset.priceCdf);
+                // Important: most data-price-cdf attributes actually contain the RAW price from DB which is USD
+                // We need to know if this element's source is USD or CDF.
+                // Legend: if it's from the main product grid, it's USD.
+                const isUSDSource = el.hasAttribute('data-price-usd') || el.closest('.product-card') || el.closest('#cartItemsContainer');
+                el.textContent = this.formatPrice(price, this.currentCurrency, !isUSDSource);
             });
         },
 
@@ -584,20 +593,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Save cart to localStorage
         saveCart(cart) {
+            console.log('[NewKet] Saving cart:', cart);
             localStorage.setItem('newketCart', JSON.stringify(cart));
             this.updateBadge();
-            window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
+
+            // Dispatch to both window and document for maximum compatibility
+            const event = new CustomEvent('cartUpdated', { detail: cart });
+            window.dispatchEvent(event);
+            document.dispatchEvent(event);
         },
 
         // Add item to cart
-        addItem(product) {
+        addItem(product, quantity = 1) {
             const cart = this.getCart();
             const existingItem = cart.find(item => item.id === product.id);
+            const qtyToAdd = parseInt(quantity) || 1;
 
             if (existingItem) {
-                existingItem.quantity += 1;
+                existingItem.quantity += qtyToAdd;
             } else {
-                cart.push({ ...product, quantity: 1 });
+                cart.push({ ...product, quantity: qtyToAdd });
             }
 
             this.saveCart(cart);
@@ -618,7 +633,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = cart.find(item => item.id === productId);
 
             if (item) {
-                item.quantity += delta;
+                // Ensure quantity is treated as a number to avoid string concatenation
+                const currentQty = parseInt(item.quantity) || 0;
+                item.quantity = currentQty + delta;
+
                 if (item.quantity <= 0) {
                     return this.removeItem(productId);
                 }
@@ -666,11 +684,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     badge.style.display = 'flex';
                 }
 
-                // Bounce animation
-                badge.style.transform = 'scale(1.3)';
-                setTimeout(() => {
-                    badge.style.transform = 'scale(1)';
-                }, 200);
+                // Animation feedback
+                badge.classList.remove('count-update');
+                void badge.offsetWidth; // Trigger reflow
+                badge.classList.add('count-update');
+            });
+
+            // Trigger shake on cart icon parent if exists
+            const cartIcons = document.querySelectorAll('.main-header a[href="cart.html"], .main-header a[title="Panier"]');
+            cartIcons.forEach(icon => {
+                icon.classList.remove('cart-shake');
+                void icon.offsetWidth;
+                icon.classList.add('cart-shake');
+                setTimeout(() => icon.classList.remove('cart-shake'), 600);
             });
         },
 
@@ -814,33 +840,38 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Update heart icon on product detail page
-            const productDetailH1 = document.querySelector('.product-info-col h1');
-            if (productDetailH1) {
-                const productName = productDetailH1.textContent.trim();
-                const productId = productName.toLowerCase().replace(/\s+/g, '-');
-                const wishlistBtn = document.querySelector('.wishlist-btn');
-                if (wishlistBtn) {
-                    const isFavorite = this.isInFavorites(productId);
-                    const iconify = wishlistBtn.querySelector('iconify-icon');
-                    const faIcon = wishlistBtn.querySelector('i');
+            const productTitleEl = document.getElementById('product-name');
+            if (productTitleEl) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id') || 'parfum';
+                const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+                const isFavorite = this.isInFavorites(productId);
 
+                wishlistBtns.forEach(btn => {
+                    const iconify = btn.querySelector('iconify-icon');
                     if (iconify) {
                         iconify.setAttribute('icon', isFavorite ? 'solar:heart-bold' : 'solar:heart-linear');
-                        if (isFavorite) wishlistBtn.classList.add('text-red-500');
-                        else wishlistBtn.classList.remove('text-red-500');
-                    } else if (faIcon) {
-                        if (isFavorite) {
-                            faIcon.classList.remove('far');
-                            faIcon.classList.add('fas');
-                            faIcon.style.color = '#EF4444';
-                        } else {
-                            faIcon.classList.remove('fas');
-                            faIcon.classList.add('far');
-                            faIcon.style.color = '';
-                        }
+                        if (isFavorite) btn.classList.add('text-red-500');
+                        else btn.classList.remove('text-red-500');
+                    }
+                });
+            }
+
+            // Update all potential heart buttons with data-product-id
+            document.querySelectorAll('[onclick*="addToWishlist"]').forEach(btn => {
+                const attr = btn.getAttribute('onclick');
+                const match = attr.match(/addToWishlist\(['"]([^'"]+)['"]/);
+                if (match) {
+                    const productId = match[1];
+                    const isFavorite = this.isInFavorites(productId);
+                    const iconify = btn.querySelector('iconify-icon');
+                    if (iconify) {
+                        iconify.setAttribute('icon', isFavorite ? 'solar:heart-bold' : 'solar:heart-linear');
+                        if (isFavorite) btn.classList.add('text-red-500');
+                        else btn.classList.remove('text-red-500');
                     }
                 }
-            }
+            });
         }
     };
 
@@ -849,6 +880,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize favorites UI
     FavoritesManager.updateUI();
+
+    // Global helper for the "Add to Favorites" button
+    window.addToWishlist = function (productId, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (!productId) {
+            console.error("AddToCart: No product ID provided.");
+            return;
+        }
+
+        // Try to get full product data from ProductManager
+        let product = null;
+        if (window.ProductManager) {
+            product = window.ProductManager.getProduct(productId);
+        }
+
+        // Fallback for demo products in product.html if ProductManager hasn't loaded them yet
+        if (!product && typeof productsDB !== 'undefined' && productsDB[productId]) {
+            const p = productsDB[productId];
+            product = {
+                id: productId,
+                name: p.name,
+                price: p.priceCDF,
+                image: p.image,
+                category: p.category
+            };
+        }
+
+        if (!product) {
+            // Last resort: minimal product object if we still don't have it
+            product = { id: productId, name: 'Produit', price: 0, image: '' };
+        }
+
+        const isFavorite = FavoritesManager.isInFavorites(productId);
+        if (isFavorite) {
+            FavoritesManager.removeItem(productId);
+            if (window.showToast) showToast('Produit retiré de vos favoris', 'info');
+        } else {
+            FavoritesManager.addItem(product);
+            if (window.showToast) showToast('Produit ajouté à vos favoris !', 'success');
+        }
+
+        // Update UI everywhere
+        FavoritesManager.updateUI();
+    };
 
     // ========== PROMO MANAGER ==========
     const PromoManager = {
@@ -1472,10 +1551,15 @@ document.addEventListener('DOMContentLoaded', () => {
         NotificationManager.updateBadge();
     });
 
-    // ========== TOAST NOTIFICATION SYSTEM ==========
+    // ========== TOAST NOTIFICATION SYSTEM (STACKING) ==========
     window.showToast = function (message, type = 'success') {
-        const existingToast = document.querySelector('.newket-toast');
-        if (existingToast) existingToast.remove();
+        // Ensure container exists
+        let container = document.getElementById('newket-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'newket-toast-container';
+            document.body.appendChild(container);
+        }
 
         const toast = document.createElement('div');
         toast.className = `newket-toast ${type}`;
@@ -1501,21 +1585,54 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="toast-icon-bg">
                 <iconify-icon icon="${icon}"></iconify-icon>
             </div>
-            <span>${message}</span>
+            <div class="flex-1 min-w-0">
+                <div class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-0.5">${titles[type] || 'Système'}</div>
+                <div class="text-sm leading-snug">${message}</div>
+            </div>
+            <button class="ml-2 opacity-30 hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
+            </button>
+            <div class="toast-progress"></div>
         `;
 
-        document.body.appendChild(toast);
+        container.appendChild(toast);
 
         // Animate in
         requestAnimationFrame(() => {
             toast.classList.add('active');
         });
 
-        // Animate out
-        setTimeout(() => {
+        // Progress bar and auto-remove
+        const duration = 4000;
+        const progress = toast.querySelector('.toast-progress');
+
+        let start = null;
+        function animate(timestamp) {
+            if (!start) start = timestamp;
+            const elapsed = timestamp - start;
+            const percent = Math.min((elapsed / duration) * 100, 100);
+
+            progress.style.width = percent + '%';
+
+            if (elapsed < duration) {
+                if (toast.parentElement) requestAnimationFrame(animate);
+            } else {
+                removeToast();
+            }
+        }
+
+        requestAnimationFrame(animate);
+
+        function removeToast() {
             toast.classList.remove('active');
-            setTimeout(() => toast.remove(), 600);
-        }, 4000);
+            toast.style.transform = 'translateX(50px) scale(0.9)';
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+                // Remove container if empty
+                if (container.children.length === 0) container.remove();
+            }, 600);
+        }
     }
 
     // ========== PREMIUM OVERLAY & MODAL SYSTEM ==========
@@ -1590,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const loader = document.createElement('div');
             loader.id = 'newket-global-loader';
             loader.className = 'fixed inset-0 z-[2000] flex items-center justify-center bg-gray-900/40 backdrop-blur-md transition-all duration-500 opacity-0 invisible';
-            
+
             // Generate dots animation HTML
             const dotsHtml = `
                 <div class="flex gap-1.5 mt-2 justify-center">
@@ -2026,7 +2143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="text-base font-bold text-gray-900" data-price-cdf="${product.price}">${CurrencyManager.formatPrice(product.price)}</span>
                             ${oldPrice ? `<span class="text-xs text-gray-400 line-through" data-price-cdf="${oldPrice}">${CurrencyManager.formatPrice(oldPrice)}</span>` : ''}
                         </div>
-                        <button class="w-full bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 group/btn add-to-cart-btn" onclick="addToCart('${product.id}')">
+                        <button class="w-full bg-gray-900 hover:bg-black text-white py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 group/btn add-to-cart-btn" onclick="addToCart('${product.id}', 1, event)">
                             <iconify-icon icon="solar:cart-large-2-linear" width="16" class="transition-transform group-hover/btn:scale-110"></iconify-icon>
                             Ajouter
                         </button>
@@ -2087,10 +2204,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Tous les produits (avec filtre & tri)
     let _currentFilter = 'all';
+    let _allProductsDisplayLimit = 8; // Default limit
 
     function renderAllProducts(filterCat, sortMode) {
         const grid = document.getElementById('allProductGrid');
         const noMsg = document.getElementById('noProductsMsg');
+        const voirPlusBtn = document.getElementById('voirPlusContainer');
         if (!grid) return;
 
         filterCat = filterCat || _currentFilter || 'all';
@@ -2108,10 +2227,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return db - da;
         });
 
-        if (noMsg) noMsg.classList.toggle('hidden', filtered.length > 0);
+        const totalFiltered = filtered.length;
+        const sliced = filtered.slice(0, _allProductsDisplayLimit);
 
-        grid.innerHTML = filtered.length > 0
-            ? filtered.map(p => buildProductCardHTML(p)).join('')
+        if (noMsg) noMsg.classList.toggle('hidden', totalFiltered > 0);
+
+        // Show/hide "Voir plus" button
+        if (voirPlusBtn) {
+            voirPlusBtn.classList.toggle('hidden', totalFiltered <= _allProductsDisplayLimit);
+        }
+
+        grid.innerHTML = sliced.length > 0
+            ? sliced.map(p => buildProductCardHTML(p)).join('')
             : '';
 
         CurrencyManager.updateAllPrices();
@@ -2120,9 +2247,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    window.showMoreProducts = function () {
+        _allProductsDisplayLimit += 8;
+        renderAllProducts();
+    };
+
     // Expose filter & sort handlers globally
     window.filterAllProducts = function (cat) {
         _currentFilter = cat;
+        _allProductsDisplayLimit = 8; // Reset limit on filter change
         // Update active button style
         document.querySelectorAll('#filterBar .filter-btn').forEach(btn => {
             const isActive = btn.dataset.filter === cat;
@@ -2145,11 +2278,59 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAllProducts();
     }
 
+    // ========== FLY TO CART ANIMATION ==========
+    window.playFlyToCartAnimation = function (productId, startElement) {
+        const product = ProductManager.getProduct(productId);
+        if (!product || !startElement) return;
+
+        // Target cart icon in header
+        const cartIcon = document.querySelector('.main-header a[href="cart.html"] iconify-icon, .main-header a[title="Panier"] iconify-icon');
+        if (!cartIcon) return;
+
+        const startRect = startElement.getBoundingClientRect();
+        const endRect = cartIcon.getBoundingClientRect();
+
+        // Create flyer
+        const flyer = document.createElement('img');
+        flyer.src = product.image;
+        flyer.className = 'fly-to-cart-item';
+        flyer.style.top = `${startRect.top + startRect.height / 2 - 30}px`;
+        flyer.style.left = `${startRect.left + startRect.width / 2 - 30}px`;
+
+        document.body.appendChild(flyer);
+
+        // Animate
+        requestAnimationFrame(() => {
+            flyer.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.1)`;
+            flyer.style.opacity = '0.5';
+        });
+
+        // Cleanup
+        flyer.addEventListener('transitionend', () => {
+            flyer.remove();
+        });
+    };
+
     // Expose helpers for onclick
-    window.addToCart = function (productId) {
+    window.addToCart = function (productId, quantity = 1, event) {
         const product = ProductManager.getProduct(productId);
         if (product) {
-            CartManager.addItem(product);
+            // Find start element for animation
+            let startEl = null;
+            if (event && event.currentTarget) {
+                // If clicked a button, try to find product card image
+                const card = event.currentTarget.closest('.product-card');
+                if (card) startEl = card.querySelector('.product-image img');
+            }
+
+            // Fallback for product detail page
+            if (!startEl) startEl = document.querySelector('#main-product-img');
+
+            if (startEl && window.playFlyToCartAnimation) {
+                playFlyToCartAnimation(productId, startEl);
+            }
+
+            CartManager.addItem(product, quantity);
             showToast(`${product.name} ajouté au panier!`, 'success');
         }
     };

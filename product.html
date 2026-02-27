@@ -211,19 +211,19 @@
                         <div class="flex items-center gap-4">
                             <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
                                 <button onclick="updateQty(-1)"
-                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                                    <iconify-icon icon="solar:minus-linear" width="16"></iconify-icon>
+                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors text-lg font-bold">
+                                    -
                                 </button>
                                 <input type="number" id="qty-input" value="1" readonly
                                     class="w-12 text-center font-semibold bg-transparent border-none focus:ring-0">
                                 <button onclick="updateQty(1)"
-                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                                    <iconify-icon icon="solar:plus-linear" width="16"></iconify-icon>
+                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors text-lg font-bold">
+                                    +
                                 </button>
                             </div>
                             <button
                                 class="flex-1 bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-3 shadow-xl"
-                                onclick="addToCart(getProductId())">
+                                onclick="const qty = parseInt(document.getElementById('qty-input').value) || 1; addToCart(getProductId(), qty, event)">
                                 <iconify-icon icon="solar:bag-3-outline" width="20"></iconify-icon>
                                 Ajouter au panier
                             </button>
@@ -304,26 +304,7 @@
         </div>
     </main>
 
-    <!-- ========== FOOTER ========== -->
-    <footer class="bg-gray-900 text-white mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-            <div
-                class="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-gray-800 pb-12 mb-12">
-                <a href="index.html" class="flex items-center gap-2">
-                    <img src="Images/Logo NewKet V2.jpeg" alt="NewKet" class="h-12 w-auto">
-                </a>
-                <div class="flex gap-8 text-sm text-gray-400">
-                    <a href="about.html" class="hover:text-white transition-colors">À propos</a>
-                    <a href="privacy.html" class="hover:text-white transition-colors">Politique de confidentialité</a>
-                    <a href="terms.html" class="hover:text-white transition-colors">Conditions générales</a>
-                </div>
-            </div>
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-                <p>© 2026 NewKet. Tous droits réservés.</p>
-                <p>Conçu par SITYZEN</p>
-            </div>
-        </div>
-    </footer>
+
 
     <script src="js/main.js"></script>
     <script>

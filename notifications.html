@@ -119,6 +119,17 @@
             </div>
         </div>
 
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-2 mb-8">
+            <button onclick="setFilter('all')" data-filter="all"
+                class="filter-chip px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 bg-black text-white transition-all">Tout</button>
+            <button onclick="setFilter('unread')" data-filter="unread"
+                class="filter-chip px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 bg-white text-gray-500 hover:border-gray-300 transition-all">Non
+                lus</button>
+            <button onclick="setFilter('alerts')" data-filter="alerts"
+                class="filter-chip px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest border border-gray-100 bg-white text-gray-500 hover:border-gray-300 transition-all">Alertes</button>
+        </div>
+
         <div id="notifications-list" class="space-y-4">
             <!-- Notifications will be injected here -->
         </div>
@@ -139,21 +150,45 @@
 
     <script src="js/main.js"></script>
     <script>
+        let currentFilter = 'all';
+
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
             const empty = document.getElementById('empty-state');
             const unreadText = document.getElementById('unread-text');
-            const notifications = NotificationManager.getNotifications();
+            const allNotifications = NotificationManager.getNotifications();
             const unreadCount = NotificationManager.getUnreadCount();
+
+            // Apply filter
+            let filteredNotifications = allNotifications;
+            if (currentFilter === 'unread') {
+                filteredNotifications = allNotifications.filter(n => !n.read);
+            } else if (currentFilter === 'alerts') {
+                filteredNotifications = allNotifications.filter(n => n.type === 'error' || n.type === 'warning');
+            }
 
             unreadText.textContent = `Vous avez ${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${unreadCount > 1 ? 's' : ''}`;
 
-            if (notifications.length === 0) {
+            // Update UI for filters
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                if (chip.dataset.filter === currentFilter) {
+                    chip.classList.add('bg-black', 'text-white');
+                    chip.classList.remove('bg-white', 'text-gray-500', 'border-gray-100');
+                } else {
+                    chip.classList.remove('bg-black', 'text-white');
+                    chip.classList.add('bg-white', 'text-gray-500', 'border-gray-100');
+                }
+            });
+
+            if (filteredNotifications.length === 0) {
                 list.innerHTML = '';
                 empty.classList.remove('hidden');
+                empty.querySelector('p').textContent = currentFilter === 'all'
+                    ? "Nous vous informerons dès qu'il y aura du nouveau pour vous."
+                    : "Aucune notification ne correspond à ce filtre.";
             } else {
                 empty.classList.add('hidden');
-                list.innerHTML = notifications.map((n, index) => {
+                list.innerHTML = filteredNotifications.map((n, index) => {
                     let icon = 'solar:bell-linear';
                     let iconColor = 'text-gray-900 bg-gray-100';
 
@@ -176,15 +211,20 @@
                     const dateStr = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
                     return `
-                        <div class="glass-card p-6 notification-item ${!n.read ? 'unread' : ''} animate-fade-in" style="animation-delay: ${index * 0.05}s" onclick="markRead('${n.id}')">
+                        <div class="glass-card p-5 notification-item ${!n.read ? 'unread' : ''} animate-fade-in group cursor-pointer" 
+                             style="animation-delay: ${index * 0.05}s" 
+                             onclick="markRead('${n.id}')">
                             <div class="flex gap-4">
-                                <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center ${iconColor}">
+                                <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center ${iconColor} transition-transform group-hover:scale-110">
                                     <iconify-icon icon="${icon}" width="24"></iconify-icon>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between mb-1">
-                                        <h3 class="font-bold text-sm sm:text-base">${n.title}</h3>
-                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${dateStr} • ${timeStr}</span>
+                                        <h3 class="font-bold text-sm sm:text-base ${!n.read ? 'text-black' : 'text-gray-700'}">${n.title}</h3>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${dateStr} • ${timeStr}</span>
+                                            ${!n.read ? '<span class="w-2 h-2 bg-black rounded-full"></span>' : ''}
+                                        </div>
                                     </div>
                                     <p class="text-gray-500 text-sm leading-relaxed">${n.message}</p>
                                 </div>
@@ -193,6 +233,11 @@
                     `;
                 }).join('');
             }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            renderNotifications();
         }
 
         function markRead(id) {
@@ -269,9 +314,11 @@
                         </li>
                         <li><a href="catalog.html?category=Style Homme"
                                 class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a></li>
-                        <li><a href="catalog.html?category=Tech & Gadgets" class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                        <li><a href="catalog.html?category=Tech & Gadgets"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Tech
                                 & Gadgets</a></li>
-                        <li><a href="catalog.html?category=Art de vivre" class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                        <li><a href="catalog.html?category=Art de vivre"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Art
                                 de vivre</a></li>
                     </ul>
                 </div>
