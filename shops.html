@@ -319,7 +319,7 @@
                             class="bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                     </a>
                     <a href="publish.html"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2">
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2 publish-btn">
                         <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon>
                         Vendre un article
                     </a>
@@ -342,14 +342,15 @@
         </div>
     </div>
 
-    
+
     <!-- Spacer for fixed header -->
     <div class="h-24 sm:h-28"></div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 ring-gray-100">
         <div class="mb-10 text-center sm:text-left">
             <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 mb-4">Parcourir les Boutiques</h1>
-            <p class="text-gray-500 text-lg max-w-2xl mx-auto sm:mx-0">Découvrez nos vendeurs partenaires et leurs collections exclusives.</p>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto sm:mx-0">Découvrez nos vendeurs partenaires et leurs
+                collections exclusives.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="shopsGrid">
@@ -358,7 +359,9 @@
             <div class="animate-pulse bg-white rounded-3xl p-6 shadow-sm border border-gray-100 h-48"></div>
             <div class="animate-pulse bg-white rounded-3xl p-6 shadow-sm border border-gray-100 h-48"></div>
         </div>
-        <div id="noShopsMsg" class="hidden text-center py-20 text-gray-400 bg-white rounded-[2rem] border border-gray-100 shadow-sm col-span-full">Aucune boutique trouvée.</div>
+        <div id="noShopsMsg"
+            class="hidden text-center py-20 text-gray-400 bg-white rounded-[2rem] border border-gray-100 shadow-sm col-span-full">
+            Aucune boutique trouvée.</div>
     </main>
 
     <!-- ========== FOOTER ========== -->
@@ -401,14 +404,16 @@
                 <div class="lg:col-span-2 space-y-6">
                     <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Boutique</h4>
                     <ul class="space-y-4">
-                        <li><a href="catalog.html"
+                        <li><a href="catalog.html?category=Collections Femme"
                                 class="text-gray-400 hover:text-white text-sm transition-colors">Collections Femme</a>
                         </li>
-                        <li><a href="catalog.html"
+                        <li><a href="catalog.html?category=Style Homme"
                                 class="text-gray-400 hover:text-white text-sm transition-colors">Style Homme</a></li>
-                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Tech
+                        <li><a href="catalog.html?category=Tech & Gadgets"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Tech
                                 & Gadgets</a></li>
-                        <li><a href="catalog.html" class="text-gray-400 hover:text-white text-sm transition-colors">Art
+                        <li><a href="catalog.html?category=Art de vivre"
+                                class="text-gray-400 hover:text-white text-sm transition-colors">Art
                                 de vivre</a></li>
                     </ul>
                 </div>
@@ -425,7 +430,8 @@
                         <li><a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide &
                                 FAQ</a></li>
                         <li><a href="publish.html"
-                                class="text-gray-400 hover:text-white text-sm transition-colors">Vendre un article</a>
+                                class="text-gray-400 hover:text-white text-sm transition-colors publish-btn">Vendre un
+                                article</a>
                         </li>
                     </ul>
                 </div>
@@ -497,8 +503,14 @@
     <script src="js/main.js"></script>
 
     <style>
-        .shop-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05); }
-        .shop-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .shop-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .shop-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
     <script>
         async function loadShops() {
@@ -530,7 +542,7 @@
                 grid.innerHTML = sellers.map(seller => {
                     const avatar = seller.avatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.name || 'Vendor') + '&background=000000&color=fff');
                     const dateJoined = seller.date_joined ? new Date(seller.date_joined).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'récemment';
-                    
+
                     return `
                         <a href="catalog.html?supplier=${encodeURIComponent(seller.email)}" class="shop-card bg-white rounded-[2rem] p-6 border border-gray-100 flex flex-col gap-4 group">
                             <div class="flex flex-row items-center justify-between">

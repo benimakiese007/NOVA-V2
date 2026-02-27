@@ -55,6 +55,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     initMobileControls();
 
+    // ========== ADMIN MOBILE CONTROLS ==========
+    const initAdminMobileControls = () => {
+        const adminMenuBtn = document.getElementById('adminMobileMenuBtn');
+        const adminSidebar = document.getElementById('adminSidebar');
+        const adminOverlay = document.getElementById('adminOverlay');
+
+        if (!adminMenuBtn || !adminSidebar || !adminOverlay) return;
+
+        const toggleAdminMenu = () => {
+            adminSidebar.classList.toggle('-translate-x-full');
+            adminOverlay.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        };
+
+        adminMenuBtn.addEventListener('click', toggleAdminMenu);
+        adminOverlay.addEventListener('click', toggleAdminMenu);
+
+        // Close sidebar on link click (mobile only)
+        adminSidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) { // Match Tailwind md breakpoint
+                    toggleAdminMenu();
+                }
+            });
+        });
+    };
+    initAdminMobileControls();
+
     console.log('newket EMarket Loaded');
 
     // ========== CURRENCY MANAGER ==========
@@ -247,11 +275,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         const user = session.user;
                         const role = user.user_metadata.role || 'customer';
                         const email = user.email;
+                        const avatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture || null;
 
                         // Admin Override Logic
-                        const adminEmails = window.ADMIN_EMAILS || [];
+                        const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
                         let finalRole = role;
-                        if (adminEmails.includes(email)) {
+                        if (adminEmails.includes(email.toLowerCase())) {
                             finalRole = 'admin';
                         }
 
@@ -262,10 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (localStorage.getItem('newketUserEmail') !== email) {
                             localStorage.setItem('newketUserEmail', email);
                         }
+                        if (avatarUrl) {
+                            localStorage.setItem('newketUserAvatar', avatarUrl);
+                        }
                     } else if (event === 'SIGNED_OUT') {
                         this.role = null;
                         localStorage.removeItem('newketRole');
                         localStorage.removeItem('newketUserEmail');
+                        localStorage.removeItem('newketUserAvatar');
                         this.enforcePermissions();
                         this.updateAccountLink();
                         // Redirect to home if on protected page
@@ -281,11 +314,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const user = data.session.user;
                     const role = user.user_metadata.role || 'customer';
 
-                    const adminEmails = window.ADMIN_EMAILS || [];
+                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
                     let finalRole = role;
-                    if (adminEmails.includes(user.email)) {
+                    if (adminEmails.includes(user.email.toLowerCase())) {
                         finalRole = 'admin';
                     }
+
+                    const avatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture || null;
+                    if (avatarUrl) {
+                        localStorage.setItem('newketUserAvatar', avatarUrl);
+                    }
+
                     this.setRole(finalRole);
                 } else {
                     // No Supabase session — but respect the localStorage role if admin auth was done via PHOENIX password
@@ -341,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.role = null;
             localStorage.removeItem('newketRole');
             localStorage.removeItem('newketUserEmail');
+            localStorage.removeItem('newketUserAvatar');
             window.location.href = 'index.html';
         },
 
@@ -440,9 +480,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!accountLink) return;
 
             const icon = accountLink.querySelector('iconify-icon');
+            const avatarUrl = localStorage.getItem('newketUserAvatar');
+
+            // Handle Avatar Display
+            if (avatarUrl) {
+                if (icon) icon.style.display = 'none';
+                let img = accountLink.querySelector('.nav-user-avatar');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.className = 'nav-user-avatar w-full h-full object-cover rounded-full';
+                    accountLink.appendChild(img);
+                }
+                img.src = avatarUrl;
+                img.style.display = 'block';
+            } else {
+                if (icon) icon.style.display = 'block';
+                const img = accountLink.querySelector('.nav-user-avatar');
+                if (img) img.style.display = 'none';
+            }
 
             if (this.role === 'admin') {
-                accountLink.href = 'ADMIN NewKet/dashboard.html';
+                accountLink.href = 'ADMIN NEWKET/dashboard.html';
                 accountLink.title = 'Admin Panel';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
@@ -1163,7 +1221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            const platformCommission = vendorTotalSales * 0.10;
+            const platformCommission = vendorTotalSales * 0.05;
             const netGains = vendorTotalSales - platformCommission;
 
             return {
@@ -1304,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalGross: stats.totalSales,
                 totalCommission: stats.commissionTotal,
                 totalNet,
-                commissionPercent: 10,
+                commissionPercent: 5,
                 payouts,
                 pendingPayout: totalNet - 235000 > 0 ? totalNet - 235000 : 0
             };
@@ -2086,206 +2144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
 
 
-    // ========== CART PAGE LOGIC ==========
-    function initCartPage() {
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        const emptyCartMessage = document.getElementById('emptyCartMessage');
-        const summarySection = document.querySelector('.cart-summary');
 
-        // Promo Code State
-        let activePromo = null;
-
-        // Mock User ID
-        const currentUser = sessionStorage.getItem('currentUser') || 'user_' + Math.floor(Math.random() * 1000);
-
-        if (!cartItemsContainer) return;
-
-        // Setup Promo Code Listeners
-        const addPromoBtn = document.getElementById('addPromoBtn');
-        const promoInputContainer = document.getElementById('promoInputContainer');
-        const promoInput = document.getElementById('promoInput');
-        const applyPromoBtn = document.getElementById('applyPromoBtn');
-        const activePromoBadge = document.getElementById('activePromoBadge');
-        const appliedCodeText = document.getElementById('appliedCodeText');
-        const removePromoBtn = document.getElementById('removePromoBtn');
-
-        if (addPromoBtn) {
-            addPromoBtn.addEventListener('click', () => {
-                promoInputContainer.classList.toggle('hidden');
-                if (!promoInputContainer.classList.contains('hidden')) {
-                    promoInput.focus();
-                }
-            });
-        }
-
-        if (applyPromoBtn) {
-            applyPromoBtn.addEventListener('click', () => {
-                const code = promoInput.value.trim().toUpperCase();
-
-                if (!code) return;
-
-                if (activePromo) {
-                    showToast('Un code promo est déjà appliqué', 'info');
-                    return;
-                }
-
-                const validation = PromoManager.canApply(code, currentUser);
-
-                if (validation.valid) {
-                    const validPromos = PromoManager.getPromos();
-                    activePromo = { ...validPromos[code], code: code };
-
-                    showToast('Code promo appliqué !', 'success');
-
-                    // Update UI State
-                    promoInput.value = '';
-                    promoInputContainer.classList.add('hidden');
-                    addPromoBtn.parentElement.classList.add('hidden');
-                    activePromoBadge.classList.remove('hidden');
-                    appliedCodeText.textContent = code;
-
-                    renderCart();
-                } else {
-                    showToast(validation.message || "Ce privilège n'a pas encore été forgé dans notre univers.", 'error');
-                }
-            });
-        }
-
-        if (removePromoBtn) {
-            removePromoBtn.addEventListener('click', () => {
-                activePromo = null;
-                activePromoBadge.classList.add('hidden');
-                addPromoBtn.parentElement.classList.remove('hidden');
-                showToast('Code promo retiré', 'info');
-                renderCart();
-            });
-        }
-
-        // Expose finalizePromo for Checkout
-        window.finalizePromoUsage = function () {
-            if (activePromo && activePromo.code) {
-                PromoManager.incrementUsage(activePromo.code, currentUser);
-            }
-        };
-
-        function renderCart() {
-            const cart = CartManager.getCart();
-
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '';
-                if (emptyCartMessage) emptyCartMessage.classList.remove('hidden');
-                return;
-            }
-
-            if (emptyCartMessage) emptyCartMessage.classList.add('hidden');
-
-            cartItemsContainer.innerHTML = cart.map(item => {
-                const priceCDF = item.price;
-                const priceUSD = CurrencyManager.convert(priceCDF, true);
-
-                return `
-                <div class="p-6 border-b border-gray-100 last:border-0 flex flex-col sm:flex-row gap-6 sm:items-center group transition-all hover:bg-white/40">
-                    <!-- Image -->
-                    <div class="w-24 h-24 bg-white/50 rounded-[1.5rem] overflow-hidden flex-shrink-0 border border-white/50 shadow-sm relative">
-                        <img src="${item.image || ''}" alt="${item.name}" class="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/100'">
-                    </div>
-                    
-                    <!--Details -->
-                    <div class="flex-1 min-w-0">
-                        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">${item.category || 'Article'}</div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-4 truncate">${item.name}</h3>
-                        
-                        <div class="flex items-center gap-6">
-                            <!-- Qty Control -->
-                            <!-- Qty Control -->
-                            <div class="flex items-center bg-gray-100/50 rounded-2xl p-1 border border-white">
-                                <button onclick="CartManager.updateQuantity('${item.id}', -1)" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition-all text-gray-600 hover:text-black">
-                                    <iconify-icon icon="solar:minus-circle-linear" width="20"></iconify-icon>
-                                </button>
-                                <input type="number" min="1" value="${item.quantity}" onchange="CartManager.setQuantity('${item.id}', this.value)" class="w-12 text-center text-sm font-black text-gray-900 bg-transparent focus:outline-none appearance-none spin-button-none">
-                                <button onclick="CartManager.updateQuantity('${item.id}', 1)" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition-all text-gray-600 hover:text-black">
-                                    <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon>
-                                </button>
-                            </div>
-                            
-                            <!-- Remove -->
-                            <button onclick="CartManager.removeItem('${item.id}')" class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors flex items-center gap-2">
-                                <iconify-icon icon="solar:trash-bin-trash-bold" width="16"></iconify-icon>
-                                <span>Supprimer</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!--Price -->
-                <div class="text-right sm:pl-6">
-                    <div class="text-xl font-black text-gray-900 mb-1 tracking-tighter" data-price-cdf="${priceCDF * item.quantity}">
-                        ${CurrencyManager.formatPrice(item.price * item.quantity)}
-                    </div>
-                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                        ${CurrencyManager.formatPrice(item.price)} / unité
-                    </div>
-                </div>
-                </div>
-                `;
-            }).join('');
-
-            updateSummary(cart);
-            CurrencyManager.updateAllPrices();
-        }
-
-        function updateSummary(cart) {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            // Calculate Discount
-            let discount = 0;
-            if (activePromo) {
-                if (activePromo.type === 'percent') {
-                    discount = subtotal * activePromo.value;
-                } else if (activePromo.type === 'fixed') {
-                    discount = activePromo.value;
-                }
-            }
-
-            // Ensure discount doesn't exceed subtotal
-            if (discount > subtotal) discount = subtotal;
-
-            const total = subtotal - discount;
-
-            // Helper to update an element
-            const updateEl = (id, amount) => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.dataset.priceCdf = amount;
-                    let formatted = CurrencyManager.formatPrice(amount);
-                    if (id === 'summaryDiscount') {
-                        formatted = '-' + formatted;
-                    }
-                    el.textContent = formatted;
-                }
-            };
-
-            // Update Summary Rows
-            updateEl('summarySubtotal', subtotal);
-
-            const discountRow = document.getElementById('summaryDiscountRow');
-            if (discountRow) {
-                if (discount > 0) {
-                    discountRow.classList.remove('hidden');
-                    updateEl('summaryDiscount', discount);
-                } else {
-                    discountRow.classList.add('hidden');
-                }
-            }
-
-            updateEl('summaryTotal', total);
-        }
-
-        window.addEventListener('cartUpdated', renderCart);
-        window.addEventListener('currencyChanged', renderCart);
-        renderCart();
-    }
-
-    initCartPage();
 
     // Listen for storage changes (Cross-tab synchronization)
     window.addEventListener('storage', (e) => {
@@ -2440,6 +2299,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update Navbar/Header User Name if exists
             const navUserName = document.querySelector('.nav-user-name');
             if (navUserName) navUserName.textContent = profile.name;
+
+            // Update Avatar Images
+            const avatarUrl = localStorage.getItem('newketUserAvatar');
+            if (avatarUrl) {
+                document.querySelectorAll('.user-avatar-display, .settings-avatar-img').forEach(container => {
+                    // If container is an img
+                    if (container.tagName === 'IMG') {
+                        container.src = avatarUrl;
+                    } else {
+                        // If container is a div, replace inner content with img or set background
+                        container.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-full" alt="Profile">`;
+                        container.classList.remove('bg-gray-100'); // Remove placeholder bg
+                    }
+                });
+            }
         }
     };
     window.ProfileManager = ProfileManager;

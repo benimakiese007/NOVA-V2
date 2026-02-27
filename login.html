@@ -138,8 +138,8 @@
     <!-- Left Side: Immersive Image (Hidden on smaller screens) -->
     <div class="hidden lg:flex lg:w-1/2 relative split-image overflow-hidden items-end p-16">
         <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1920&fm=jpg&fit=crop"
-            alt="NewKet Experience" class="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center"
-            id="bgImage">
+            alt="NewKet Experience"
+            class="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center" id="bgImage">
 
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-10"></div>
 
@@ -587,7 +587,16 @@
                     }, 1500);
 
                 } else if (isLogin) {
-                    // LOGIN Logic
+                    // LOGIN Logic — Bypass admin local si Supabase indisponible
+                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+                    const adminPassword = window.ADMIN_PASSWORD || '';
+
+                    if (adminEmails.includes(email.toLowerCase()) && password === adminPassword) {
+                        // Connexion admin locale directe
+                        finalizeAuth({ user_metadata: { role: 'admin' } }, email);
+                        return; // sortir sans appeler Supabase
+                    }
+
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
 
@@ -596,8 +605,8 @@
                 } else {
                     // SIGNUP Logic
                     let role = document.querySelector('input[name="role"]:checked').value;
-                    const adminEmails = window.ADMIN_EMAILS || [];
-                    if (adminEmails.includes(email)) {
+                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+                    if (adminEmails.includes(email.toLowerCase())) {
                         role = 'admin';
                     }
 
@@ -635,14 +644,14 @@
             if (typeof showToast !== 'undefined') showToast("Authentification réussie", "success");
 
             let role = user?.user_metadata?.role || 'customer';
-            const adminEmails = window.ADMIN_EMAILS || [];
-            if (adminEmails.includes(email)) role = 'admin';
+            const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+            if (adminEmails.includes(email.toLowerCase())) role = 'admin';
 
             localStorage.setItem('newketUserEmail', email);
             localStorage.setItem('newketRole', role);
 
             setTimeout(() => {
-                if (role === 'admin') window.location.href = 'ADMIN NewKet/dashboard.html';
+                if (role === 'admin') window.location.href = 'ADMIN NEWKET/dashboard.html';
                 else if (role === 'supplier') window.location.href = 'vendor-dashboard.html';
                 else window.location.href = 'index.html';
             }, 800);

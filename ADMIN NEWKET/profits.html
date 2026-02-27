@@ -77,6 +77,15 @@
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-[1800px] mx-auto px-4 sm:px-8 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
+                <!-- Mobile Menu Button -->
+                <button id="adminMobileMenuBtn" class="md:hidden p-2 text-gray-500 hover:text-black focus:outline-none flex items-center justify-center">
+                    <iconify-icon icon="solar:hamburger-menu-bold" width="24"></iconify-icon>
+                </button>
+
+                
+
+                
+
                 <a href="dashboard.html" class="flex items-center gap-2 group">
                     <img src="../Images/Logo NewKet V2.jpeg" alt="NewKet" class="h-10 w-auto invert">
                     <span
@@ -100,9 +109,13 @@
 
     <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
-        <aside class="w-full md:w-64 flex-shrink-0">
-            <div class="glass-panel p-6 sticky top-24">
-                <nav class="space-y-1">
+        <!-- Sidebar Overlay -->
+        <div id="adminOverlay" class="fixed inset-0 bg-black/50 z-[55] hidden"></div>
+
+        <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-64 bg-white z-[60] transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out h-screen md:h-auto overflow-y-auto border-r md:border-none border-gray-100 flex-shrink-0">
+            <div class="p-6 md:p-0 md:sticky md:top-24">
+                <div class="md:glass-panel md:p-6">
+                    <nav class="space-y-1">
                     <a href="dashboard.html" class="sidebar-link"><iconify-icon icon="solar:home-smile-bold"
                             width="20"></iconify-icon>Vue d'ensemble</a>
                     <a href="products.html" class="sidebar-link"><iconify-icon icon="solar:box-bold"
@@ -137,6 +150,7 @@
                                 width="20"></iconify-icon>Paramètres</a>
                     </div>
                 </nav>
+                </div>
             </div>
         </aside>
 
@@ -148,6 +162,19 @@
                     </h1>
                     <p class="text-gray-500" id="pageSubtitle">Suivez vos gains réels et la répartition des commissions.
                     </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="restoreProfits()" id="restoreBtn"
+                        class="hidden flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm rounded-xl transition-all">
+                        <iconify-icon icon="solar:history-bold" width="18"></iconify-icon>
+                        Restaurer
+                    </button>
+                    <button onclick="resetProfitsTest()" id="resetTestBtn"
+                        title="Réinitialise l'affichage à zéro (sauvegardé dans le navigateur)"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-sm rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+                        <iconify-icon icon="solar:restart-bold" width="18"></iconify-icon>
+                        Réinitialiser (Test)
+                    </button>
                 </div>
             </div>
 
@@ -177,7 +204,7 @@
                     </div>
                     <div class="text-3xl font-black text-red-600" id="commissionTotal" data-price-cdf="0">0</div>
                     <p class="text-xs text-gray-400 mt-2" id="descComm">Part prélevée par NewKet (<span
-                            id="commissionRate">10</span>%)
+                            id="commissionRate">5</span>%)
                     </p>
                 </div>
 
@@ -270,11 +297,45 @@
     </div>
 
     <script src="../js/main.js"></script>
+
+    <!-- Custom Modal Template -->
+    <div id="customModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" id="modalBackdrop"></div>
+        <div class="relative bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0"
+            id="modalContent">
+            <div class="p-8 text-center">
+                <div
+                    class="w-16 h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <iconify-icon icon="solar:danger-bold" width="32"></iconify-icon>
+                </div>
+                <h3 class="text-xl font-black text-gray-900 mb-2" id="modalTitle">Confirmation</h3>
+                <p class="text-gray-500 leading-relaxed mb-8" id="modalMessage">Voulez-vous vraiment effectuer cette
+                    action ?</p>
+
+                <div class="flex flex-col gap-3">
+                    <button id="modalConfirmBtn"
+                        class="w-full bg-black text-white py-4 rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-lg shadow-black/10">
+                        Confirmer
+                    </button>
+                    <button id="modalCancelBtn"
+                        class="w-full bg-gray-100 text-gray-600 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             renderProfits();
             window.addEventListener('currencyChanged', renderProfits);
             window.addEventListener('ordersUpdated', renderProfits);
+
+            // Check if reset is persistent
+            if (localStorage.getItem('profitsResetTimestamp')) {
+                document.getElementById('restoreBtn')?.classList.remove('hidden');
+            }
 
             // Dynamic Labels based on role
             const role = localStorage.getItem('newketRole');
@@ -295,7 +356,25 @@
         });
 
         function renderProfits() {
-            const stats = OrderManager.getProfitStats();
+            let stats = OrderManager.getProfitStats();
+
+            // Apply PERSISTENT RESET filter (Hides data before the reset timestamp)
+            const resetTs = localStorage.getItem('profitsResetTimestamp');
+            if (resetTs) {
+                const ts = parseInt(resetTs);
+                // Return zeroed stats if persistent reset is on
+                stats = {
+                    totalGross: 0,
+                    totalCommission: 0,
+                    totalNet: 0,
+                    pendingPayout: 0,
+                    commissionPercent: stats.commissionPercent || 5,
+                    payouts: []
+                };
+                document.getElementById('restoreBtn')?.classList.remove('hidden');
+            } else {
+                document.getElementById('restoreBtn')?.classList.add('hidden');
+            }
 
             // Cards Update
             document.getElementById('grossTotal').dataset.priceCdf = stats.totalGross;
@@ -333,6 +412,84 @@
 
             // Chart
             initProfitChart(stats);
+        }
+
+        // ===== CUSTOM MODAL SYSTEM =====
+        function showCustomConfirm(title, message, confirmText = "Confirmer") {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const backdrop = document.getElementById('modalBackdrop');
+                const content = document.getElementById('modalContent');
+                const titleEl = document.getElementById('modalTitle');
+                const messageEl = document.getElementById('modalMessage');
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+                const cancelBtn = document.getElementById('modalCancelBtn');
+
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                confirmBtn.textContent = confirmText;
+
+                modal.classList.replace('hidden', 'flex');
+                setTimeout(() => {
+                    content.classList.replace('scale-95', 'scale-100');
+                    content.classList.replace('opacity-0', 'opacity-100');
+                }, 10);
+
+                const closeModal = (result) => {
+                    content.classList.replace('scale-100', 'scale-95');
+                    content.classList.replace('opacity-100', 'opacity-0');
+                    setTimeout(() => {
+                        modal.classList.replace('flex', 'hidden');
+                        resolve(result);
+                    }, 200);
+                };
+
+                confirmBtn.onclick = () => closeModal(true);
+                cancelBtn.onclick = () => closeModal(false);
+                backdrop.onclick = () => closeModal(false);
+            });
+        }
+
+        // ===== RESET TEST FUNCTION (Persistent) =====
+        async function resetProfitsTest() {
+            const confirmed = await showCustomConfirm(
+                'Réinitialiser l\'affichage ?',
+                'Cela restera à zéro même après actualisation. Vos données réelles restent en sécurité dans la base de données.',
+                'Réinitialiser'
+            );
+
+            if (!confirmed) return;
+
+            // Set persistent flag
+            localStorage.setItem('profitsResetTimestamp', Date.now().toString());
+
+            // Re-render (will use the zeroed logic)
+            renderProfits();
+
+            // Visual feedback
+            const btn = document.getElementById('resetTestBtn');
+            if (btn) {
+                btn.classList.add('bg-green-100', 'border-green-300', 'text-green-700');
+                btn.innerHTML = '<iconify-icon icon="solar:check-circle-bold" width="18"></iconify-icon> Réinitialisé !';
+                setTimeout(() => {
+                    btn.classList.remove('bg-green-100', 'border-green-300', 'text-green-700');
+                    btn.innerHTML = '<iconify-icon icon="solar:restart-bold" width="18"></iconify-icon> Réinitialiser (Test)';
+                }, 2000);
+            }
+        }
+
+        async function restoreProfits() {
+            const confirmed = await showCustomConfirm(
+                'Restaurer les données ?',
+                'Souhaitez-vous annuler le mode test et afficher à nouveau vos chiffres réels de vente ?',
+                'Restaurer'
+            );
+
+            if (!confirmed) return;
+
+            localStorage.removeItem('profitsResetTimestamp');
+            renderProfits();
+            showToast('Données réelles restaurées', 'success');
         }
 
         let profitChart = null;

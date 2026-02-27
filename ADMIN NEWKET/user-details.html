@@ -138,17 +138,16 @@
                         </h3>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left" id="dataTable">
+                        <table class="min-w-[800px] w-full text-left" id="dataTable">
                             <thead>
                                 <tr class="bg-gray-50/50">
-                                    <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date
+                                    <th class="whitespace-nowrap p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date
                                     </th>
-                                    <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Réf /
+                                    <th class="whitespace-nowrap p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Réf /
                                         Nom</th>
-                                    <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    <th class="whitespace-nowrap p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                         Détails</th>
-                                    <th
-                                        class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">
+                                    <th class="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right whitespace-nowrap">
                                         Montant</th>
                                 </tr>
                             </thead>
@@ -285,8 +284,8 @@
             document.getElementById('stat1Value').textContent = products.length;
             document.getElementById('stat2Label').textContent = "Volume de Ventes";
             document.getElementById('stat2Value').textContent = CurrencyManager.formatPrice(totalGross);
-            document.getElementById('stat3Label').textContent = "Commission (10%)";
-            document.getElementById('stat3Value').textContent = CurrencyManager.formatPrice(totalGross * 0.1);
+            document.getElementById('stat3Label').textContent = "Commission (5%)";
+            document.getElementById('stat3Value').textContent = CurrencyManager.formatPrice(totalGross * 0.05);
 
             document.getElementById('listTitle').textContent = "Commandes reçues";
 

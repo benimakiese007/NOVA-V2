@@ -134,9 +134,13 @@
 
     <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
-        <aside class="w-full md:w-64 flex-shrink-0">
-            <div class="glass-panel p-6 sticky top-24">
-                <nav class="space-y-1">
+        <!-- Sidebar Overlay -->
+        <div id="adminOverlay" class="fixed inset-0 bg-black/50 z-[55] hidden"></div>
+
+        <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-64 bg-white z-[60] transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out h-screen md:h-auto overflow-y-auto border-r md:border-none border-gray-100 flex-shrink-0">
+            <div class="p-6 md:p-0 md:sticky md:top-24">
+                <div class="md:glass-panel md:p-6">
+                    <nav class="space-y-1">
                     <a href="dashboard.html" class="sidebar-link"><iconify-icon icon="solar:home-smile-bold"
                             width="20"></iconify-icon>Vue d'ensemble</a>
                     <a href="products.html" class="sidebar-link"><iconify-icon icon="solar:box-bold"
@@ -171,6 +175,7 @@
                                 width="20"></iconify-icon>Paramètres</a>
                     </div>
                 </nav>
+                </div>
             </div>
         </aside>
 
@@ -179,7 +184,7 @@
             <!-- Header -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-gray-900">📣 Notifications</h1>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900">Notifications</h1>
                     <p class="text-gray-500">Gérez et envoyez des alertes à vos utilisateurs.</p>
                 </div>
                 <button onclick="openNewNotifModal()"
@@ -227,11 +232,11 @@
                             class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Type</label>
                         <select id="notifType"
                             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-black transition-colors bg-white">
-                            <option value="info">ℹ️ Information</option>
-                            <option value="success">✅ Succès</option>
-                            <option value="warning">⚠️ Avertissement</option>
-                            <option value="danger">🚨 Alerte</option>
-                            <option value="promo">🎉 Promotion</option>
+                            <option value="info">Information</option>
+                            <option value="success">Succès</option>
+                            <option value="warning">Avertissement</option>
+                            <option value="danger">Alerte</option>
+                            <option value="promo">Promotion</option>
                         </select>
                     </div>
                     <div class="sm:col-span-2">
@@ -343,11 +348,11 @@
 
         function getTypeBadge(type) {
             const badges = {
-                'info': '<span class="badge badge-info">ℹ️ Info</span>',
-                'success': '<span class="badge badge-success">✅ Succès</span>',
-                'warning': '<span class="badge badge-warning">⚠️ Avertiss.</span>',
-                'danger': '<span class="badge badge-danger">🚨 Alerte</span>',
-                'promo': '<span class="badge badge-promo">🎉 Promo</span>'
+                'info': '<span class="badge badge-info">Info</span>',
+                'success': '<span class="badge badge-success">Succès</span>',
+                'warning': '<span class="badge badge-warning">Avertiss.</span>',
+                'danger': '<span class="badge badge-danger">Alerte</span>',
+                'promo': '<span class="badge badge-promo">Promo</span>'
             };
             return badges[type] || '<span class="badge badge-info">Info</span>';
         }
@@ -389,13 +394,13 @@
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex items-start gap-4 flex-1 min-w-0">
                             <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 text-lg">
-                                ${{ 'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'danger': '🚨', 'promo': '🎉' }[n.type] || '📢'}
+                                ${{ 'info': '', 'success': '', 'warning': '', 'danger': '', 'promo': '' }[n.type] || ''}
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap mb-1">
                                     <span class="text-sm font-bold text-gray-900">${n.title}</span>
                                     ${getTypeBadge(n.type)}
-                                    <span class="badge" style="background:#f1f5f9;color:#475569;">👥 ${getTargetLabel(n.target)}</span>
+                                    <span class="badge" style="background:#f1f5f9;color:#475569;">${getTargetLabel(n.target)}</span>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2">${n.message}</p>
                                 <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">

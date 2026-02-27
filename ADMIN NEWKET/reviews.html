@@ -87,9 +87,14 @@
     </nav>
 
     <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
-        <aside class="w-full md:w-64 flex-shrink-0">
-            <div class="glass-panel p-6 sticky top-24">
-                <nav class="space-y-1">
+        <!-- Sidebar -->
+        <!-- Sidebar Overlay -->
+        <div id="adminOverlay" class="fixed inset-0 bg-black/50 z-[55] hidden"></div>
+
+        <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-64 bg-white z-[60] transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out h-screen md:h-auto overflow-y-auto border-r md:border-none border-gray-100 flex-shrink-0">
+            <div class="p-6 md:p-0 md:sticky md:top-24">
+                <div class="md:glass-panel md:p-6">
+                    <nav class="space-y-1">
                     <a href="dashboard.html" class="sidebar-link"><iconify-icon icon="solar:home-smile-bold"
                             width="20"></iconify-icon>Vue d'ensemble</a>
                     <a href="products.html" class="sidebar-link"><iconify-icon icon="solar:box-bold"
@@ -124,13 +129,14 @@
                                 width="20"></iconify-icon>Paramètres</a>
                     </div>
                 </nav>
+                </div>
             </div>
         </aside>
 
         <main class="flex-1 min-w-0 space-y-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-gray-900">⭐ Avis & Évaluations</h1>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900">Avis & Évaluations</h1>
                     <p class="text-gray-500">Moférez et analysez les retours clients sur vos produits.</p>
                 </div>
                 <div class="flex items-center gap-3">
