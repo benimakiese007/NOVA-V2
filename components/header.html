@@ -1,7 +1,7 @@
 <!-- NewKet Header Component -->
 <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
     <!-- Main header -->
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 py-2 flex items-center justify-between gap-1 sm:gap-4">
+    <div class="header-content w-full px-2 sm:px-8 py-1 sm:py-2 flex flex-wrap items-center justify-between sm:gap-x-4">
         <!-- Left: Hamburger (Mobile) & Logo -->
         <div class="flex items-center gap-2 sm:gap-4">
             <button id="mobileMenuBtn" class="p-1 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors sm:hidden"
@@ -12,29 +12,35 @@
                 <span
                     class="text-lg sm:text-xl font-bold tracking-tighter text-gray-900 max-[360px]:hidden">NEWKET</span>
             </a>
+            <!-- Mobile Publish Button (+) - Hidden as requested -->
+            <a href="publish.html" class="p-1 hidden rounded-lg hover:bg-gray-100 transition-colors" title="Vendre">
+                <iconify-icon icon="solar:add-circle-linear" width="24" class="text-gray-900"></iconify-icon>
+            </a>
         </div>
 
-        <!-- Center: Search (Desktop) -->
-        <div class="hidden sm:flex flex-1 max-w-2xl mx-auto relative group">
+        <!-- Center: Search & Publish (Desktop/Mobile) -->
+        <div id="mobileSearchContainer"
+            class="order-3 sm:order-2 flex-none w-full sm:flex-1 sm:w-auto relative group flex gap-3 items-center min-w-0">
             <div
-                class="search-bar w-full flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300">
-                <iconify-icon icon="solar:magnifer-linear" width="20" class="ml-4 text-slate-400"></iconify-icon>
-                <input type="text" placeholder="Rechercher une pièce, un style..."
-                    class="w-full py-2 px-3 bg-transparent text-sm outline-none placeholder-slate-400 font-medium search-input">
+                class="search-bar flex-1 flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300 w-full pr-2">
+                <input type="text" placeholder="Qu'est-ce qui vous ferait plaisir ?"
+                    class="w-full py-2 px-4 bg-transparent text-sm outline-none placeholder-slate-400 font-medium search-input">
+                <iconify-icon icon="solar:magnifer-linear" width="20" class="text-slate-400 sm:hidden"></iconify-icon>
                 <button
-                    class="bg-slate-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all uppercase tracking-wider">RECHERCHE</button>
+                    class="bg-slate-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all uppercase tracking-wider hidden sm:block">RECHERCHE</button>
             </div>
+            <!-- Publish Button (Desktop Only) -->
+            <a href="publish.html"
+                class="shrink-0 bg-gray-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] flex items-center">
+                <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
+                Vendre
+            </a>
             <!-- Suggestions Dropdown -->
             <div id="searchSuggestions" class="search-suggestions hidden"></div>
         </div>
 
         <!-- Right: Icons -->
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <!-- Search Icon (Mobile Only) -->
-            <button class="p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors sm:hidden" title="Rechercher"
-                id="mobileSearchBtn">
-                <iconify-icon icon="solar:magnifer-linear" width="22" class="text-gray-600"></iconify-icon>
-            </button>
+        <div class="order-2 sm:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0">
 
             <!-- Currency Switch -->
             <div class="hidden md:block currency-switch-segmented" id="currencyToggle" data-active="CDF">
@@ -45,8 +51,9 @@
                 </div>
             </div>
 
-            <!-- Notifications -->
-            <a href="notifications.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
+            <!-- Notifications (Hidden on mobile as requested) -->
+            <a href="notifications.html"
+                class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Notifications">
                 <iconify-icon icon="solar:bell-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
@@ -78,29 +85,14 @@
                     style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
             </a>
 
-            <!-- Publish Button (Desktop Only) -->
-            <a href="publish.html"
-                class="ml-2 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors hidden lg:flex items-center gap-2 publish-btn">
-                <iconify-icon icon="solar:add-circle-linear" width="18"></iconify-icon>
-                Vendre
-            </a>
         </div>
     </div>
 
-    <!-- Mobile Search Bar (Expandable) -->
-    <div id="mobileSearchContainer" class="hidden px-4 pb-2 sm:hidden">
-        <div class="flex items-center bg-slate-100 border border-slate-200 rounded-xl overflow-hidden">
-            <iconify-icon icon="solar:magnifer-linear" width="18" class="ml-3 text-slate-400"></iconify-icon>
-            <input type="text" id="mobileSearchInput" placeholder="Rechercher..."
-                class="w-full py-2 px-3 bg-transparent text-sm outline-none placeholder-slate-400 search-input">
-        </div>
-        <!-- Mobile Suggestions Dropdown -->
-        <div id="mobileSearchSuggestions" class="search-suggestions hidden"></div>
-    </div>
+
 
     <!-- Category nav -->
     <div class="border-t border-gray-50 bg-white hidden sm:block">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="w-full px-4 sm:px-8">
             <nav class="flex items-center gap-1 overflow-x-auto py-1 -mx-2" style="scrollbar-width:none;">
                 <a href="catalog.html"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Toutes

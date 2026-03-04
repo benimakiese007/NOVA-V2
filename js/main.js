@@ -68,6 +68,27 @@ const App = {
             }
             FavoritesManager.updateUI();
         };
+
+        // Mobile Menu & Search Handlers (Event Delegation)
+        document.addEventListener('click', (e) => {
+            // Mobile Menu Open
+            if (e.target.closest('#mobileMenuBtn')) {
+                document.getElementById('mobileMenu')?.classList.add('active');
+                document.getElementById('mobileOverlay')?.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            // Mobile Menu Close
+            if (e.target.closest('#closeMobileMenu') || e.target.closest('#mobileOverlay')) {
+                document.getElementById('mobileMenu')?.classList.remove('active');
+                document.getElementById('mobileOverlay')?.classList.remove('active');
+                document.body.style.overflow = '';
+                return;
+            }
+
+
+        });
     },
 
     shakeFavoritesIcon() {

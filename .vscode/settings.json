@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        ".agent": true,
+        ".agents": true,
+        ".vscode": true
+    }
+}

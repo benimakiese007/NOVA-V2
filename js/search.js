@@ -3,15 +3,10 @@
 const SearchManager = {
     init() {
         const searchInputs = document.querySelectorAll('.search-input, #searchInput, #mobileSearchInput');
-        const suggestionsContainers = {
-            desktop: document.getElementById('searchSuggestions'),
-            mobile: document.getElementById('mobileSearchSuggestions')
-        };
+        const suggestionsContainer = document.getElementById('searchSuggestions');
 
         searchInputs.forEach(input => {
-            const isMobile = input.id === 'mobileSearchInput' || input.closest('#mobileSearchContainer');
-            const container = isMobile ? suggestionsContainers.mobile : suggestionsContainers.desktop;
-
+            const container = suggestionsContainer;
             if (!container) return;
 
             input.addEventListener('input', (e) => {

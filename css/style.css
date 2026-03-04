@@ -57,6 +57,7 @@ body {
     background-color: var(--bg-light);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 /* Prevent mobile auto-zoom on focus by ensuring font-size is at least 16px */
@@ -346,9 +347,8 @@ h6 {
 
 .search-bar {
     flex: 1;
-    max-width: 500px;
-    margin: 0 3rem;
-    /* Increased margin */
+    width: 100%;
+    max-width: none !important;
     position: relative;
 }
 
