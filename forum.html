@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -178,7 +179,7 @@
 
     <!-- Modal Nouveau Sujet (Hidden by default) -->
     <div id="newTopicModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" id="closeModalOverlay"></div>
+        <div class="absolute inset-0 bg-black/40 " id="closeModalOverlay"></div>
         <div
             class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
             <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
@@ -220,6 +221,7 @@
     <!-- Footer link integration -->
 
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -234,6 +236,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
     <script type="module" src="js/forum.js"></script>
 
 </body>

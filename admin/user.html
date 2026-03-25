@@ -142,7 +142,16 @@
             </div>
 
             <!-- Filters & Search -->
-            <div class="glass-panel p-4 flex flex-col md:flex-row gap-4">
+            <div class="glass-panel p-4 space-y-4">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterUsers('all')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gray-50 text-gray-500">Tous</button>
+                    <button onclick="filterUsers('supplier')" id="btn-supplier" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-black text-white">Vendeurs</button>
+                    <button onclick="filterUsers('customer')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gray-50 text-gray-500">Clients</button>
+                    <button onclick="filterUsers('pending')" id="btn-pending" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-yellow-50 text-yellow-600 border border-yellow-100 flex items-center gap-2">
+                        <iconify-icon icon="solar:clock-circle-bold"></iconify-icon>
+                        En Attente de Validation
+                    </button>
+                </div>
                 <div class="flex-1 relative">
                     <iconify-icon icon="solar:magnifer-linear"
                         class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon>
@@ -295,7 +304,10 @@
             const filteredUsers = allUsers.filter(u => {
                 // Exclude admins from this page always
                 if (u.role === 'admin') return false;
-                const matchesRole = currentFilter === 'all' || u.role === currentFilter;
+                
+                const matchesRole = currentFilter === 'all' || 
+                                   (currentFilter === 'pending' ? u.status === 'pending' : u.role === currentFilter);
+                
                 const userName = u.name || 'Utilisateur sans nom';
                 const userEmail = u.email || '';
                 const matchesSearch = userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -316,6 +328,7 @@
                     const mine = (o.items || []).filter(item => userProducts.some(p => p.id === item.id));
                     return sum + mine.reduce((s, it) => s + (it.price * it.quantity), 0);
                 }, 0);
+                const isPending = u.status === 'pending';
 
                 return `
                 <tr class="group hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="window.open('user-details.html?email=' + encodeURIComponent('${u.email}'), '_blank')">
@@ -325,8 +338,12 @@
                                 ${u.avatar || (u.name ? u.name.substring(0, 2).toUpperCase() : 'U')}
                             </div>
                             <div>
-                                <div class="font-bold text-gray-900">${u.name || 'Utilisateur sans nom'}</div>
+                                <div class="font-bold text-gray-900 flex items-center gap-2">
+                                    ${u.name || 'Utilisateur sans nom'}
+                                    ${isPending ? '<span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" title="Validation requise"></span>' : ''}
+                                </div>
                                 <div class="text-[10px] text-gray-400 font-medium">${u.email || 'Pas d\'email'}</div>
+                                ${u.company_name ? `<div class="text-[9px] font-bold text-blue-500 uppercase">${u.company_name}</div>` : ''}
                             </div>
                         </div>
                     </td>
@@ -338,13 +355,69 @@
                         <span class="font-black text-gray-900">${CurrencyManager.formatPrice(userSales)}</span>
                     </td>
                     <td class="p-4 text-right">
-                        <button onclick="event.stopPropagation(); confirmDelete('${u.id}', '${u.name}')" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                            <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
-                        </button>
+                        <div class="flex items-center justify-end gap-2">
+                            ${isPending ? `
+                                <button onclick="event.stopPropagation(); approveVendor('${u.id}', '${u.name}')" class="px-3 py-1.5 bg-green-500 text-white text-[10px] font-bold rounded-lg hover:bg-green-600 transition-all flex items-center gap-1">
+                                    <iconify-icon icon="solar:check-read-bold"></iconify-icon> Approuver
+                                </button>
+                                <button onclick="event.stopPropagation(); rejectVendor('${u.id}', '${u.name}')" class="px-3 py-1.5 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg hover:bg-red-100 transition-all">
+                                    Rejeter
+                                </button>
+                            ` : `
+                                <button onclick="event.stopPropagation(); confirmDelete('${u.id}', '${u.name}')" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                    <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
+                                </button>
+                            `}
+                        </div>
                     </td>
                 </tr>
             `;
             }).join('');
+        }
+
+        async function approveVendor(id, name) {
+            if (!confirm(`Approuver le vendeur ${name} ?`)) return;
+            
+            try {
+                if (window.LoaderManager) LoaderManager.show(`Approbation de ${name}...`);
+                const { error } = await window.supabaseClient
+                    .from('users')
+                    .update({ status: 'approved' })
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                if (window.showToast) showToast(`Vendeur ${name} approuvé avec succès !`, "success");
+                // Refresh data
+                UserManager.init().then(() => renderUsers());
+                if (window.LoaderManager) LoaderManager.hide();
+            } catch (err) {
+                console.error(err);
+                if (window.LoaderManager) LoaderManager.hide();
+                alert("Erreur lors de l'approbation.");
+            }
+        }
+
+        async function rejectVendor(id, name) {
+            if (!confirm(`Rejeter le vendeur ${name} ?`)) return;
+            
+            try {
+                if (window.LoaderManager) LoaderManager.show(`Rejet de ${name}...`);
+                const { error } = await window.supabaseClient
+                    .from('users')
+                    .update({ status: 'rejected' })
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                if (window.showToast) showToast(`Vendeur ${name} rejeté.`, "warning");
+                UserManager.init().then(() => renderUsers());
+                if (window.LoaderManager) LoaderManager.hide();
+            } catch (err) {
+                console.error(err);
+                if (window.LoaderManager) LoaderManager.hide();
+                alert("Erreur lors du rejet.");
+            }
         }
 
         function getRoleClass(role) {

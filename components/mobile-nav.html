@@ -1,0 +1,46 @@
+<!-- NewKet Mobile Bottom Navigation Bar -->
+<nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
+    <div class="nav-bar">
+        <!-- Home -->
+        <a href="index.html" class="nav-item" title="Accueil" id="nav-home">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon>
+            </div>
+            <span>Accueil</span>
+        </a>
+
+        <!-- Catalog -->
+        <a href="catalog.html" class="nav-item" title="Catalogue" id="nav-catalog">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:shop-linear" width="22"></iconify-icon>
+            </div>
+            <span>Catalogue</span>
+        </a>
+
+        <!-- Cart -->
+        <a href="cart.html" class="nav-item" title="Panier" id="nav-cart">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:cart-large-minimalistic-linear" width="22"></iconify-icon>
+                <span class="nav-badge" id="mobileCartBadge" style="display:none;">0</span>
+            </div>
+            <span>Panier</span>
+        </a>
+
+        <!-- Favorites -->
+        <a href="favorites.html" class="nav-item" title="Favoris" id="nav-favorites">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:heart-linear" width="22"></iconify-icon>
+                <span class="nav-badge" id="mobileFavBadge" style="display:none;">0</span>
+            </div>
+            <span>Favoris</span>
+        </a>
+
+        <!-- Dark mode toggle -->
+        <button class="nav-item" data-theme-toggle-mobile onclick="ThemeManager.toggle()" title="Changer le thème">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:moon-bold" width="22"></iconify-icon>
+            </div>
+            <span>Thème</span>
+        </button>
+    </div>
+</nav>

@@ -1,0 +1,3 @@
+{
+  "query": "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending'; ALTER TABLE public.users ADD COLUMN IF NOT EXISTS company_name TEXT; ALTER TABLE public.users ADD COLUMN IF NOT EXISTS documents_url JSONB; UPDATE public.users SET status = 'approved' WHERE role IN ('supplier', 'admin') AND (status IS NULL OR status = 'pending');"
+}

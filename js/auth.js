@@ -2,6 +2,7 @@
 
 const AuthManager = {
     role: null,
+    status: null, // NewKet: Added status for KYC (pending, approved, rejected)
     _authChecking: true, // Prevents redirect loops while checking auth
 
     async init() {
@@ -35,14 +36,23 @@ const AuthManager = {
                         localStorage.setItem('newketUserAvatar', avatarUrl);
                     }
 
+                    // Fetch actual status from public.users for KYC
+                    this.fetchUserStatus(email).then(status => {
+                        this.status = status;
+                        localStorage.setItem('newketUserStatus', status);
+                        this.enforcePermissions();
+                    });
+
                     // Sync cart and favorites from Supabase on login
                     if (window.CartManager) CartManager.syncFromSupabase();
                     if (window.FavoritesManager) FavoritesManager.syncFromSupabase();
                 } else if (event === 'SIGNED_OUT') {
                     this.role = null;
+                    this.status = null;
                     localStorage.removeItem('newketRole');
                     localStorage.removeItem('newketUserEmail');
                     localStorage.removeItem('newketUserAvatar');
+                    localStorage.removeItem('newketUserStatus');
                     this.enforcePermissions();
                     this.updateAccountLink();
                     // Redirect to home if on protected page
@@ -70,6 +80,14 @@ const AuthManager = {
                 }
 
                 this.setRole(finalRole);
+                this.status = localStorage.getItem('newketUserStatus') || 'pending';
+                
+                // Refresh status asynchronously
+                this.fetchUserStatus(user.email).then(status => {
+                    this.status = status;
+                    localStorage.setItem('newketUserStatus', status);
+                    this.enforcePermissions();
+                });
             } else {
                 // No Supabase session — strict security lockdown, no local fallbacks permitted
                 this.setRole(null);
@@ -101,6 +119,22 @@ const AuthManager = {
         return this.role;
     },
 
+    async fetchUserStatus(email) {
+        if (!window.supabaseClient) return 'pending';
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('users')
+                .select('status')
+                .eq('email', email)
+                .single();
+            if (error) throw error;
+            return data.status || 'pending';
+        } catch (err) {
+            console.error('Error fetching user status:', err);
+            return 'pending';
+        }
+    },
+
     setRole(role) {
         this.role = role;
         localStorage.setItem('newketRole', role);
@@ -127,6 +161,7 @@ const AuthManager = {
 
         const body = document.body;
         body.classList.add(`role-${this.role}`);
+        if (this.status) body.classList.add(`status-${this.status}`);
 
         if (this.role === 'supplier' || this.role === 'admin') {
             const isAdmin = this.role === 'admin';
@@ -159,6 +194,26 @@ const AuthManager = {
                 el.style.display = '';
             });
 
+            // KYC Enforcement
+            const isApproved = this.status === 'approved';
+            const isPending = this.status === 'pending' || !this.status;
+
+            if (isPending) {
+                this.showPendingNotice();
+                
+                // Hide publish and dashboard links for unverified suppliers
+                document.querySelectorAll('.publish-btn, .supplier-only, .vendor-dashboard-link').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                const path = window.location.pathname;
+                if (path.includes('vendor-dashboard.html') || path.includes('publish.html')) {
+                    window.location.href = 'index.html';
+                }
+            } else if (this.status === 'rejected') {
+                this.showRejectedNotice();
+            }
+
             if (window.location.pathname.includes('/admin/')) {
                 window.location.href = '../vendor-dashboard.html';
             }
@@ -176,7 +231,7 @@ const AuthManager = {
                 window.location.href = '../customer-dashboard.html';
             }
 
-            if (window.location.pathname.includes('publish.html')) {
+            if (window.location.pathname.includes('publish.html') || window.location.pathname.includes('vendor-dashboard.html')) {
                 window.location.href = 'index.html';
             }
         }
@@ -302,6 +357,48 @@ const AuthManager = {
             }
         });
     },
+
+    showPendingNotice() {
+        if (document.getElementById('kyc-notice')) return;
+        const notice = document.createElement('div');
+        notice.id = 'kyc-notice';
+        notice.className = 'fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-[100] bg-yellow-50 border border-yellow-200 p-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-slide-up';
+        notice.innerHTML = `
+            <div class="w-12 h-12 bg-yellow-400/20 text-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="solar:clock-circle-bold" width="24"></iconify-icon>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm font-black text-gray-900 leading-tight">Profil vendeur en attente</div>
+                <div class="text-[10px] text-gray-500 font-medium mb-2">Veuillez finaliser votre dossier pour vendre.</div>
+                <a href="seller-onboarding.html" class="text-[11px] font-bold text-yellow-600 underline">Compléter mon profil</a>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-900">
+                <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+        `;
+        document.body.appendChild(notice);
+    },
+
+    showRejectedNotice() {
+        if (document.getElementById('kyc-notice')) return;
+        const notice = document.createElement('div');
+        notice.id = 'kyc-notice';
+        notice.className = 'fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-[100] bg-red-50 border border-red-200 p-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-slide-up';
+        notice.innerHTML = `
+            <div class="w-12 h-12 bg-red-400/20 text-red-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="solar:danger-bold" width="24"></iconify-icon>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm font-black text-gray-900 leading-tight">Profil vendeur rejeté</div>
+                <div class="text-[10px] text-gray-500 font-medium mb-2">Veuillez contacter le support pour plus d'infos.</div>
+                <a href="seller-onboarding.html" class="text-[11px] font-bold text-red-600 underline">Soumettre à nouveau</a>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-900">
+                <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+        `;
+        document.body.appendChild(notice);
+    }
 };
 
 window.AuthManager = AuthManager;

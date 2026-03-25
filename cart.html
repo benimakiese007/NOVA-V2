@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -53,8 +54,6 @@
 
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             box-shadow:
                 0 25px 50px -12px rgba(0, 0, 0, 0.1),
@@ -251,7 +250,7 @@
 
     <!-- Success Modal -->
     <div id="checkoutOverlay"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60  opacity-0 invisible transition-all duration-300">
         <div class="bg-white rounded-[2.5rem] w-full max-w-md p-10 text-center shadow-2xl transform scale-95 transition-all duration-500 overflow-hidden"
             id="checkoutModal">
 
@@ -390,6 +389,7 @@
 
 
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -404,6 +404,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         function renderCart() {

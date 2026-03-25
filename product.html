@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -240,6 +241,7 @@
 
 
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -254,6 +256,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         const productsDB = {
@@ -788,7 +791,7 @@
 
     <!-- ========== STICKY ADD TO CART (MOBILE) ========== -->
     <div id="sticky-cart-bar"
-        class="fixed bottom-[72px] left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 p-4 translate-y-full transition-transform duration-300 z-40 sm:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+        class="fixed bottom-[72px] left-0 right-0 bg-white/90  border-t border-gray-100 p-4 translate-y-full transition-transform duration-300 z-40 sm:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                 <img id="sticky-product-img" src="" class="w-full h-full object-contain mix-blend-multiply" alt="">

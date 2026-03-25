@@ -1,0 +1,7 @@
+{
+  "id": "vendor-docs",
+  "name": "vendor-docs",
+  "public": false,
+  "file_size_limit": 10485760,
+  "allowed_mime_types": ["image/png", "image/jpeg", "application/pdf"]
+}

@@ -363,8 +363,9 @@ canvas {
 
 @media (max-width: 1023px) {
 
-    /* Sidebar settings empilée */
-    .lg\:w-72 {
+    /* Sidebar settings empilée — scoped to settings layout only */
+    .settings-layout .lg\:w-72,
+    [data-page="settings"] .lg\:w-72 {
         width: 100% !important;
     }
 
@@ -808,3 +809,664 @@ canvas {
     opacity: 1;
     pointer-events: auto;
 }
+
+/* ==========================================
+   32. MOBILE BOTTOM NAVIGATION BAR — Styles principaux
+   ========================================== */
+
+#mobileBottomNav {
+    display: none; /* hidden on desktop by default */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@media (max-width: 639px) {
+    #mobileBottomNav {
+        display: block;
+    }
+}
+
+#mobileBottomNav .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.4rem 0 0.5rem;
+    height: 64px;
+}
+
+#mobileBottomNav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.2rem 0.3rem;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    transition: color 0.18s ease, background-color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#mobileBottomNav .nav-item:hover,
+#mobileBottomNav .nav-item.active {
+    color: #111827;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#mobileBottomNav .nav-item span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1;
+}
+
+#mobileBottomNav .nav-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+#mobileBottomNav .nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: #111827;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1.5px solid rgba(255, 255, 255, 0.97);
+}
+
+/* Dark mode mobile nav */
+html.dark #mobileBottomNav {
+    background: rgba(17, 24, 39, 0.97);
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+html.dark #mobileBottomNav .nav-item {
+    color: #9ca3af;
+}
+
+html.dark #mobileBottomNav .nav-item:hover,
+html.dark #mobileBottomNav .nav-item.active {
+    color: #f9fafb;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================
+   33. ACTIVE NAV ITEM (highlighting current page)
+   ========================================== */
+
+#mobileBottomNav .nav-item.active .nav-icon-wrap iconify-icon,
+#mobileBottomNav .nav-item.active iconify-icon {
+    color: #111827;
+}
+
+html.dark #mobileBottomNav .nav-item.active .nav-icon-wrap iconify-icon,
+html.dark #mobileBottomNav .nav-item.active iconify-icon {
+    color: #f9fafb;
+}
+
+/* ==========================================
+   34. CATALOG — Mobile Filter Panel (Drawer)
+   ========================================== */
+
+/* Mobile filter toggle button — shows only on mobile */
+#mobileFilterToggle {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    #mobileFilterToggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e293b;
+        cursor: pointer;
+        min-height: 44px;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.2s, border-color 0.2s;
+        flex-shrink: 0;
+    }
+
+    #mobileFilterToggle:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    /* Catalog toolbar row: show filter button + sort on mobile */
+    .catalog-toolbar-row {
+        flex-wrap: nowrap !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Make sidebar an off-canvas drawer on mobile */
+    .catalog-sidebar-aside {
+        display: none !important; /* hidden by default; toggled via JS */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: min(320px, 90vw) !important;
+        z-index: 500 !important;
+        background: #fff !important;
+        overflow-y: auto !important;
+        padding: 1.5rem !important;
+        box-shadow: 4px 0 32px rgba(0, 0, 0, 0.12) !important;
+        border-radius: 0 1.5rem 1.5rem 0 !important;
+    }
+
+    .catalog-sidebar-aside.open {
+        display: block !important;
+    }
+
+    /* Overlay behind the filter drawer */
+    #catalogFilterOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 499;
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+    }
+
+    #catalogFilterOverlay.open {
+        display: block;
+    }
+
+    /* Header inside filter drawer */
+    .filter-drawer-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    html.dark .catalog-sidebar-aside {
+        background: #1f2937 !important;
+    }
+}
+
+/* Desktop: always show */
+@media (min-width: 1024px) {
+    .catalog-sidebar-aside {
+        display: block !important;
+        position: relative !important;
+        width: auto !important;
+        box-shadow: none !important;
+    }
+
+    .filter-drawer-header {
+        display: none !important;
+    }
+
+    #catalogFilterOverlay {
+        display: none !important;
+    }
+}
+
+/* ==========================================
+   35. PRODUCT CARDS — Touch target & mobile UX
+   ========================================== */
+
+/* Always show wishlist/action buttons on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .wishlist-btn,
+    .product-card .quick-actions {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .product-card .quick-add-btn {
+        display: flex !important;
+    }
+}
+
+/* Product card bottom buttons — bigger on mobile */
+@media (max-width: 639px) {
+    .product-card .btn,
+    .product-card button {
+        min-height: 40px;
+        font-size: 0.7rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Keep product title readable */
+    .product-title {
+        font-size: 0.85rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .product-cat {
+        font-size: 0.65rem !important;
+    }
+
+    /* Product price */
+    .product-price,
+    .price-text {
+        font-size: 0.9rem !important;
+    }
+
+    /* Reduce product image padding on mobile */
+    .product-info {
+        padding: 0.625rem 0.75rem 0.75rem !important;
+    }
+}
+
+/* ==========================================
+   36. CATALOG GRID — Mobile optimisation
+   ========================================== */
+
+@media (max-width: 639px) {
+    /* Catalog main padding */
+    .catalog-main-padding {
+        padding-top: 1.5rem !important;
+        padding-bottom: 5rem !important; /* account for mobile nav */
+    }
+
+    /* Filter toolbar: ensure it's scrollable */
+    .catalog-toolbar-row {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .catalog-toolbar-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Catalog heading */
+    .catalog-heading {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ==========================================
+   37. DARK MODE — Gaps supplémentaires
+   ========================================== */
+
+html.dark .main-header {
+    background-color: #111827;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+html.dark .main-header .bg-white {
+    background-color: #111827 !important;
+}
+
+html.dark #mobileMenu {
+    background: #1f2937;
+    color: #f9fafb;
+}
+
+html.dark #mobileMenu h3 {
+    color: #6b7280;
+}
+
+html.dark #mobileMenu a {
+    color: #d1d5db;
+}
+
+html.dark #mobileMenu a:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark .search-bar {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .search-input {
+    color: #f9fafb;
+}
+
+html.dark .search-input::placeholder {
+    color: #6b7280;
+}
+
+/* ==========================================
+   38. HEADER — Compact mobile height fix
+   ========================================== */
+
+/* On mobile, ensure fixed header doesn't eat too much space */
+@media (max-width: 639px) {
+    /* Our header is now 2 rows: logo+icons row + search row */
+    /* Spacer: match actual rendered header height on mobile */
+    /* Row 1: ~52px, Row 2 (search): ~46px, top bar: 24px, cat nav hidden => ~88px total */
+    /* We use h-[88px] via the existing spacer, no change needed */
+}
+
+/* ==========================================
+   39. FOOTER — Always visible on all pages
+   ========================================== */
+
+/* Make footer load on all pages by ensuring placeholder is visible */
+#footer-placeholder:empty {
+    display: none;
+}
+
+/* ==========================================
+   40. HERO SECTION — Mobile text sizes
+   ========================================== */
+
+@media (max-width: 480px) {
+    /* Hero text  */
+    .hero-content h1 {
+        font-size: 1.8rem !important;
+    }
+
+    /* Hero section height */
+    .hero-section {
+        height: 280px !important;
+        min-height: 220px !important;
+    }
+}
+
+/* ==========================================
+   41. FILTER BAR (index.html) — Mobile scroll
+   ========================================== */
+
+@media (max-width: 639px) {
+    #filterBar {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+        /* mask edges */
+        -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+    }
+
+    #filterBar::-webkit-scrollbar {
+        display: none;
+    }
+
+    #filterBar > span {
+        flex-shrink: 0;
+    }
+
+    #filterBar .filter-btn,
+    #filterBar button {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    /* Sort control on mobile */
+    #filterBar .border-l {
+        flex-shrink: 0;
+    }
+}
+
+/* ==========================================
+   42. CART PAGE — Full responsive
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* Cart layout stacks */
+    .cart-layout {
+        flex-direction: column !important;
+    }
+
+    /* Cart summary always full width on mobile */
+    .cart-summary-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ==========================================
+   43. PRODUCT DETAIL PAGE — Mobile gallery
+   ========================================== */
+
+@media (max-width: 639px) {
+    /* Main product image */
+    #mainImage {
+        max-height: 320px !important;
+        object-fit: contain !important;
+    }
+
+    /* Product action buttons in a row */
+    .product-action-row {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+
+    .product-action-row button,
+    .product-action-row a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* ==========================================
+   44. GLOBAL — Body padding bottom (mobile nav)
+   ========================================== */
+
+@media (max-width: 639px) {
+    /* Only add bottom padding when mobile nav is present */
+    body:has(#mobileBottomNav) {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* Fallback for browsers that don't support :has() */
+@media (max-width: 639px) {
+    .page-content-wrapper {
+        padding-bottom: 80px;
+    }
+}
+
+/* ==========================================
+   45. FORM INPUTS — Minimum 16px to avoid iOS zoom
+   ========================================== */
+
+@media (max-width: 768px) {
+    input:not([type="range"]),
+    select,
+    textarea {
+        font-size: max(16px, 1em) !important;
+    }
+}
+
+/* ==========================================
+   46. SEARCH SUGGESTION DROPDOWN — Mobile fix
+   ========================================== */
+
+@media (max-width: 639px) {
+    .search-suggestions {
+        top: calc(100% + 4px) !important;
+        border-radius: 1rem !important;
+        max-height: 55vh !important;
+        font-size: 0.875rem;
+    }
+
+    .search-suggestions > div {
+        padding: 0.625rem 1rem !important;
+    }
+}
+
+/* ==========================================
+   47. NOTIFICATIONS PAGE — Mobile layout
+   ========================================== */
+
+@media (max-width: 639px) {
+    #notifications-list .notification-item,
+    .notification-item {
+        border-radius: 1rem !important;
+    }
+
+    .notification-filter-bar {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap !important;
+        scrollbar-width: none;
+    }
+
+    .notification-filter-bar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* ==========================================
+   48. BREADCRUMB — Mobile
+   ========================================== */
+
+@media (max-width: 639px) {
+    nav.breadcrumb {
+        font-size: 0.65rem !important;
+        letter-spacing: 0.08em !important;
+    }
+}
+
+/* ==========================================
+   49. GLASSMORPHISM PANELS — Dark/light responsive
+   ========================================== */
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+html.dark .glass-panel {
+    background: rgba(31, 41, 55, 0.8);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================
+   50. PUBLISH PAGE — Mobile upload grid
+   ========================================== */
+
+@media (max-width: 480px) {
+    /* Single column upload on very small screens */
+    .publish-image-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Taille des dropzones */
+    .publish-image-grid > div {
+        aspect-ratio: 1;
+    }
+
+    /* Reduce publish form sections padding */
+    .publish-section {
+        padding: 1rem !important;
+        border-radius: 1rem !important;
+    }
+}
+
+/* ==========================================
+   51. TOASTS & NOTIFICATIONS — Mobile position
+   ========================================== */
+
+@media (max-width: 639px) {
+    .toast-container,
+    #toast-container,
+    .notifications-toast-wrap {
+        bottom: calc(72px + env(safe-area-inset-bottom, 8px)) !important;
+        left: 0.75rem !important;
+        right: 0.75rem !important;
+        top: auto !important;
+        max-width: none !important;
+    }
+
+    .toast,
+    .toast-msg {
+        border-radius: 1rem !important;
+        padding: 0.875rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+/* ==========================================
+   52. VENDOR & CUSTOMER DASHBOARDS — Mobile
+   ========================================== */
+
+@media (max-width: 639px) {
+    /* Tab bars on dashboards: horizontal scroll */
+    .dashboard-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex-wrap: nowrap !important;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+
+    .dashboard-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .dashboard-tabs button,
+    .dashboard-tabs a {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Dashboard stat card: compact */
+    .stat-card {
+        padding: 1rem !important;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* ==========================================
+   53. CURRENCY SEGMENTED CONTROL — Mobile
+   ========================================== */
+
+@media (max-width: 639px) {
+    /* In mobile menu sidebar */
+    .currency-switch-segmented {
+        font-size: 0.75rem;
+    }
+
+    .segmented-track {
+        height: 34px;
+    }
+}

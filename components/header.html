@@ -1,7 +1,9 @@
 <!-- NewKet Header Component -->
-<header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+<header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
+    <!-- Espace en haut du header (visible pour tester) -->
+    <div class="w-full h-4 sm:h-6 bg-gray-50 border-b border-gray-100"></div>
     <!-- Main header -->
-    <div class="header-content w-full px-2 sm:px-8 py-1 sm:py-2 flex flex-wrap items-center justify-between sm:gap-x-4">
+    <div class="header-content w-full px-2 sm:px-8 py-3 sm:py-4 flex flex-wrap items-center justify-between sm:gap-x-4">
         <!-- Left: Hamburger (Mobile) & Logo -->
         <div class="flex items-center gap-2 sm:gap-4">
             <button id="mobileMenuBtn" class="p-1 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors sm:hidden"
@@ -20,7 +22,7 @@
 
         <!-- Center: Search & Publish (Desktop/Mobile) -->
         <div id="mobileSearchContainer"
-            class="order-3 sm:order-2 flex-none w-full sm:flex-1 sm:w-auto relative group flex gap-3 items-center min-w-0">
+            class="order-3 sm:order-2 flex-none w-full sm:flex-1 sm:w-auto relative group flex flex-row flex-nowrap gap-2 sm:gap-3 items-center min-w-0">
             <div
                 class="search-bar flex-1 flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300 pr-2">
                 <input type="text" placeholder="Qu'est-ce qui vous ferait plaisir ?"
@@ -31,7 +33,7 @@
             </div>
             <!-- Publish Button (Desktop Only) -->
             <a href="publish.html"
-                class="shrink-0 bg-gray-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] flex items-center">
+                class="shrink-0 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] whitespace-nowrap">
                 <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
                 Vendre
             </a>
@@ -84,6 +86,12 @@
                     class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
                     style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
             </a>
+
+            <!-- Theme Toggle -->
+            <button class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                data-theme-toggle onclick="ThemeManager.toggle()" title="Passer en mode sombre" aria-label="Passer en mode sombre">
+                <iconify-icon data-theme-icon icon="solar:moon-bold" width="22" class="text-gray-600"></iconify-icon>
+            </button>
 
         </div>
     </div>

@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -376,7 +377,7 @@
 
     <!-- Order Detail Modal -->
     <div id="orderModal"
-        class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/60  p-4">
         <div
             class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden animate-in fade-in zoom-in duration-300">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
@@ -495,6 +496,7 @@
         </div>
     </div>
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -509,6 +511,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         let currentSelectedOrder = null;

@@ -32,7 +32,6 @@ const UI = {
         if (!window.ProductManager) return;
 
         const allProducts = ProductManager.getProducts();
-        if (!allProducts || allProducts.length === 0) return;
 
         // 1. Pinned Products Section
         this.renderPinned(allProducts);
@@ -122,10 +121,11 @@ const UI = {
             window.buildProductCardHTML(p, { animationClass: 'animate-fade-in', delay: `${idx * 0.05}s` })
         ).join('');
 
-        // Handle "Voir Plus" button
+        // Handle "Voir Plus" button — show if more pages exist from the API
         const voirPlus = document.getElementById('voirPlusContainer');
         if (voirPlus) {
-            if (filtered.length > batchSize) voirPlus.classList.remove('hidden');
+            const hasMore = window.ProductManager && ProductManager.hasMore();
+            if (hasMore) voirPlus.classList.remove('hidden');
             else voirPlus.classList.add('hidden');
         }
 
@@ -156,10 +156,17 @@ window.sortAndRenderAll = function () {
     UI.renderAll(ProductManager.getProducts());
 };
 
-window.showMoreProducts = function () {
-    const grid = document.getElementById('allProductGrid');
-    if (grid) {
-        UI.renderFilteredBatch(ProductManager.getProducts(), grid, 24);
+window.showMoreProducts = async function () {
+    const btn = document.getElementById('voirPlusBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Chargement...';
+    }
+    await ProductManager.loadMore();
+    // Button visibility is re-evaluated in renderAll via hasMore()
+    if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Voir plus';
     }
 };
 

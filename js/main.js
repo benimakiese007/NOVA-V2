@@ -42,6 +42,12 @@ const App = {
             if (e.key === 'newketFavorites' && window.FavoritesManager) FavoritesManager.updateUI();
         });
 
+        // PWA Install prompt
+        window.addEventListener('pwaInstallAvailable', () => {
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.classList.remove('hidden');
+        });
+
         // Add to Cart global handler
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.add-to-cart-btn');

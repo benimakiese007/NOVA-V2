@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -37,7 +38,6 @@
 
         .glass {
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
         }
     </style>
 </head>
@@ -183,7 +183,7 @@
 
     <!-- Success Modal -->
     <div id="publishOverlay"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60  opacity-0 invisible transition-all duration-300">
         <div
             class="bg-white rounded-[2.5rem] w-full max-w-sm p-10 text-center shadow-2xl transform scale-90 transition-all duration-300">
 
@@ -206,6 +206,7 @@
     <!-- Confetti Container -->
     <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-[101]"></div>
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -220,6 +221,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         const priceInput = document.getElementById('priceInput');
@@ -281,7 +283,7 @@
                 <div class="relative flex-shrink-0 w-32 h-32 rounded-2xl border border-gray-200 overflow-hidden group">
                     <img src="${src}" class="w-full h-full object-cover">
                     <button type="button" onclick="removeImage(${index})" 
-                        class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:scale-110 hover:bg-white transition-all">
+                        class="absolute top-2 right-2 bg-white/90  text-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:scale-110 hover:bg-white transition-all">
                         <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
                     </button>
                     <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] font-bold py-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">

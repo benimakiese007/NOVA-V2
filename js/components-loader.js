@@ -26,7 +26,7 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
 
         <!-- Center: Search & Publish (Desktop/Mobile) -->
         <div id="mobileSearchContainer"
-            class="order-3 sm:order-2 flex-none w-full sm:flex-1 sm:w-auto relative group flex gap-3 items-center min-w-0">
+            class="order-3 sm:order-2 flex-none w-full sm:flex-1 sm:w-auto relative group flex flex-row flex-nowrap gap-2 sm:gap-3 items-center min-w-0">
             <div
                 class="search-bar flex-1 flex items-center bg-slate-100/50 border border-slate-200 rounded-2xl overflow-hidden focus-within:bg-white focus-within:ring-4 focus-within:ring-gray-100 focus-within:border-gray-200 transition-all duration-300 pr-2">
                 <input type="text" placeholder="Qu'est-ce qui vous ferait plaisir ?"
@@ -37,7 +37,7 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
             </div>
             <!-- Publish Button (Desktop Only) -->
             <a href="publish.html"
-                class="shrink-0 bg-gray-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] flex items-center">
+                class="shrink-0 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] whitespace-nowrap">
                 <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
                 Vendre
             </a>
@@ -90,6 +90,12 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
                     class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
                     style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
             </a>
+
+            <!-- Theme Toggle -->
+            <button class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                data-theme-toggle onclick="ThemeManager.toggle()" title="Passer en mode sombre" aria-label="Passer en mode sombre">
+                <iconify-icon data-theme-icon icon="solar:moon-bold" width="22" class="text-gray-600"></iconify-icon>
+            </button>
 
         </div>
     </div>
@@ -180,6 +186,10 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2 publish-btn">
                     <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon> Vendre un article
                 </a>
+                <button onclick="window.AppNotifications && AppNotifications.promptInstall()" id="pwa-install-btn"
+                    class="hidden flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium mt-2 transition-all">
+                    <iconify-icon icon="solar:download-square-bold" width="20"></iconify-icon> Installer l'Application
+                </button>
             </nav>
         </div>
 
@@ -247,20 +257,75 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
     </div>
 </footer>`;
 
+const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
+<nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
+    <div class="nav-bar">
+        <a href="index.html" class="nav-item" title="Accueil" id="nav-home">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
+            <span>Accueil</span>
+        </a>
+        <a href="catalog.html" class="nav-item" title="Catalogue" id="nav-catalog">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="22"></iconify-icon></div>
+            <span>Catalogue</span>
+        </a>
+        <a href="cart.html" class="nav-item" title="Panier" id="nav-cart">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:cart-large-minimalistic-linear" width="22"></iconify-icon>
+                <span class="nav-badge" id="mobileCartBadge" style="display:none;">0</span>
+            </div>
+            <span>Panier</span>
+        </a>
+        <a href="favorites.html" class="nav-item" title="Favoris" id="nav-favorites">
+            <div class="nav-icon-wrap">
+                <iconify-icon icon="solar:heart-linear" width="22"></iconify-icon>
+                <span class="nav-badge" id="mobileFavBadge" style="display:none;">0</span>
+            </div>
+            <span>Favoris</span>
+        </a>
+        <button class="nav-item" data-theme-toggle-mobile onclick="ThemeManager.toggle()" title="Changer le thème">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:moon-bold" width="22"></iconify-icon></div>
+            <span>Thème</span>
+        </button>
+    </div>
+</nav>`;
+
+const MINIMAL_HEADER_HTML = `<!-- NewKet Minimal Header Component -->
+<header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm flex h-[60px] sm:h-[64px] items-center justify-center">
+    <a href="index.html" class="flex items-center group" title="Retour à l'accueil">
+        <span class="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 transition-transform group-hover:scale-105">NEWKET</span>
+    </a>
+    <div class="absolute right-4 items-center hidden sm:flex text-gray-300">
+        <iconify-icon icon="solar:lock-password-bold" width="18"></iconify-icon>
+        <span class="text-[10px] uppercase font-bold tracking-widest ml-1">Sécurisé</span>
+    </div>
+</header>`;
+
 const ComponentLoader = {
     async init() {
         console.log('[NewKet] Initializing Component Loader...');
 
         // Determine if we are on the home page (index.html or root)
-        const isHomePage = window.location.pathname === '/' ||
-            window.location.pathname === '' ||
-            window.location.pathname.endsWith('index.html');
+        const currentPath = window.location.pathname;
+        const isHomePage = currentPath === '/' || currentPath === '' || currentPath.endsWith('index.html');
+        // Pages that require focus/conversion
+        const isMinimalPage = currentPath.endsWith('login.html') || currentPath.endsWith('cart.html') || currentPath.endsWith('publish.html');
 
-        const componentsToLoad = [
-            this.loadComponent('header-placeholder', 'components/header.html', HEADER_HTML)
-        ];
+        const componentsToLoad = [];
 
-        if (isHomePage) {
+        if (isMinimalPage) {
+            componentsToLoad.push(
+                this.loadComponent('header-placeholder', 'components/header-minimal.html', MINIMAL_HEADER_HTML)
+            );
+            // Intentionally omit mobile nav on minimal pages to prevent conversion drop-off
+            // Also, mobile-nav-placeholder element exists in those pages, but will remain empty.
+        } else {
+            componentsToLoad.push(
+                this.loadComponent('header-placeholder', 'components/header.html', HEADER_HTML),
+                this.loadComponent('mobile-nav-placeholder', 'components/mobile-nav.html', MOBILE_NAV_HTML)
+            );
+        }
+
+        if (!isMinimalPage) {
             componentsToLoad.push(
                 this.loadComponent('footer-placeholder', 'components/footer.html', FOOTER_HTML)
             );

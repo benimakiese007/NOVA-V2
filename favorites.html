@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -79,6 +80,7 @@
 
 
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -93,6 +95,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         // Use FavoritesManager from main.js but with this custom UI
@@ -112,7 +115,7 @@
 
             grid.innerHTML = favs.map(item => `
                 <div class="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-shadow transition-all duration-300 relative">
-                    <button onclick="removeFromFav('${item.id}')" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition-all">
+                    <button onclick="removeFromFav('${item.id}')" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition-all">
                         <iconify-icon icon="solar:heart-bold" width="20"></iconify-icon>
                     </button>
                     <div class="aspect-square bg-gray-50 flex items-center justify-center p-8 overflow-hidden">

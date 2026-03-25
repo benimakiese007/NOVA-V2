@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+    <script src="js/theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
@@ -35,8 +36,6 @@
 
         .glass-card {
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
@@ -87,7 +86,7 @@
                 <div class="flex-1 mb-2">
                     <div class="flex items-center gap-3 mb-2">
                         <span
-                            class="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">Partenaire
+                            class="px-3 py-1 bg-white/20  text-white text-[10px] font-black uppercase tracking-widest rounded-full">Partenaire
                             Certifié</span>
                     </div>
                     <h1 id="vendorName" class="text-4xl sm:text-6xl font-black text-white tracking-tighter uppercase">
@@ -143,6 +142,7 @@
 
 
 
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
     <script type="module" src="js/auth.js"></script>
@@ -157,6 +157,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
 
     <script>
         async function loadShopData() {

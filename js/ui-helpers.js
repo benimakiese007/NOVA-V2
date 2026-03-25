@@ -93,9 +93,10 @@ function buildProductCardHTML(p, options = {}) {
     const { animationClass = '', delay = '0s' } = options;
     const isFavorite = window.FavoritesManager ? FavoritesManager.isInFavorites(p.id) : false;
 
-    // Handle image (could be comma separated)
+    // Handle image (could be comma separated) — optimize first image for thumbnails
     const images = (p.image || '').split(',');
-    const mainImg = images[0].trim() || 'Images/default.png';
+    const rawImg = images[0].trim() || 'Images/default.png';
+    const mainImg = window.getOptimizedImageUrl ? window.getOptimizedImageUrl(rawImg, { width: 400, quality: 80 }) : rawImg;
 
     // Format price
     const priceDisplay = window.CurrencyManager ? CurrencyManager.formatPrice(p.price) : `${(p.price || 0).toLocaleString()} FC`;

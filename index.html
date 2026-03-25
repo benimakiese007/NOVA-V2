@@ -13,6 +13,8 @@
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>NewKet — Marketplace Moderne</title>
     <link rel="stylesheet" href="/src/input.css">
+    <!-- Theme FOUC prevention (must be first, inline) -->
+    <script src="js/theme.js"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -153,11 +155,10 @@
 
 
     <!-- Spacer for fixed header -->
-    <!-- Spacer for fixed header -->
     <div class="h-28 sm:h-24 lg:h-32"></div>
 
     <!-- ========== PRODUITS ÉPINGLÉS ========== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 mb-12" id="pinnedSection">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-2 mb-12" id="pinnedSection">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-gray-900 rounded-xl flex items-center justify-center">
@@ -200,7 +201,7 @@
             <div class="flex-1 hidden lg:flex justify-center">
                 <div class="relative">
                     <div
-                        class="w-80 h-80 bg-white/10 rounded-3xl backdrop-blur-sm flex items-center justify-center border border-white/20">
+                        class="w-80 h-80 bg-white/10 rounded-3xl  flex items-center justify-center border border-white/20">
                         <div class="text-center">
                             <div class="text-6xl font-bold text-white mb-2">-50%</div>
                             <div class="text-white/80 text-sm">Sur une sélection Premium pour les achats de plus de 150$
@@ -355,13 +356,14 @@
 
         <!-- Button Voir Plus -->
         <div id="voirPlusContainer" class="mt-12 flex justify-center hidden">
-            <button onclick="showMoreProducts()"
+            <button id="voirPlusBtn" onclick="showMoreProducts()"
                 class="group relative px-8 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex items-center gap-2">
                 <span>Voir plus d'articles</span>
                 <iconify-icon icon="solar:alt-arrow-down-linear" width="18"
                     class="group-hover:translate-y-0.5 transition-transform"></iconify-icon>
             </button>
         </div>
+
 
         <div id="noProductsMsg" class="hidden text-center py-12 text-gray-400 text-sm">Aucun produit trouvé.</div>
     </section>
@@ -379,6 +381,9 @@
         </div>
     </section>
 
+    
+
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
 
@@ -394,6 +399,29 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/components-loader.js"></script>
+    <script type="module" src="js/realtime-notifications.js"></script>
+    <script>
+        // Sync mobile cart/fav badges
+        function syncMobileBadges() {
+            const cartCount = window.CartManager ? CartManager.getItems().length : 0;
+            const favCount = window.FavoritesManager ? FavoritesManager.getFavorites().length : 0;
+            const cartBadge = document.getElementById('mobileCartBadge');
+            const favBadge = document.getElementById('mobileFavBadge');
+            if (cartBadge) {
+                cartBadge.textContent = cartCount;
+                cartBadge.style.display = cartCount > 0 ? 'block' : 'none';
+            }
+            if (favBadge) {
+                favBadge.textContent = favCount;
+                favBadge.style.display = favCount > 0 ? 'block' : 'none';
+            }
+        }
+        window.addEventListener('newketInitialized', syncMobileBadges);
+        window.addEventListener('cartUpdated', syncMobileBadges);
+        window.addEventListener('favoritesUpdated', syncMobileBadges);
+        // Init ThemeManager after DOM
+        document.addEventListener('DOMContentLoaded', () => {}); // ThemeManager auto-inits
+    </script>
     <script>
         document.addEventListener('newketInitialized', () => {
             if (window.RecentlyViewedManager) {
