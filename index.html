@@ -403,8 +403,8 @@
     <script>
         // Sync mobile cart/fav badges
         function syncMobileBadges() {
-            const cartCount = window.CartManager ? CartManager.getItems().length : 0;
-            const favCount = window.FavoritesManager ? FavoritesManager.getFavorites().length : 0;
+            const cartCount = window.CartManager ? CartManager.getItemCount() : 0;
+            const favCount = window.FavoritesManager ? FavoritesManager.getCount() : 0;
             const cartBadge = document.getElementById('mobileCartBadge');
             const favBadge = document.getElementById('mobileFavBadge');
             if (cartBadge) {

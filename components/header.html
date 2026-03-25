@@ -53,9 +53,9 @@
                 </div>
             </div>
 
-            <!-- Notifications (Hidden on mobile as requested) -->
+            <!-- Notifications (Desktop Only) -->
             <a href="notifications.html"
-                class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
                 title="Notifications">
                 <iconify-icon icon="solar:bell-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
@@ -63,7 +63,7 @@
                     style="display:none; font-size:10px; width:16px; height:16px; min-width: 16px;">0</span>
             </a>
 
-            <!-- Favorites -->
+            <!-- Favorites (Desktop Only) -->
             <a href="favorites.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
                 title="Favoris">
                 <iconify-icon icon="solar:heart-linear" width="22" class="text-gray-600"></iconify-icon>
@@ -72,19 +72,25 @@
                     style="display:none; font-size:10px; width:18px; height:18px;">0</span>
             </a>
 
-            <!-- Account -->
-            <a href="login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                title="Compte" id="accountLink">
-                <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
-            </a>
-
-            <!-- Cart -->
+            <!-- Cart (Desktop Only) -->
             <a href="cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
                 title="Panier">
                 <iconify-icon icon="solar:bag-3-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
                     class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
                     style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
+            </a>
+
+            <!-- Dashboard (Desktop Only) -->
+            <a href="vendor-dashboard.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                title="Tableau de bord" id="headerDashboardLink">
+                <iconify-icon icon="solar:chart-square-linear" width="22" class="text-gray-600"></iconify-icon>
+            </a>
+
+            <!-- Account (Desktop Only) -->
+            <a href="login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                title="Compte" id="accountLink">
+                <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
             </a>
 
             <!-- Theme Toggle -->
@@ -178,6 +184,10 @@
                     <span id="mobileFavoritesBadge"
                         class="bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                 </a>
+                <button onclick="ThemeManager.toggle()"
+                    class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium w-full text-left" title="Changer le thème">
+                    <span class="flex items-center gap-3"><iconify-icon data-theme-icon icon="solar:moon-bold" width="20"></iconify-icon> Mode Sombre</span>
+                </button>
                 <a href="publish.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2 publish-btn">
                     <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon> Vendre un article

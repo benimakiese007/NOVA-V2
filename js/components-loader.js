@@ -1,11 +1,25 @@
-/* NewKet EMarket Component Loader */
+﻿/* NewKet EMarket Component Loader */
 
 /**
  * Header HTML inlined to avoid CORS issues with file:// protocol.
  * When served via HTTP, fetch is used instead.
  */
-const HEADER_HTML = `<!-- NewKet Header Component -->
-<header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+const HEADER_HTML = `
+    <!-- Simple fallback header if fetch fails (e.g. local file://) -->
+    <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 flex items-center justify-between px-4 py-3 shadow-sm sm:px-8">
+        <a href="index.html" class="text-xl font-bold tracking-tighter">NEWKET</a>
+        <div class="flex items-center gap-4">
+            <a href="cart.html" class="p-2 hover:bg-gray-100 rounded-lg relative">
+                <iconify-icon icon="solar:bag-3-outline" width="22"></iconify-icon>
+            </a>
+            <a href="vendor-dashboard.html" class="p-2 hover:bg-gray-100 rounded-lg hidden sm:block" id="headerDashboardLink">
+                <iconify-icon icon="solar:chart-square-linear" width="22"></iconify-icon>
+            </a>
+            <a href="login.html" class="p-2 hover:bg-gray-100 rounded-lg" id="accountLink">
+                <iconify-icon icon="solar:user-outline" width="22"></iconify-icon>
+            </a>
+        </div>
+    </header>
     <!-- Main header -->
     <div class="header-content w-full px-2 sm:px-8 py-1 sm:py-2 flex flex-wrap items-center justify-between sm:gap-x-4">
         <!-- Left: Hamburger (Mobile) & Logo -->
@@ -57,7 +71,7 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
                 </div>
             </div>
 
-            <!-- Notifications (Hidden on mobile as requested) -->
+            <!-- Notifications -->
             <a href="notifications.html"
                 class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Notifications">
@@ -68,7 +82,7 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
             </a>
 
             <!-- Favorites -->
-            <a href="favorites.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
+            <a href="favorites.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Favoris">
                 <iconify-icon icon="solar:heart-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
@@ -76,19 +90,25 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
                     style="display:none; font-size:10px; width:18px; height:18px;">0</span>
             </a>
 
-            <!-- Account -->
-            <a href="login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                title="Compte" id="accountLink">
-                <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
-            </a>
-
             <!-- Cart -->
-            <a href="cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
+            <a href="cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Panier">
                 <iconify-icon icon="solar:bag-3-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
                     class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
                     style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
+            </a>
+
+            <!-- Dashboard -->
+            <a href="vendor-dashboard.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                title="Tableau de bord" id="headerDashboardLink">
+                <iconify-icon icon="solar:chart-square-linear" width="22" class="text-gray-600"></iconify-icon>
+            </a>
+
+            <!-- Account -->
+            <a href="login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+                title="Compte" id="accountLink">
+                <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
             </a>
 
             <!-- Theme Toggle -->
@@ -182,6 +202,10 @@ const HEADER_HTML = `<!-- NewKet Header Component -->
                     <span id="mobileFavoritesBadge"
                         class="bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                 </a>
+                <button onclick="ThemeManager.toggle()"
+                    class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium w-full text-left" title="Changer le thème">
+                    <span class="flex items-center gap-3"><iconify-icon data-theme-icon icon="solar:moon-bold" width="20"></iconify-icon> Mode Sombre</span>
+                </button>
                 <a href="publish.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2 publish-btn">
                     <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon> Vendre un article
@@ -259,33 +283,52 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
 
 const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
 <nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
-    <div class="nav-bar">
+    <!-- Acheteur (Customer) Nav - 4 items -->
+    <div class="nav-bar customer-nav flex justify-around items-center w-full px-2" style="display: none;">
         <a href="index.html" class="nav-item" title="Accueil" id="nav-home">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
             <span>Accueil</span>
         </a>
-        <a href="catalog.html" class="nav-item" title="Catalogue" id="nav-catalog">
+        <a href="catalog.html" class="nav-item" title="Boutique" id="nav-catalog">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="22"></iconify-icon></div>
-            <span>Catalogue</span>
+            <span>Boutique</span>
         </a>
-        <a href="cart.html" class="nav-item" title="Panier" id="nav-cart">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:cart-large-minimalistic-linear" width="22"></iconify-icon>
-                <span class="nav-badge" id="mobileCartBadge" style="display:none;">0</span>
-            </div>
-            <span>Panier</span>
+        <a href="forum.html" class="nav-item" title="Forum" id="nav-forum">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="22"></iconify-icon></div>
+            <span>Forum</span>
         </a>
-        <a href="favorites.html" class="nav-item" title="Favoris" id="nav-favorites">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:heart-linear" width="22"></iconify-icon>
-                <span class="nav-badge" id="mobileFavBadge" style="display:none;">0</span>
-            </div>
-            <span>Favoris</span>
+        <a href="customer-dashboard.html" class="nav-item" title="Compte" id="mobileBottomAccountCustomer">
+            <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="22"></iconify-icon></div>
+            <span>Compte</span>
         </a>
-        <button class="nav-item" data-theme-toggle-mobile onclick="ThemeManager.toggle()" title="Changer le thème">
-            <div class="nav-icon-wrap"><iconify-icon icon="solar:moon-bold" width="22"></iconify-icon></div>
-            <span>Thème</span>
-        </button>
+    </div>
+
+    <!-- Vendeur (Supplier/Admin) Nav - 6 items -->
+    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 overflow-x-auto" style="display: none; gap: 2px;">
+        <a href="index.html" class="nav-item shrink-0" title="Accueil" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Accueil</span>
+        </a>
+        <a href="catalog.html" class="nav-item shrink-0" title="Boutique" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Boutique</span>
+        </a>
+        <a href="publish.html" class="nav-item shrink-0 publish-btn relative" title="Vendre" style="min-width: 60px;">
+            <div class="nav-icon-wrap bg-gray-900 text-white rounded-full w-12 h-12 flex items-center justify-center absolute -top-8 left-1/2 transform -translate-x-1/2 shadow-lg border-4 border-white"><iconify-icon icon="solar:add-circle-bold" width="26"></iconify-icon></div>
+            <span style="font-size: 9px; margin-top: 18px;">Vendre</span>
+        </a>
+        <a href="forum.html" class="nav-item shrink-0" title="Forum" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Forum</span>
+        </a>
+        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Dashboard" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Dashboard</span>
+        </a>
+        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Compte" id="mobileBottomAccountVendor" style="min-width: 46px;">
+            <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Compte</span>
+        </a>
     </div>
 </nav>`;
 
@@ -342,6 +385,13 @@ const ComponentLoader = {
         if (window.FavoritesManager) FavoritesManager.updateUI();
         if (window.CurrencyManager) CurrencyManager.updateCurrencyUI();
         if (window.SearchManager) SearchManager.init();
+
+        // Load newsletter manager for footer form
+        if (!window.NewsletterManager) {
+            const script = document.createElement('script');
+            script.src = this.getAdjustedPath('js/newsletter.js');
+            document.head.appendChild(script);
+        }
     },
 
     async loadComponent(elementId, path, fallbackHTML = '') {

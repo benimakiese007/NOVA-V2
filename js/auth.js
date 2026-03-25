@@ -163,6 +163,15 @@ const AuthManager = {
         body.classList.add(`role-${this.role}`);
         if (this.status) body.classList.add(`status-${this.status}`);
 
+        // Mobile Nav Visibility
+        if (this.role === 'supplier' || this.role === 'admin') {
+            document.querySelectorAll('.vendor-nav').forEach(el => el.style.display = 'flex');
+            document.querySelectorAll('.customer-nav').forEach(el => el.style.display = 'none');
+        } else {
+            document.querySelectorAll('.vendor-nav').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.customer-nav').forEach(el => el.style.display = 'flex');
+        }
+
         if (this.role === 'supplier' || this.role === 'admin') {
             const isAdmin = this.role === 'admin';
 
@@ -183,7 +192,8 @@ const AuthManager = {
         }
 
         if (this.role === 'admin') {
-            document.querySelectorAll('.publish-btn, .supplier-only, .admin-only').forEach(el => {
+            // Admin has access to everything
+            document.querySelectorAll('.publish-btn, .supplier-only, .admin-only, #headerDashboardLink').forEach(el => {
                 el.style.display = '';
             });
             return;
@@ -201,13 +211,13 @@ const AuthManager = {
             if (isPending) {
                 this.showPendingNotice();
                 
-                // Hide publish and dashboard links for unverified suppliers
-                document.querySelectorAll('.publish-btn, .supplier-only, .vendor-dashboard-link').forEach(el => {
+                // Hide publish links for unverified suppliers (but keep dashboard accessible)
+                document.querySelectorAll('.publish-btn, .supplier-only').forEach(el => {
                     el.style.display = 'none';
                 });
 
                 const path = window.location.pathname;
-                if (path.includes('vendor-dashboard.html') || path.includes('publish.html')) {
+                if (path.includes('publish.html')) {
                     window.location.href = 'index.html';
                 }
             } else if (this.status === 'rejected') {
@@ -223,7 +233,7 @@ const AuthManager = {
             document.querySelectorAll('.cart-trigger, .add-to-cart-btn, #cart-count').forEach(el => {
                 el.style.display = '';
             });
-            document.querySelectorAll('.publish-btn, .supplier-only').forEach(el => {
+            document.querySelectorAll('.publish-btn, .supplier-only, #headerDashboardLink').forEach(el => {
                 el.style.display = 'none';
             });
 
@@ -248,7 +258,7 @@ const AuthManager = {
     },
 
     updateAccountLink() {
-        const accountLinks = document.querySelectorAll('#accountLink, #mobileBottomAccount');
+        const accountLinks = document.querySelectorAll('#accountLink, #mobileBottomAccountCustomer, #mobileBottomAccountVendor');
         if (accountLinks.length === 0) return;
 
         const avatarUrl = localStorage.getItem('newketUserAvatar');
@@ -273,8 +283,8 @@ const AuthManager = {
             }
 
             if (this.role === 'admin') {
-                accountLink.href = 'admin/dashboard.html';
-                accountLink.title = 'Admin Panel';
+                accountLink.href = 'settings.html';
+                accountLink.title = 'Paramètres';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
                     icon.className = 'text-white';
@@ -291,7 +301,7 @@ const AuthManager = {
                 }
                 badge.style.display = 'block';
 
-                if (accountLink.id === 'mobileBottomAccount') {
+                if (accountLink.id.includes('mobileBottomAccount')) {
                     accountLink.classList.add('text-gray-900');
                     accountLink.classList.remove('text-gray-400');
                     if (accountLink.querySelector('iconify-icon')) {
@@ -300,8 +310,8 @@ const AuthManager = {
                 }
 
             } else if (this.role === 'supplier') {
-                accountLink.href = 'vendor-dashboard.html';
-                accountLink.title = 'Mon espace vendeur';
+                accountLink.href = 'settings.html';
+                accountLink.title = 'Paramètres';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
                     icon.className = 'text-gray-900';
@@ -318,8 +328,8 @@ const AuthManager = {
                 badge.style.display = 'block';
 
             } else if (this.role === 'customer') {
-                accountLink.href = 'customer-dashboard.html';
-                accountLink.title = 'Mon compte';
+                accountLink.href = 'settings.html';
+                accountLink.title = 'Paramètres';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
                     icon.className = 'text-gray-900';
@@ -335,7 +345,7 @@ const AuthManager = {
                 }
                 badge.style.display = 'block';
 
-                if (accountLink.id === 'mobileBottomAccount') {
+                if (accountLink.id.includes('mobileBottomAccount')) {
                     accountLink.classList.add('text-gray-900');
                     accountLink.classList.remove('text-gray-400');
                     if (accountLink.querySelector('iconify-icon')) {

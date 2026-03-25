@@ -98,6 +98,17 @@
                     </button>
                 </div>
 
+                <!-- Vendor Info Panel -->
+                <div id="vendorDetailsPanel" class="hidden glass-panel p-6 space-y-4">
+                    <h3 class="font-black text-gray-900 flex items-center gap-2">
+                        <iconify-icon icon="solar:shop-bold" width="20" class="text-blue-500"></iconify-icon>
+                        Détails Boutique
+                    </h3>
+                    <div id="vendorDetailsContent" class="space-y-4 text-sm">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
                 <!-- Activity Feed -->
                 <div class="glass-panel p-6 space-y-6">
                     <h3 class="font-black text-gray-900 flex items-center gap-2">
@@ -287,6 +298,38 @@
             document.getElementById('stat2Value').textContent = CurrencyManager.formatPrice(totalGross);
             document.getElementById('stat3Label').textContent = "Commission (5%)";
             document.getElementById('stat3Value').textContent = CurrencyManager.formatPrice(totalGross * 0.05);
+
+            // Populate Vendor Details Panel
+            const detailsPanel = document.getElementById('vendorDetailsPanel');
+            const detailsContent = document.getElementById('vendorDetailsContent');
+            if (user.company_name || user.store_description || user.documents_url) {
+                detailsPanel.classList.remove('hidden');
+                
+                let docsHtml = '';
+                if (user.documents_url && user.documents_url.length > 0) {
+                    docsHtml = `
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-[10px] uppercase font-bold text-gray-400 mb-2">Documents</p>
+                            <div class="flex flex-col gap-2">
+                                ${user.documents_url.map((url, idx) => `
+                                    <a href="https://kuygjocnnlvjtoaquicq.supabase.co/storage/v1/object/public/vendor-docs/${url}" target="_blank" class="flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-xl hover:bg-blue-100 transition-colors">
+                                        <iconify-icon icon="solar:document-bold"></iconify-icon> Voir Document ${idx + 1}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                detailsContent.innerHTML = `
+                    ${user.company_name ? `<div><p class="text-[10px] uppercase font-bold text-gray-400">Nom</p><p class="font-bold text-gray-900">${user.company_name}</p></div>` : ''}
+                    ${user.store_description ? `<div><p class="text-[10px] uppercase font-bold text-gray-400">Description</p><p class="text-gray-600 leading-relaxed">${user.store_description}</p></div>` : ''}
+                    ${user.store_address ? `<div><p class="text-[10px] uppercase font-bold text-gray-400">Adresse/Ville</p><p class="font-medium text-gray-900">${user.store_address}</p></div>` : ''}
+                    ${user.store_phone_whatsapp ? `<div><p class="text-[10px] uppercase font-bold text-gray-400">WhatsApp</p><a href="https://wa.me/${user.store_phone_whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="font-bold text-green-600 flex items-center gap-1"><iconify-icon icon="ic:baseline-whatsapp"></iconify-icon> ${user.store_phone_whatsapp}</a></div>` : ''}
+                    ${user.preferred_payout_method ? `<div><p class="text-[10px] uppercase font-bold text-gray-400">Paiement</p><p class="font-medium text-gray-900">${user.preferred_payout_method}</p></div>` : ''}
+                    ${docsHtml}
+                `;
+            }
 
             document.getElementById('listTitle').textContent = "Commandes reçues";
 

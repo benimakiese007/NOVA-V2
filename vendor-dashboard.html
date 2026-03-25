@@ -48,20 +48,6 @@
             font-weight: 600;
         }
 
-        .sidebar-link.active {
-            background: #000000;
-            color: white;
-        }
-    </style>
-    <script>
-        const role = localStorage.getItem('newketRole');
-        if (!role || role !== 'supplier') {
-            window.location.href = 'index.html';
-        }
-    </script>
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z'/></svg>">
-</head>
 
 <body class="text-gray-900 antialiased">
     <div id="header-placeholder"></div>
@@ -162,11 +148,11 @@
                             <thead>
                                 <tr
                                     class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-50">
-                                    <th class="pb-4">Commande</th>
+                                    <th class="pb-4">ID</th>
                                     <th class="pb-4">Client</th>
                                     <th class="pb-4">Contact</th>
-                                    <th class="pb-4">Total</th>
-                                    <th class="pb-4">Statut</th>
+                                    <th class="pb-4 text-right">Montant</th>
+                                    <th class="pb-4 text-center">Statut</th><th class="pb-4"></th>
                                 </tr>
                             </thead>
                             <tbody id="vendor-recent-orders" class="divide-y divide-gray-50">
@@ -329,6 +315,67 @@
                 </div>
             </div>
 
+            <!-- Order Detail Modal (New for Vendor) -->
+            <div id="orderDetailModal"
+                class="fixed inset-0 z-[65] hidden flex items-center justify-center bg-black/60 p-4">
+                <div class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-300">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                        <div>
+                            <h2 class="text-xl font-bold" id="vModalOrderId">Détails de la commande</h2>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-widest" id="vModalOrderDate"></p>
+                        </div>
+                        <button onclick="closeOrderDetailModal()"
+                            class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+                            <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-8">
+                        <!-- Client Info -->
+                        <div class="grid grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Client</p>
+                                <p class="font-bold text-gray-900" id="vModalCustomerName"></p>
+                                <p class="text-xs text-gray-500" id="vModalCustomerEmail"></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Contact</p>
+                                <p class="font-bold text-gray-900" id="vModalCustomerPhone"></p>
+                            </div>
+                        </div>
+
+                        <!-- Items -->
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 border-b border-gray-100 pb-2">Articles commandés</p>
+                            <div id="vModalOrderItems" class="space-y-4">
+                                <!-- Items injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="flex justify-between items-end pt-4 border-t border-gray-100">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Commande</p>
+                                <div class="text-2xl font-black text-gray-900" id="vModalOrderTotal">0 FC</div>
+                            </div>
+                            <div class="flex gap-2" id="vModalActions">
+                                <button id="btnMarkDelivered" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all">Marquer comme livré</button>
+                                <button id="btnMarkCancelled" class="px-4 py-2 border border-red-100 text-red-500 rounded-xl text-xs font-bold hover:bg-red-50 transition-all">Annuler</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Option A Note -->
+                        <div class="bg-blue-50 p-4 rounded-xl flex items-start gap-3">
+                            <iconify-icon icon="solar:info-circle-bold" class="text-blue-500 shrink-0" width="20"></iconify-icon>
+                            <p class="text-[10px] text-blue-700 leading-relaxed font-medium">
+                                <strong>Note Option A :</strong> Le paiement étant manuel/hors-ligne, assurez-vous d'avoir reçu les fonds avant de livrer la marchandise. 
+                                La commission de 5% sera déduite de votre solde virtuel NewKet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
@@ -443,23 +490,28 @@
                     // Render Recent Orders
                     const ordersTable = document.getElementById('vendor-recent-orders');
                     if (stats.recentOrders.length === 0) {
-                        ordersTable.innerHTML = `<tr><td colspan="4" class="py-12 text-center text-sm text-gray-400">Aucune commande pour le moment</td></tr>`;
+                        ordersTable.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-sm text-gray-400">Aucune commande pour le moment</td></tr>`;
                     } else {
                         ordersTable.innerHTML = stats.recentOrders.map(o => `
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-4 font-bold text-xs uppercase tracking-wider">#${o.id.substring(0, 6)}</td>
-                            <td class="py-4 text-sm text-gray-600">${o.customer?.name || o.customer_name || 'Client'}</td>
+                        <tr class="hover:bg-gray-50 transition-all cursor-pointer group" onclick="openOrderDetailModal('${o.id}')">
+                            <td class="py-4 font-bold text-xs uppercase tracking-wider text-gray-400">#${o.id.substring(0, 6)}</td>
+                            <td class="py-4 text-sm font-bold text-gray-900">${o.customer?.name || o.customer_name || 'Client'}</td>
                             <td class="py-4">
                                 ${o.phone_number ? `
-                                    <a href="tel:${o.phone_number}" class="text-[10px] font-black bg-gray-100 px-2 py-1 rounded-md hover:bg-black hover:text-white transition-all inline-flex items-center gap-1">
+                                    <div class="text-[10px] font-black bg-gray-100 px-2 py-1 rounded-md inline-flex items-center gap-1 group-hover:bg-black group-hover:text-white transition-all">
                                         <iconify-icon icon="solar:phone-bold" width="10"></iconify-icon>
                                         ${o.phone_number}
-                                    </a>
+                                    </div>
                                 ` : '<span class="text-gray-300">-</span>'}
                             </td>
-                            <td class="py-4 font-black">${CurrencyManager.formatPrice(o.total)}</td>
-                            <td class="py-4">
+                            <td class="py-4 font-black text-right text-sm">${CurrencyManager.formatPrice(o.total)}</td>
+                            <td class="py-4 text-center">
                                 <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${getStatusColor(o.status)}">${o.status}</span>
+                            </td>
+                            <td class="py-4 text-right pr-4">
+                                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                                    <iconify-icon icon="solar:eye-bold" width="16"></iconify-icon>
+                                </div>
                             </td>
                         </tr>
                 `).join('');
@@ -641,7 +693,74 @@
                         document.getElementById('btnSubmitWithdrawal').innerHTML = 'Confirmer la demande <iconify-icon icon="solar:arrow-right-bold" width="20"></iconify-icon>';
                     }
                 }
-            </script>
+            
+                // Order Detail Modal Functions
+                window.openOrderDetailModal = function(orderId) {
+                    const order = OrderManager.getOrderById(orderId);
+                    if (!order) return;
+
+                    document.getElementById('vModalOrderId').textContent = `Commande #${order.id.substring(0, 8)}`;
+                    document.getElementById('vModalOrderDate').textContent = new Date(order.timestamp || order.date).toLocaleDateString('fr-FR', {
+                        day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    document.getElementById('vModalCustomerName').textContent = order.customer?.name || order.customer_name || 'Client';
+                    document.getElementById('vModalCustomerEmail').textContent = order.customer?.email || 'Pas d\'email';
+                    document.getElementById('vModalCustomerPhone').textContent = order.phone_number || 'Pas de numéro';
+                    document.getElementById('vModalOrderTotal').textContent = CurrencyManager.formatPrice(order.total);
+
+                    const itemsContainer = document.getElementById('vModalOrderItems');
+                    itemsContainer.innerHTML = order.items.map(item => `
+                        <div class="flex items-center gap-4 p-4 border border-gray-50 rounded-2xl hover:bg-gray-50 transition-colors">
+                            <div class="w-16 h-16 bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
+                                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain">
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-gray-900">${item.name}</h4>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${item.category || ''}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-sm">${CurrencyManager.formatPrice(item.price)}</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase">Qté: ${item.quantity || 1}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Show/Hide buttons based on status
+                    const actions = document.getElementById('vModalActions');
+                    if (order.status === 'En attente') {
+                        actions.classList.remove('hidden');
+                        document.getElementById('btnMarkDelivered').onclick = () => updateVendorOrderStatus(order.id, 'Livré');
+                        document.getElementById('btnMarkCancelled').onclick = () => updateVendorOrderStatus(order.id, 'Annulé');
+                    } else {
+                        actions.classList.add('hidden');
+                    }
+
+                    document.getElementById('orderDetailModal').classList.remove('hidden');
+                };
+
+                window.closeOrderDetailModal = function() {
+                    document.getElementById('orderDetailModal').classList.add('hidden');
+                };
+
+                async function updateVendorOrderStatus(orderId, newStatus) {
+                    if (!confirm(`Voulez-vous vraiment passer cette commande en statut "${newStatus}" ?`)) return;
+                    
+                    try {
+                        const success = await OrderManager.updateOrderStatus(orderId, newStatus);
+                        if (success) {
+                            showToast(`Commande ${newStatus.toLowerCase()} !`, 'success');
+                            closeOrderDetailModal();
+                            renderVendorDashboard(); // Refresh
+                            
+                            // Activity log
+                            const order = OrderManager.getOrderById(orderId);
+                            ActivityManager.log(`Commande #${orderId.substring(0,6)} marquée comme ${newStatus}`, 'order');
+                        }
+                    } catch (error) {
+                        showToast('Une erreur est survenue.', 'error');
+                    }
+                }
+    </script>
 </body>
 
 </html>

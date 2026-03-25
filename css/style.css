@@ -552,9 +552,6 @@ h6 {
   transition: transform 0.3s ease;
 }
 
-.feature-item:hover i {
-}
-
 .live-indicator {
   position: relative;
   display: flex;
@@ -3389,6 +3386,7 @@ input:where([type='button']),
 input:where([type='reset']),
 input:where([type='submit']) {
   -webkit-appearance: button;
+  appearance: button;
   /* 1 */
   background-color: transparent;
   /* 2 */
@@ -3436,6 +3434,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 
 [type='search'] {
   -webkit-appearance: textfield;
+  appearance: textfield;
   /* 1 */
   outline-offset: -2px;
   /* 2 */
@@ -3575,8 +3574,6 @@ embed,
 object {
   display: block;
   /* 1 */
-  vertical-align: middle;
-  /* 2 */
 }
 
 /*
@@ -4056,6 +4053,7 @@ video {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
 }
 
 .line-clamp-2{
@@ -4063,6 +4061,7 @@ video {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .block{

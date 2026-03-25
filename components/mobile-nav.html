@@ -1,46 +1,50 @@
 <!-- NewKet Mobile Bottom Navigation Bar -->
 <nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
-    <div class="nav-bar">
-        <!-- Home -->
+    <!-- Acheteur (Customer) Nav - 4 items -->
+    <div class="nav-bar customer-nav flex justify-around items-center w-full px-2" style="display: none;">
         <a href="index.html" class="nav-item" title="Accueil" id="nav-home">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon>
-            </div>
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
             <span>Accueil</span>
         </a>
-
-        <!-- Catalog -->
-        <a href="catalog.html" class="nav-item" title="Catalogue" id="nav-catalog">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:shop-linear" width="22"></iconify-icon>
-            </div>
-            <span>Catalogue</span>
+        <a href="catalog.html" class="nav-item" title="Boutique" id="nav-catalog">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="22"></iconify-icon></div>
+            <span>Boutique</span>
         </a>
-
-        <!-- Cart -->
-        <a href="cart.html" class="nav-item" title="Panier" id="nav-cart">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:cart-large-minimalistic-linear" width="22"></iconify-icon>
-                <span class="nav-badge" id="mobileCartBadge" style="display:none;">0</span>
-            </div>
-            <span>Panier</span>
+        <a href="forum.html" class="nav-item" title="Forum" id="nav-forum">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="22"></iconify-icon></div>
+            <span>Forum</span>
         </a>
-
-        <!-- Favorites -->
-        <a href="favorites.html" class="nav-item" title="Favoris" id="nav-favorites">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:heart-linear" width="22"></iconify-icon>
-                <span class="nav-badge" id="mobileFavBadge" style="display:none;">0</span>
-            </div>
-            <span>Favoris</span>
+        <a href="customer-dashboard.html" class="nav-item" title="Compte" id="mobileBottomAccountCustomer">
+            <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="22"></iconify-icon></div>
+            <span>Compte</span>
         </a>
+    </div>
 
-        <!-- Dark mode toggle -->
-        <button class="nav-item" data-theme-toggle-mobile onclick="ThemeManager.toggle()" title="Changer le thème">
-            <div class="nav-icon-wrap">
-                <iconify-icon icon="solar:moon-bold" width="22"></iconify-icon>
-            </div>
-            <span>Thème</span>
-        </button>
+    <!-- Vendeur (Supplier/Admin) Nav - 6 items -->
+    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 overflow-x-auto" style="display: none; gap: 2px;">
+        <a href="index.html" class="nav-item shrink-0" title="Accueil" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Accueil</span>
+        </a>
+        <a href="catalog.html" class="nav-item shrink-0" title="Boutique" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Boutique</span>
+        </a>
+        <a href="publish.html" class="nav-item shrink-0 publish-btn relative" title="Vendre" style="min-width: 60px;">
+            <div class="nav-icon-wrap bg-gray-900 text-white rounded-full w-12 h-12 flex items-center justify-center absolute -top-8 left-1/2 transform -translate-x-1/2 shadow-lg border-4 border-white"><iconify-icon icon="solar:add-circle-bold" width="26"></iconify-icon></div>
+            <span style="font-size: 9px; margin-top: 18px;">Vendre</span>
+        </a>
+        <a href="forum.html" class="nav-item shrink-0" title="Forum" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Forum</span>
+        </a>
+        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Dashboard" style="min-width: 46px;">
+            <div class="nav-icon-wrap"><iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Dashboard</span>
+        </a>
+        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Compte" id="mobileBottomAccountVendor" style="min-width: 46px;">
+            <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="20"></iconify-icon></div>
+            <span style="font-size: 9px;">Compte</span>
+        </a>
     </div>
 </nav>
