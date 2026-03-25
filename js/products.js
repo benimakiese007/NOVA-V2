@@ -20,6 +20,7 @@ const ProductManager = {
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                     this.products = parsed;
                     console.log('[NewKet] Loaded products from cache:', this.products.length);
+                    // Dispatch immediately so UI handles it as soon as 'newketInitialized' fires
                     window.dispatchEvent(new CustomEvent('productsUpdated'));
                 }
             } catch (e) {
@@ -27,7 +28,20 @@ const ProductManager = {
             }
         }
 
-        // Fetch fresh data in the background
+        // KICK OFF BACKGROUND FETCH (DO NOT AWAIT FULL FINISH)
+        this.fetchFreshData().finally(() => {
+            this.loading = false;
+            console.log('[NewKet] ProductManager background fetch complete. Products:', this.products.length);
+        });
+
+        // Resolve immediately so App initialization can proceed to UI setup
+        return Promise.resolve();
+    },
+
+    /**
+     * Internal: Fetches fresh data from network and updates state.
+     */
+    async fetchFreshData() {
         try {
             const data = await window.SupabaseAdapter.fetchWithFilters('products', {
                 order: ['created_at', { ascending: false }],
@@ -52,20 +66,13 @@ const ProductManager = {
                 // --- FLASH CACHE (SAVE) ---
                 localStorage.setItem('newket_products_cache', JSON.stringify(this.products.slice(0, 50)));
 
-                if (dataChanged || this.loading) {
+                if (dataChanged) {
                     window.dispatchEvent(new CustomEvent('productsUpdated'));
                 }
-            } else if (!localCache) {
-                this.products = [];
-                window.dispatchEvent(new CustomEvent('productsUpdated'));
             }
         } catch (err) {
-            console.error('[NewKet] Error fetching products:', err);
-        } finally {
-            this.loading = false;
+            console.error('[NewKet] Error fetching products fresh data:', err);
         }
-
-        console.log('[NewKet] ProductManager initialized. Products:', this.products.length);
     },
 
     getProducts() {
@@ -77,7 +84,14 @@ const ProductManager = {
     },
 
     async addProduct(product) {
-        const newProd = await window.SupabaseAdapter.insert('products', product);
+        // Ensure supplier_email is recorded for RLS
+        const userEmail = localStorage.getItem('newketUserEmail');
+        const productWithSupplier = {
+            ...product,
+            supplier_email: userEmail
+        };
+
+        const newProd = await window.SupabaseAdapter.insert('products', productWithSupplier);
         if (newProd) {
             // Map back to camelCase for local state
             const mappedProd = {

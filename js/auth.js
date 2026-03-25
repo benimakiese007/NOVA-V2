@@ -71,12 +71,8 @@ const AuthManager = {
 
                 this.setRole(finalRole);
             } else {
-                // No Supabase session — but respect the localStorage role if admin auth was done via PHOENIX password
-                const localRole = localStorage.getItem('newketRole');
-                const adminAuth = sessionStorage.getItem('adminAuth') === 'true';
-                if (!localRole || (!adminAuth && localRole === 'admin')) {
-                    this.setRole(null);
-                }
+                // No Supabase session — strict security lockdown, no local fallbacks permitted
+                this.setRole(null);
             }
         }
 

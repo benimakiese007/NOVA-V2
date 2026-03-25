@@ -11,9 +11,12 @@ const App = {
     async init() {
         console.log('[NewKet] App initializing...');
 
-        // 1 & 2. Initialize Heavy Managers in Parallel
+        // 1 & 2. Initialize Managers
+        // AuthManager is critical for session state, we usually await it.
+        if (window.AuthManager) await AuthManager.init();
+
+        // Product and Order managers now handle their own internal "immediate resolve" from cache
         const initPromises = [];
-        if (window.AuthManager) initPromises.push(AuthManager.init());
         if (window.ProductManager) initPromises.push(ProductManager.init());
         if (window.OrderManager) initPromises.push(OrderManager.init());
 
@@ -27,7 +30,7 @@ const App = {
         // 4. Global Event Listeners
         this.bindGlobalEvents();
 
-        console.log('[NewKet] App initialized successfully.');
+        console.log('[NewKet] App core systems ready.');
         window.newketInitialized = true;
         window.dispatchEvent(new CustomEvent('newketInitialized'));
     },

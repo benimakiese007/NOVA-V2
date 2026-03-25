@@ -7,26 +7,80 @@ const OrderManager = {
     async init() {
         if (!window.SupabaseAdapter) return;
 
-        // 1. Orders
-        const data = await window.SupabaseAdapter.fetchWithFilters('orders', {
-            order: ['date', { ascending: false }],
-            limit: 100
-        });
-        this.orders = (data || []).map(o => ({
-            ...o,
-            customer: { name: o.customer_name, email: o.customer_email }
-        }));
+        // --- FLASH CACHE (LOAD) ---
+        const localOrders = localStorage.getItem('newket_orders_cache');
+        const localWithdrawals = localStorage.getItem('newket_withdrawals_cache');
 
-        // 2. Withdrawals
-        const wData = await window.SupabaseAdapter.fetchWithFilters('withdrawals', {
-            order: ['created_at', { ascending: false }],
-            limit: 100
-        });
-        this.withdrawals = wData || [];
+        if (localOrders) {
+            try {
+                const parsed = JSON.parse(localOrders);
+                if (Array.isArray(parsed)) {
+                    this.orders = parsed;
+                    window.dispatchEvent(new CustomEvent('ordersUpdated'));
+                }
+            } catch (e) { console.warn('[NewKet] Error parsing orders cache', e); }
+        }
 
-        window.dispatchEvent(new CustomEvent('ordersUpdated'));
-        window.dispatchEvent(new CustomEvent('withdrawalsUpdated'));
-        console.log('[NewKet] OrderManager initialized.');
+        if (localWithdrawals) {
+            try {
+                const parsed = JSON.parse(localWithdrawals);
+                if (Array.isArray(parsed)) {
+                    this.withdrawals = parsed;
+                    window.dispatchEvent(new CustomEvent('withdrawalsUpdated'));
+                }
+            } catch (e) { console.warn('[NewKet] Error parsing withdrawals cache', e); }
+        }
+
+        // KICK OFF BACKGROUND FETCH
+        this.fetchFreshData();
+
+        // Resolve immediately
+        return Promise.resolve();
+    },
+
+    /**
+     * Internal: Fetches fresh data and updates cache.
+     */
+    async fetchFreshData() {
+        try {
+            // 1. Orders
+            const data = await window.SupabaseAdapter.fetchWithFilters('orders', {
+                order: ['date', { ascending: false }],
+                limit: 100
+            });
+            const mappedOrders = (data || []).map(o => ({
+                ...o,
+                customer: { name: o.customer_name, email: o.customer_email }
+            }));
+
+            const ordersChanged = this.orders.length !== mappedOrders.length ||
+                (this.orders.length > 0 && mappedOrders.length > 0 && this.orders[0].id !== mappedOrders[0].id);
+
+            this.orders = mappedOrders;
+            localStorage.setItem('newket_orders_cache', JSON.stringify(this.orders.slice(0, 50)));
+
+            if (ordersChanged) {
+                window.dispatchEvent(new CustomEvent('ordersUpdated'));
+            }
+
+            // 2. Withdrawals
+            const wData = await window.SupabaseAdapter.fetchWithFilters('withdrawals', {
+                order: ['created_at', { ascending: false }],
+                limit: 100
+            });
+            
+            const withdrawalsChanged = this.withdrawals.length !== (wData || []).length;
+            this.withdrawals = wData || [];
+            localStorage.setItem('newket_withdrawals_cache', JSON.stringify(this.withdrawals.slice(0, 50)));
+
+            if (withdrawalsChanged) {
+                window.dispatchEvent(new CustomEvent('withdrawalsUpdated'));
+            }
+
+            console.log('[NewKet] OrderManager fresh data sync complete.');
+        } catch (err) {
+            console.error('[NewKet] Error fetching fresh orders:', err);
+        }
     },
 
     getOrders() { return this.orders; },
@@ -41,6 +95,14 @@ const OrderManager = {
             ? Math.max(0, Math.min(order.total, recalculatedSubtotal))
             : Math.max(0, recalculatedSubtotal - pointsUsedAmount);
 
+        const itemsWithSuppliers = (order.items || []).map(item => {
+            const product = window.ProductManager ? ProductManager.getProduct(item.id) : null;
+            return {
+                ...item,
+                supplier_email: product ? product.supplier_email : (item.supplier_email || null)
+            };
+        });
+
         const newOrderData = {
             id: order.id || 'EN-' + Date.now(),
             date: new Date().toISOString(),
@@ -48,7 +110,7 @@ const OrderManager = {
             total: safeFinalTotal,
             customer_name: order.customer?.name || order.customer_name,
             customer_email: order.customer?.email || order.customer_email,
-            items: order.items,
+            items: itemsWithSuppliers,
             payment_method: order.paymentMethod || 'Non spécifié',
             phone_number: order.phoneNumber || '',
             points_used: order.pointsUsed || 0

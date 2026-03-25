@@ -12,9 +12,9 @@ for root, _, files in os.walk(dir_path):
         if file.endswith(".html"):
             path = os.path.join(root, file)
             with open(path, "r", encoding="utf-8") as f:
-                content = f.read()
+                content: str = f.read()
 
-            new_content = content
+            new_content: str = content
             
             # Find the starting index of the comment
             start_idx = new_content.find("<!-- ========== MOBILE BOTTOM NAV ========== -->")
@@ -28,9 +28,9 @@ for root, _, files in os.walk(dir_path):
                 if start_idx != -1:
                     nav_start = new_content.rfind("<nav", 0, start_idx)
                     if nav_start != -1:
-                         end_idx = new_content.find("</nav>", start_idx)
-                         if end_idx != -1:
-                             new_content = new_content[:nav_start] + new_content[end_idx + 6:]
+                        end_idx = new_content.find("</nav>", start_idx)
+                        if end_idx != -1:
+                            new_content = new_content[:nav_start] + new_content[end_idx + 6:]
             
             if new_content != content:
                 with open(path, "w", encoding="utf-8") as f:

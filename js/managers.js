@@ -130,7 +130,14 @@ const ActivityManager = {
     getActivities() { return this.activities; },
     async log(text, type = 'system') {
         if (!window.SupabaseAdapter) return;
-        const newActivity = { id: 'act-' + Date.now(), text, type, time: new Date().toISOString() };
+        const userEmail = localStorage.getItem('newketUserEmail');
+        const newActivity = { 
+            id: 'act-' + Date.now(), 
+            text, 
+            type, 
+            time: new Date().toISOString(),
+            user_email: userEmail
+        };
         const inserted = await window.SupabaseAdapter.insert('activities', newActivity);
         if (inserted) {
             this.activities.unshift(inserted);
@@ -167,13 +174,15 @@ const NotificationManager = {
     getNotifications() { return this.notifications; },
     async addNotification(title, message, type = 'info') {
         if (!window.SupabaseAdapter) return;
+        const userEmail = localStorage.getItem('newketUserEmail');
         const newNotif = {
             id: 'notif-' + Date.now(),
             title,
             message,
             type,
             date: new Date().toISOString(),
-            read: false
+            read: false,
+            user_email: userEmail
         };
         const inserted = await window.SupabaseAdapter.insert('notifications', newNotif);
         if (inserted) {
