@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../../assets/Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../../assets/Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Notifications | NewKet Admin</title>
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../../services/supabase-client.js"></script>
+    <script type="module" src="../../services/supabase-adapter.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .sidebar-link.active {
+            background: #000000;
+            color: white;
+        }
+
+        .notif-card {
+            transition: all 0.2s;
+        }
+
+        .notif-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-info {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .badge-success {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .badge-warning {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .badge-danger {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .badge-promo {
+            background: #faf5ff;
+            color: #9333ea;
+        }
+    </style>
+
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+</head>
+
+<body class="text-gray-900">
+    <div id="adminNavbarPlaceholder"></div>
+
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">        <div id="adminSidebarPlaceholder"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 min-w-0 space-y-8">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900">Notifications</h1>
+                    <p class="text-gray-500">Gérez et envoyez des alertes à vos utilisateurs.</p>
+                </div>
+                <button onclick="openNewNotifModal()"
+                    class="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-xl shadow-black/10">
+                    <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
+                    Nouvelle Notification
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass-panel p-5 flex flex-col gap-1">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total envoyées</div>
+                    <div class="text-2xl font-black text-gray-900" id="statTotal">0</div>
+                </div>
+                <div class="glass-panel p-5 flex flex-col gap-1">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Non lues</div>
+                    <div class="text-2xl font-black text-blue-500" id="statUnread">0</div>
+                </div>
+                <div class="glass-panel p-5 flex flex-col gap-1">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Promotions</div>
+                    <div class="text-2xl font-black text-purple-500" id="statPromos">0</div>
+                </div>
+                <div class="glass-panel p-5 flex flex-col gap-1">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-gray-400">Alertes système</div>
+                    <div class="text-2xl font-black text-red-500" id="statAlerts">0</div>
+                </div>
+            </div>
+
+            <!-- Compose Section -->
+            <div class="glass-panel p-6">
+                <h2 class="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <iconify-icon icon="solar:letter-bold-duotone" width="20" class="text-blue-500"></iconify-icon>
+                    Composer une Notification
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Titre</label>
+                        <input id="notifTitle" type="text" placeholder="Ex: Nouvelle promotion..."
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-black transition-colors">
+                    </div>
+                    <div>
+                        <label
+                            class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Type</label>
+                        <select id="notifType"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-black transition-colors bg-white">
+                            <option value="info">Information</option>
+                            <option value="success">Succès</option>
+                            <option value="warning">Avertissement</option>
+                            <option value="danger">Alerte</option>
+                            <option value="promo">Promotion</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Message</label>
+                        <textarea id="notifMessage" placeholder="Rédigez votre message ici..." rows="3"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-black transition-colors resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label
+                            class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Destinataires</label>
+                        <select id="notifTarget"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-black transition-colors bg-white">
+                            <option value="all">Tous les utilisateurs</option>
+                            <option value="customers">Clients uniquement</option>
+                            <option value="suppliers">Fournisseurs uniquement</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="sendNotification()"
+                            class="w-full bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
+                            <iconify-icon icon="solar:send-bold" width="18"></iconify-icon>
+                            Envoyer la Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications History -->
+            <div class="glass-panel overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="font-bold text-gray-900 flex items-center gap-2">
+                        <iconify-icon icon="solar:history-bold-duotone" width="20" class="text-gray-400"></iconify-icon>
+                        Historique des Notifications
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <select id="filterType" onchange="renderNotifications()"
+                            class="text-[10px] font-black uppercase tracking-widest bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-black cursor-pointer">
+                            <option value="all">Tous les types</option>
+                            <option value="info">Information</option>
+                            <option value="success">Succès</option>
+                            <option value="warning">Avertissement</option>
+                            <option value="danger">Alerte</option>
+                            <option value="promo">Promotion</option>
+                        </select>
+                        <button onclick="clearAllNotifications()"
+                            class="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 px-3 py-2 rounded-lg border border-transparent hover:border-red-200 transition-all">
+                            Tout effacer
+                        </button>
+                    </div>
+                </div>
+                <div id="notifList" class="divide-y divide-gray-50">
+                    <div class="p-12 text-center text-gray-400">Chargement...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../../services/main.js"></script>
+    <script type="module" src="../../services/admin-layout.js"></script>
+    <script>
+        const NOTIF_KEY = 'newket_admin_notifications';
+
+        function getNotifications() {
+            try { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; } catch { return []; }
+        }
+
+        function saveNotifications(notifs) {
+            localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs));
+        }
+
+        function sendNotification() {
+            const title = document.getElementById('notifTitle').value.trim();
+            const message = document.getElementById('notifMessage').value.trim();
+            const type = document.getElementById('notifType').value;
+            const target = document.getElementById('notifTarget').value;
+
+            if (!title || !message) {
+                showToast('Veuillez remplir le titre et le message.', 'error');
+                return;
+            }
+
+            const notif = {
+                id: Date.now().toString(),
+                title,
+                message,
+                type,
+                target,
+                date: new Date().toISOString(),
+                read: false,
+                sentBy: localStorage.getItem('newketUserEmail') || 'admin'
+            };
+
+            const notifs = getNotifications();
+            notifs.unshift(notif);
+            saveNotifications(notifs);
+
+            // Also add to user-facing notifications
+            const userNotifs = JSON.parse(localStorage.getItem('newket_notifications') || '[]');
+            userNotifs.unshift({ ...notif, read: false });
+            localStorage.setItem('newket_notifications', JSON.stringify(userNotifs));
+
+            document.getElementById('notifTitle').value = '';
+            document.getElementById('notifMessage').value = '';
+            renderNotifications();
+            updateStats();
+            showToast('Notification envoyée avec succès !', 'success');
+            if (window.ActivityManager) ActivityManager.log(`Notification envoyée : "${title}"`, 'system');
+        }
+
+        function getTypeBadge(type) {
+            const badges = {
+                'info': '<span class="badge badge-info">Info</span>',
+                'success': '<span class="badge badge-success">Succès</span>',
+                'warning': '<span class="badge badge-warning">Avertiss.</span>',
+                'danger': '<span class="badge badge-danger">Alerte</span>',
+                'promo': '<span class="badge badge-promo">Promo</span>'
+            };
+            return badges[type] || '<span class="badge badge-info">Info</span>';
+        }
+
+        function getTargetLabel(target) {
+            const labels = { 'all': 'Tous', 'customers': 'Clients', 'suppliers': 'Fournisseurs' };
+            return labels[target] || target;
+        }
+
+        function deleteNotification(id) {
+            const notifs = getNotifications().filter(n => n.id !== id);
+            saveNotifications(notifs);
+            renderNotifications();
+            updateStats();
+            showToast('Notification supprimée.', 'success');
+        }
+
+        function clearAllNotifications() {
+            if (!confirm('Supprimer tout l\'historique des notifications ?')) return;
+            saveNotifications([]);
+            renderNotifications();
+            updateStats();
+            showToast('Historique effacé.', 'success');
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifList');
+            const filterType = document.getElementById('filterType').value;
+            let notifs = getNotifications();
+            if (filterType !== 'all') notifs = notifs.filter(n => n.type === filterType);
+
+            if (notifs.length === 0) {
+                list.innerHTML = `<div class="p-12 text-center text-gray-400 text-sm italic">Aucune notification envoyée.</div>`;
+                return;
+            }
+
+            list.innerHTML = notifs.map(n => `
+                <div class="notif-card p-4 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4 flex-1 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 text-lg">
+                                ${{ 'info': '', 'success': '', 'warning': '', 'danger': '', 'promo': '' }[n.type] || ''}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    <span class="text-sm font-bold text-gray-900">${n.title}</span>
+                                    ${getTypeBadge(n.type)}
+                                    <span class="badge" style="background:#f1f5f9;color:#475569;">${getTargetLabel(n.target)}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">${n.message}</p>
+                                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                    ${new Date(n.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    · Par ${n.sentBy}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteNotification('${n.id}')" class="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0 p-2 rounded-lg hover:bg-red-50">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-bold" width="16"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const notifs = getNotifications();
+            document.getElementById('statTotal').textContent = notifs.length;
+            document.getElementById('statUnread').textContent = notifs.filter(n => !n.read).length;
+            document.getElementById('statPromos').textContent = notifs.filter(n => n.type === 'promo').length;
+            document.getElementById('statAlerts').textContent = notifs.filter(n => n.type === 'danger').length;
+        }
+
+        function openNewNotifModal() {
+            document.getElementById('notifTitle').focus();
+        }
+
+        function initPage() {
+            renderNotifications();
+            updateStats();
+            // Role check
+            const role = localStorage.getItem('newketRole');
+            document.querySelectorAll('.admin-only').forEach(el => {
+                if (role === 'admin') el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.newketInitialized) { initPage(); }
+            else { window.addEventListener('newketInitialized', initPage); }
+        });
+    </script>
+</body>
+
+</html>

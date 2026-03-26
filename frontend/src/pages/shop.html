@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../services/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../assets/Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../assets/Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Boutique — NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../services/supabase-client.js"></script>
+    <script type="module" src="../services/supabase-adapter.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #fcfcfd;
+        }
+
+        .vendor-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .card-hover:hover {
+            transform: none !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .img-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            background: #f8f9fb;
+        }
+
+        .img-zoom img {
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .card-hover:hover .img-zoom img {
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+
+<body class="text-slate-900 antialiased">
+
+    <div id="header-placeholder"></div>
+
+
+    <div class="h-14 sm:h-16"></div>
+
+    <!-- Vendor Hero -->
+    <div class="vendor-hero relative h-[300px] sm:h-[400px] flex items-end">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-12 relative z-10 w-full">
+            <div class="flex flex-col sm:flex-row items-end gap-6">
+                <div
+                    class="w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] bg-white p-1 border-4 border-white/20 shadow-2xl overflow-hidden">
+                    <img id="vendorAvatar"
+                        src="https://ui-avatars.com/api/?name=Vendor&background=f3f4f6&color=000&bold=true"
+                        class="w-full h-full object-cover rounded-[2rem]">
+                </div>
+                <div class="flex-1 mb-2">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span
+                            class="px-3 py-1 bg-white/20  text-white text-[10px] font-black uppercase tracking-widest rounded-full">Partenaire
+                            Certifié</span>
+                    </div>
+                    <h1 id="vendorName" class="text-4xl sm:text-6xl font-black text-white tracking-tighter uppercase">
+                        Chargement...</h1>
+                    <p id="vendorMeta" class="text-white/60 text-sm font-medium mt-2 flex items-center gap-2">
+                        <iconify-icon icon="solar:calendar-outline"></iconify-icon>
+                        Membre depuis ...
+                    </p>
+                    <div class="flex items-center gap-6 mt-6">
+                        <div class="text-white">
+                            <div class="text-xl font-black" id="vendor-items-count">0</div>
+                            <div class="text-[10px] text-white/50 uppercase font-bold tracking-widest">Articles</div>
+                        </div>
+                        <div class="w-px h-8 bg-white/10"></div>
+                        <div class="text-white">
+                            <div class="text-xl font-black flex items-center gap-1">
+                                4.9 <iconify-icon icon="solar:star-bold" class="text-yellow-400 text-sm"></iconify-icon>
+                            </div>
+                            <div class="text-[10px] text-white/50 uppercase font-bold tracking-widest">Note</div>
+                        </div>
+                        <div class="w-px h-8 bg-white/10"></div>
+                        <div class="text-white">
+                            <div class="text-xl font-black">24h</div>
+                            <div class="text-[10px] text-white/50 uppercase font-bold tracking-widest">Expédition</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div class="flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
+            <h2 class="text-2xl font-black text-gray-900 uppercase">La Collection</h2>
+            <p class="text-sm font-bold text-gray-400 uppercase tracking-widest"><span id="productCount">0</span>
+                Articles</p>
+        </div>
+
+        <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+            <!-- Loading Skeletons -->
+            <div class="animate-pulse bg-gray-50 rounded-3xl h-80"></div>
+            <div class="animate-pulse bg-gray-50 rounded-3xl h-80"></div>
+            <div class="animate-pulse bg-gray-50 rounded-3xl h-80"></div>
+            <div class="animate-pulse bg-gray-50 rounded-3xl h-80"></div>
+        </div>
+
+        <div id="noProductsMsg"
+            class="hidden text-center py-20 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
+            <iconify-icon icon="solar:box-minimalistic-linear" width="48" class="text-gray-200 mb-4"></iconify-icon>
+            <p class="text-gray-400 font-bold uppercase tracking-widest">Aucun produit disponible pour le moment</p>
+        </div>
+    </main>
+
+
+
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../services/auth.js"></script>
+    <script type="module" src="../services/cart.js"></script>
+    <script type="module" src="../services/favorites.js"></script>
+    <script type="module" src="../services/currency.js"></script>
+    <script type="module" src="../services/products.js"></script>
+    <script type="module" src="../services/orders.js"></script>
+    <script type="module" src="../services/managers.js"></script>
+    <script type="module" src="../services/ui-helpers.js"></script>
+    <script type="module" src="../services/ui.js"></script>
+    <script type="module" src="../services/search.js"></script>
+    <script type="module" src="../services/main.js"></script>
+    <script type="module" src="../services/components-loader.js"></script>
+    <script type="module" src="../services/realtime-notifications.js"></script>
+
+    <script>
+        async function loadShopData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+
+            if (!email) {
+                location.href = '/pages/shops.html';
+                return;
+            }
+
+            try {
+                // 1. Load Vendor Info
+                const vendor = await window.SupabaseAdapter.fetchWithFilters('users', {
+                    eq: [['email', email]],
+                    single: true
+                });
+
+                if (!vendor) {
+                    if (window.showToast) showToast('Boutique introuvable', 'error');
+
+                    document.querySelector('main').innerHTML = `
+                        <div class="py-20 text-center">
+                            <iconify-icon icon="solar:shop-broken" width="64" class="text-gray-300 mb-6"></iconify-icon>
+                            <h1 class="text-3xl font-black text-gray-900 mb-4 tracking-tighter uppercase">Boutique Introuvable</h1>
+                            <p class="text-gray-500 mb-8 max-w-md mx-auto">La boutique que vous recherchez n'existe pas ou n'est plus disponible sur NewKet.</p>
+                            <a href="/pages/shops.html" class="bg-gray-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-colors inline-block uppercase tracking-wider text-sm">Voir toutes les boutiques</a>
+                        </div>
+                    `;
+                    document.querySelector('.vendor-hero').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('vendorName').textContent = vendor.name || 'Boutique sans nom';
+                document.getElementById('vendorAvatar').src = vendor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.name || 'V')}&background=f3f4f6&color=000&bold=true`;
+
+                const joinDate = vendor.date_joined ? new Date(vendor.date_joined).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'récemment';
+                document.getElementById('vendorMeta').innerHTML = `<iconify-icon icon="solar:calendar-outline"></iconify-icon> Membre depuis ${joinDate}`;
+                document.title = `${vendor.name || 'Boutique'} — NewKet`;
+
+                // 2. Load Products
+                const products = ProductManager.getProducts().filter(p => p.supplier_email === email);
+                const grid = document.getElementById('productsGrid');
+                const noProducts = document.getElementById('noProductsMsg');
+                const countEl = document.getElementById('productCount');
+
+                countEl.textContent = products.length;
+                document.getElementById('vendor-items-count').textContent = products.length;
+
+                if (products.length === 0) {
+                    grid.innerHTML = '';
+                    noProducts.classList.remove('hidden');
+                    return;
+                }
+
+                noProducts.classList.add('hidden');
+                grid.innerHTML = products.map((p, idx) => `
+                    <div class="card-hover bg-white rounded-3xl group cursor-pointer overflow-hidden border border-gray-50" onclick="location.href='product.html?id=${p.id}'">
+                        <div class="img-container aspect-[4/5] img-zoom">
+                             <img src="${p.image}" loading="lazy" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" alt="${p.name}">
+                             <button onclick="event.stopPropagation(); addToCart('${p.id}')" class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-xl">
+                                <iconify-icon icon="solar:bag-plus-linear" width="24"></iconify-icon>
+                             </button>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-900 mb-1 truncate">${p.name}</h3>
+                            <p class="text-xl font-black text-black">${CurrencyManager.formatPrice(p.price)}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('Error loading shop:', err);
+                location.href = '/pages/shops.html';
+            }
+        }
+
+        function addToCart(id) {
+            const product = ProductManager.getProduct(id);
+            if (product && window.CartManager) {
+                CartManager.addItem(product);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.newketInitialized) {
+                loadShopData();
+            } else {
+                window.addEventListener('newketInitialized', loadShopData);
+            }
+
+            // Listen for currency changes to refresh prices
+            window.addEventListener('currencyChanged', () => {
+                loadShopData(); // Easy re-render
+            });
+        });
+    </script>
+</body>
+
+</html>

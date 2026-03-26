@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../services/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../assets/Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../assets/Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Paramètres — NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
+        }
+
+        .nav-link.active {
+            background: white;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #000000;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #000000;
+        }
+
+        /* Input Focus Ring */
+        .form-input:focus {
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-color: #000000;
+        }
+    </style>
+    <script type="module">
+        import { supabaseClient } from '../js/supabase-client.js';
+        window.supabaseClient = supabaseClient;
+    </script>
+    <script type="module" src="../services/supabase-adapter.js"></script>
+    <script type="module" src="../services/auth.js"></script>
+    <script>
+        // Check Auth using existing system
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AuthManager) {
+                await AuthManager.init();
+                if (!AuthManager.user) {
+                    window.location.href = '/pages/login.html';
+                }
+            }
+        });
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 antialiased min-h-screen">
+
+    <div id="header-placeholder"></div>
+
+    <div class="h-16"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+            <!-- Sidebar Navigation -->
+            <aside class="w-full lg:w-72 lg:sticky lg:top-28 space-y-2">
+                <div class="bg-gray-100/50 p-2 rounded-2xl flex flex-col gap-1" id="settingsSidebar">
+                    <a href="/pages/customer-dashboard.html" id="dashboardLink"
+                        class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/80 transition-all font-medium text-gray-500 hover:text-gray-900">
+                        <iconify-icon icon="solar:box-linear" width="20"></iconify-icon>
+                        <span id="dashboardLinkLabel">Mes Commandes</span>
+                    </a>
+                    <a href="/pages/favorites.html"
+                        class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/80 transition-all font-medium text-gray-500 hover:text-gray-900">
+                        <iconify-icon icon="solar:heart-linear" width="20"></iconify-icon>
+                        Mes Favoris
+                    </a>
+                    <a href="/pages/settings.html"
+                        class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium">
+                        <iconify-icon icon="solar:user-linear" width="20"></iconify-icon>
+                        Profil & Sécurité
+                    </a>
+                    <div class="h-px bg-gray-200 my-2 mx-4"></div>
+                    <button onclick="AuthManager.logout()"
+                        class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 transition-all font-medium text-red-500 w-full text-left">
+                        <iconify-icon icon="solar:logout-linear" width="20"></iconify-icon>
+                        Déconnexion
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Settings Content -->
+            <div class="flex-1 w-full space-y-8">
+
+                <!-- Main Title -->
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Paramètres du compte</h1>
+                    <p class="text-gray-500 text-sm mt-1">Gérez vos informations personnelles et préférences.</p>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <iconify-icon icon="solar:user-id-linear" class="text-gray-400"></iconify-icon>
+                        Informations Personnelles
+                    </h2>
+
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <!-- Avatar -->
+                        <div class="flex flex-col items-center gap-3">
+                            <div
+                                class="settings-avatar-img w-24 h-24 rounded-full hero-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-gray-200 relative group cursor-pointer overflow-hidden">
+                                <span>??</span>
+                                <div
+                                    class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <iconify-icon icon="solar:camera-linear" width="24"></iconify-icon>
+                                </div>
+                            </div>
+                            <button class="text-xs font-semibold text-gray-500 hover:text-gray-900" onclick="document.getElementById('avatarUploadInput').click()">Modifier la photo</button>
+                        </div>
+
+                        <!-- Form -->
+                        <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nom Complet</label>
+                                <input type="text" id="profileFullName" placeholder="Chargement..."
+                                    class="form-input w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white transition-all text-sm font-medium text-gray-900">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Rôle</label>
+                                <input type="text" id="profileRole" readonly
+                                    class="w-full px-4 py-3 bg-gray-100 border border-gray-100 rounded-xl outline-none text-xs font-bold text-gray-400 uppercase">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Email (Lecture seule)</label>
+                                <input type="email" id="profileEmail" readonly
+                                    class="w-full px-4 py-3 bg-gray-100 border border-gray-100 rounded-xl outline-none text-sm font-medium text-gray-400">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Téléphone</label>
+                                <input type="tel" id="profilePhone" placeholder="+243 ..."
+                                    class="form-input w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white transition-all text-sm font-medium text-gray-900">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button id="saveProfileBtn"
+                            class="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-gray-200 transition-all flex items-center gap-2">
+                            <iconify-icon icon="solar:disk-linear"></iconify-icon>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <iconify-icon icon="solar:shield-keyhole-linear" class="text-gray-400"></iconify-icon>
+                        Sécurité
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nouveau mot de passe</label>
+                                <input type="password" id="newPassword" placeholder="••••••••"
+                                    class="form-input w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white transition-all text-sm font-medium text-gray-900">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Confirmer le nouveau mot de passe</label>
+                                <input type="password" id="confirmPassword" placeholder="••••••••"
+                                    class="form-input w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white transition-all text-sm font-medium text-gray-900">
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-50 flex items-center justify-between">
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-sm">Authentification à deux facteurs</h3>
+                                <p class="text-xs text-gray-500 mt-1">Ajouter une couche de sécurité supplémentaire à votre compte.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button id="updatePasswordBtn"
+                                class="border border-gray-200 hover:bg-gray-50 text-gray-900 px-6 py-3 rounded-xl text-sm font-bold transition-all">
+                                Mettre à jour le mot de passe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications & Preferences -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Notifications -->
+                    <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm h-full">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <iconify-icon icon="solar:bell-linear" class="text-gray-400"></iconify-icon>
+                            Notifications
+                        </h2>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-sm">Emails de commande</h3>
+                                    <p class="text-xs text-gray-500">Recevoir des mises à jour sur vos commandes.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-sm">Notifications SMS</h3>
+                                    <p class="text-xs text-gray-500">Alertes importantes par SMS.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm h-full">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <iconify-icon icon="solar:settings-linear" class="text-gray-400"></iconify-icon>
+                            Préférences
+                        </h2>
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Langue</label>
+                                <div class="relative">
+                                    <select
+                                        class="form-select w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white transition-all text-sm font-medium text-gray-900 appearance-none cursor-pointer">
+                                        <option value="fr" selected>Français</option>
+                                        <option value="en">English</option>
+                                        <option value="ln">Lingala</option>
+                                    </select>
+                                    <iconify-icon icon="solar:alt-arrow-down-linear"
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../services/auth.js"></script>
+    <script type="module" src="../services/cart.js"></script>
+    <script type="module" src="../services/favorites.js"></script>
+    <script type="module" src="../services/currency.js"></script>
+    <script type="module" src="../services/products.js"></script>
+    <script type="module" src="../services/orders.js"></script>
+    <script type="module" src="../services/managers.js"></script>
+    <script type="module" src="../services/ui-helpers.js"></script>
+    <script type="module" src="../services/ui.js"></script>
+    <script type="module" src="../services/search.js"></script>
+    <script type="module" src="../services/main.js"></script>
+    <script type="module" src="../services/components-loader.js"></script>
+    <script type="module" src="../services/realtime-notifications.js"></script>
+
+    <input type="file" id="avatarUploadInput" accept="image/*" class="hidden">
+    <script>
+        document.addEventListener('newketInitialized', async () => {
+            const SettingsPage = {
+                async init() {
+                    const user = AuthManager.user;
+                    if (!user) return;
+
+                    this.loadProfile(user);
+                    this.bindEvents();
+                    this.customizeByRole(AuthManager.role);
+                },
+
+                loadProfile(user) {
+                    const metadata = user.user_metadata || {};
+                    document.getElementById('profileFullName').value = metadata.full_name || '';
+                    document.getElementById('profileEmail').value = user.email || '';
+                    document.getElementById('profilePhone').value = metadata.phone || '';
+                    document.getElementById('profileRole').value = AuthManager.role || 'Client';
+
+                    const avatarContainer = document.querySelector('.settings-avatar-img');
+                    const avatarSpan = avatarContainer.querySelector('span');
+                    const avatarUrl = metadata.avatar_url;
+
+                    if (avatarUrl) {
+                        avatarSpan.style.display = 'none';
+                        avatarContainer.style.backgroundImage = `url(${avatarUrl})`;
+                        avatarContainer.style.backgroundSize = 'cover';
+                        avatarContainer.style.backgroundPosition = 'center';
+                    } else {
+                        avatarSpan.textContent = (metadata.full_name || user.email || '??').substring(0, 2).toUpperCase();
+                    }
+                },
+
+                customizeByRole(role) {
+                    const dashboardLink = document.getElementById('dashboardLink');
+                    const label = document.getElementById('dashboardLinkLabel');
+                    
+                    if (role === 'admin') {
+                        dashboardLink.href = 'admin/dashboard.html';
+                        label.textContent = 'Tableau de bord Admin';
+                        
+                        // Add link to platform settings
+                        const sidebar = document.getElementById('settingsSidebar');
+                        const adminSettingsLink = document.createElement('a');
+                        adminSettingsLink.href = 'admin/settings.html';
+                        adminSettingsLink.className = 'nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/80 transition-all font-medium text-gray-500 hover:text-gray-900';
+                        adminSettingsLink.innerHTML = `
+                            <iconify-icon icon="solar:settings-bold" width="20"></iconify-icon>
+                            Paramètres Plateforme
+                        `;
+                        sidebar.insertBefore(adminSettingsLink, sidebar.querySelector('.h-px'));
+                    } else if (role === 'supplier') {
+                        dashboardLink.href = 'vendor-dashboard.html';
+                        label.textContent = 'Tableau de bord Vendeur';
+                    } else {
+                        dashboardLink.href = 'customer-dashboard.html';
+                        label.textContent = 'Mes Commandes';
+                    }
+                },
+
+                bindEvents() {
+                    document.getElementById('saveProfileBtn').addEventListener('click', () => this.saveProfile());
+                    document.getElementById('updatePasswordBtn').addEventListener('click', () => this.updatePassword());
+                    
+                    const avatarContainer = document.querySelector('.settings-avatar-img');
+                    const avatarInput = document.getElementById('avatarUploadInput');
+                    
+                    avatarContainer.addEventListener('click', () => avatarInput.click());
+                    avatarInput.addEventListener('change', (e) => this.handleAvatarChange(e));
+                },
+
+                async saveProfile() {
+                    const fullName = document.getElementById('profileFullName').value.trim();
+                    const phone = document.getElementById('profilePhone').value.trim();
+
+                    if (!fullName) {
+                        showToast('Le nom complet est obligatoire.', 'warning');
+                        return;
+                    }
+
+                    if (window.LoaderManager) LoaderManager.show('Mise à jour du profil...');
+
+                    try {
+                        const { data, error } = await window.supabaseClient.auth.updateUser({
+                            data: { full_name: fullName, phone: phone }
+                        });
+
+                        if (error) throw error;
+
+                        showToast('Profil mis à jour avec succès.', 'success');
+                        
+                        // Refresh local state
+                        AuthManager.user = data.user;
+                        localStorage.setItem('newketUserName', fullName);
+                        
+                    } catch (err) {
+                        console.error('Update error:', err);
+                        showToast(err.message, 'error');
+                    } finally {
+                        if (window.LoaderManager) LoaderManager.hide();
+                    }
+                },
+
+                async updatePassword() {
+                    const newPass = document.getElementById('newPassword').value;
+                    const confirmPass = document.getElementById('confirmPassword').value;
+
+                    if (!newPass) {
+                        showToast('Veuillez saisir un nouveau mot de passe.', 'warning');
+                        return;
+                    }
+
+                    if (newPass !== confirmPass) {
+                        showToast('Les mots de passe ne correspondent pas.', 'error');
+                        return;
+                    }
+
+                    if (window.LoaderManager) LoaderManager.show('Sécurisation de votre compte...');
+
+                    try {
+                        const { error } = await window.supabaseClient.auth.updateUser({
+                            password: newPass
+                        });
+
+                        if (error) throw error;
+
+                        showToast('Mot de passe mis à jour avec succès.', 'success');
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                        
+                    } catch (err) {
+                        console.error('Password update error:', err);
+                        showToast(err.message, 'error');
+                    } finally {
+                        if (window.LoaderManager) LoaderManager.hide();
+                    }
+                },
+
+                async handleAvatarChange(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    if (window.LoaderManager) LoaderManager.show('Téléchargement de la photo...');
+
+                    try {
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${AuthManager.user.id}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                        const filePath = `avatars/${fileName}`;
+
+                        if (window.SupabaseAdapter && window.SupabaseAdapter.uploadFile) {
+                            const publicUrl = await SupabaseAdapter.uploadFile('user-assets', filePath, file);
+                            
+                            if (publicUrl) {
+                                const { data, error } = await window.supabaseClient.auth.updateUser({
+                                    data: { avatar_url: publicUrl }
+                                });
+
+                                if (error) throw error;
+
+                                showToast('Photo de profil mise à jour.', 'success');
+                                localStorage.setItem('newketUserAvatar', publicUrl);
+                                
+                                // Update UI immediately
+                                const avatarContainer = document.querySelector('.settings-avatar-img');
+                                avatarContainer.querySelector('span').style.display = 'none';
+                                avatarContainer.style.backgroundImage = `url(${publicUrl})`;
+                                avatarContainer.style.backgroundSize = 'cover';
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Avatar upload error:', err);
+                        showToast('Échec du téléchargement.', 'error');
+                    } finally {
+                        if (window.LoaderManager) LoaderManager.hide();
+                    }
+                }
+            };
+
+            SettingsPage.init();
+        });
+    </script>
+</body>
+
+</html>

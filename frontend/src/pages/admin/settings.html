@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../../assets/Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../../assets/Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Paramètres Admin | NewKet</title>
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/config-manager.js"></script>
+    <script type="module" src="/js/supabase-client.js"></script>
+    <script type="module" src="/js/supabase-adapter.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+</head>
+
+<body class="text-gray-900">
+    <div id="adminNavbarPlaceholder"></div>
+
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
+        <div id="adminSidebarPlaceholder"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 min-w-0 space-y-8">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900" id="pageTitle">Paramètres</h1>
+                    <p class="text-gray-500" id="pageSubtitle">Configurez votre boutique et vos préférences globales.
+                    </p>
+                </div>
+                <div id="saveStatus"
+                    class="hidden flex items-center gap-2 text-green-600 text-xs font-bold uppercase tracking-widest">
+                    <iconify-icon icon="solar:check-circle-bold" width="16"></iconify-icon>
+                    Enregistré
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Informations de la Boutique -->
+                <div class="glass-panel p-8 space-y-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:shop-2-bold" width="24"></iconify-icon>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">Identité & Contact</h3>
+                    </div>
+
+                    <form id="identityForm" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Nom de
+                                l'enseigne</label>
+                            <input type="text" id="shopName"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                placeholder="NewKet EMarket">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Email
+                                    public</label>
+                                <input type="email" id="shopEmail"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                    placeholder="contact@newket.com">
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Téléphone
+                                    support</label>
+                                <input type="text" id="supportPhone"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                    placeholder="+243 ...">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">URL du
+                                Logo (Simulé)</label>
+                            <input type="text" id="logoUrl"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Livraison & Devises -->
+                <div class="glass-panel p-8 space-y-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:delivery-bold" width="24"></iconify-icon>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">Livraison & Devises</h3>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                        <button type="button" onclick="setShippingCurrency('USD')" id="shipUSD"
+                            class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">USD</button>
+                        <button type="button" onclick="setShippingCurrency('CDF')" id="shipCDF"
+                            class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">CDF</button>
+                    </div>
+
+                    <form id="deliveryForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Frais
+                                    de livraison (USD)</label>
+                                <input type="number" id="shippingFee"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Seuil
+                                    gratuité (USD)</label>
+                                <input type="number" id="freeShippingThreshold"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Commission
+                                    Vendeur (%)</label>
+                                <input type="number" id="sellerCommission"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                    placeholder="10">
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Devise
+                                    par défaut</label>
+                                <select id="shopCurrency"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                                    <option value="CDF">Franc Congolais (FC)</option>
+                                    <option value="USD">Dollar Américain ($)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Taux
+                                    de Change (1 USD = X FC)</label>
+                                <input type="number" id="exchangeRate"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                    placeholder="2500">
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Objectif
+                                    Panier Moyen ($)</label>
+                                <input type="number" id="targetAOV"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                    placeholder="20">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Réseaux Sociaux -->
+                <div class="glass-panel p-8 space-y-8 text-gray-900">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:share-circle-bold" width="24"></iconify-icon>
+                        </div>
+                        <h3 class="font-bold text-lg">Liens Sociaux</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <iconify-icon icon="solar:camera-bold" width="18"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+                            <input type="text" id="socialInstagram"
+                                class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                placeholder="Instagram URL">
+                        </div>
+                        <div class="relative">
+                            <iconify-icon icon="solar:pen-new-square-bold" width="18"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+                            <input type="text" id="socialFacebook"
+                                class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors"
+                                placeholder="Facebook URL">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Site Management -->
+                <div class="glass-panel p-8 space-y-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:shield-warning-bold" width="24"></iconify-icon>
+                        </div>
+                        <h3 class="font-bold text-lg">Maintenance & Sécurité</h3>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div>
+                            <div class="text-sm font-bold">Mode Maintenance</div>
+                            <div class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Rendre le site
+                                inaccessible</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="maintenanceMode" class="sr-only peer">
+                            <div
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Database / Test Data Section -->
+                <div class="glass-panel p-8 space-y-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:trash-bin-trash-bold" width="24"></iconify-icon>
+                        </div>
+                        <h3 class="font-bold text-lg text-red-600">Zone Dangereuse</h3>
+                    </div>
+
+                    <div class="p-4 bg-red-50 rounded-2xl border border-red-100">
+                        <h4 class="font-bold text-red-600 text-sm mb-2">Réinitialiser les données de test</h4>
+                        <p class="text-xs text-red-500 mb-4">
+                            Cette action supprimera de façon permanente toutes les <strong>commandes</strong> et
+                            l'<strong>historique d'activités</strong> de la base de données.
+                            Cette action est irréversible. Un mot de passe administrateur sera demandé.
+                        </p>
+                        <button id="resetTestDataBtn"
+                            class="w-full bg-red-600 text-white py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-0.5 transition-all">
+                            Effacer toutes les commandes et activités
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-xl mx-auto mt-12 pb-8">
+                <button id="saveAllBtn"
+                    class="w-full bg-black text-white py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-black/10 hover:shadow-black/20 hover:-translate-y-0.5 transition-all">
+                    Enregistrer tous les paramètres
+                </button>
+            </div>
+    </div>
+    </main>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/admin-layout.js"></script>
+    <script>
+        let currentShippingCurrency = 'USD';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+
+            // Dynamic Labels based on role
+            const role = localStorage.getItem('newketRole');
+            if (role === 'admin') {
+                document.getElementById('pageTitle').textContent = 'Paramètres Plateforme';
+                document.getElementById('pageSubtitle').textContent = 'Configuration globale de la marketplace et options système.';
+            }
+        });
+
+        function setShippingCurrency(curr, convert = true) {
+            currentShippingCurrency = curr;
+            const btnUSD = document.getElementById('shipUSD');
+            const btnCDF = document.getElementById('shipCDF');
+            
+            // Update Buttons
+            if (curr === 'USD') {
+                btnUSD.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-black text-white shadow-lg shadow-black/20";
+                btnCDF.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-gray-400 hover:text-black";
+            } else {
+                btnCDF.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-black text-white shadow-lg shadow-black/20";
+                btnUSD.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-gray-400 hover:text-black";
+            }
+
+            // Update Labels
+            const labels = document.querySelectorAll('#deliveryForm label');
+            if (labels.length >= 2) {
+                labels[0].textContent = `Frais de livraison (${curr})`;
+                labels[1].textContent = `Seuil gratuité (${curr})`;
+            }
+
+            // Optional: Conversion logic
+            if (convert) {
+                const feeInput = document.getElementById('shippingFee');
+                const thresholdInput = document.getElementById('freeShippingThreshold');
+                const rate = ConfigManager ? ConfigManager.getExchangeRate() : 2800;
+
+                if (curr === 'CDF') {
+                    feeInput.value = Math.round(parseFloat(feeInput.value || 0) * rate);
+                    thresholdInput.value = Math.round(parseFloat(thresholdInput.value || 0) * rate);
+                } else {
+                    feeInput.value = (parseFloat(feeInput.value || 0) / rate).toFixed(2);
+                    thresholdInput.value = (parseFloat(thresholdInput.value || 0) / rate).toFixed(2);
+                }
+            }
+        }
+
+        function loadConfig() {
+            if (window.ConfigManager) {
+                const config = ConfigManager.getConfig();
+
+                // Identity
+                document.getElementById('shopName').value = config.shopName || '';
+                document.getElementById('shopEmail').value = config.email || '';
+                document.getElementById('supportPhone').value = config.supportPhone || '';
+                document.getElementById('logoUrl').value = config.logoUrl || '';
+
+                // Delivery & Economy
+                document.getElementById('shippingFee').value = config.shippingFee || 0;
+                document.getElementById('freeShippingThreshold').value = config.freeShippingThreshold || 0;
+                document.getElementById('sellerCommission').value = config.commissionRate || config.sellerCommission || 0;
+                document.getElementById('shopCurrency').value = config.currencySymbol || 'CDF';
+                document.getElementById('exchangeRate').value = config.exchangeRate || 2500;
+                document.getElementById('targetAOV').value = config.targetAOV || 0;
+
+                // Set shipping currency UI
+                setShippingCurrency(config.shippingCurrency || 'USD', false);
+
+                // Social
+                if (config.socialLinks) {
+                    document.getElementById('socialInstagram').value = config.socialLinks.instagram || '';
+                    document.getElementById('socialFacebook').value = config.socialLinks.facebook || '';
+                }
+
+                // Security
+                document.getElementById('maintenanceMode').checked = config.maintenanceMode || false;
+            }
+        }
+
+        document.getElementById('saveAllBtn').addEventListener('click', () => {
+            const newConfig = {
+                shopName: document.getElementById('shopName').value,
+                email: document.getElementById('shopEmail').value,
+                supportPhone: document.getElementById('supportPhone').value,
+                logoUrl: document.getElementById('logoUrl').value,
+                shippingFee: parseFloat(document.getElementById('shippingFee').value),
+                freeShippingThreshold: parseFloat(document.getElementById('freeShippingThreshold').value),
+                shippingCurrency: currentShippingCurrency,
+                sellerCommission: parseFloat(document.getElementById('sellerCommission').value),
+                currencySymbol: document.getElementById('shopCurrency').value,
+                socialLinks: {
+                    instagram: document.getElementById('socialInstagram').value,
+                    facebook: document.getElementById('socialFacebook').value
+                },
+                maintenanceMode: document.getElementById('maintenanceMode').checked,
+                exchangeRate: parseFloat(document.getElementById('exchangeRate').value) || 2800,
+                targetAOV: parseFloat(document.getElementById('targetAOV').value) || 0,
+                primaryColor: window.newketConfig ? window.newketConfig.primaryColor : '#000000'
+            };
+
+            if (window.ConfigManager) {
+                ConfigManager.saveConfig(newConfig);
+
+                // Show success feedback
+                const btn = document.getElementById('saveAllBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Enregistré !';
+                btn.classList.replace('bg-black', 'bg-green-600');
+
+                const status = document.getElementById('saveStatus');
+                status.classList.remove('hidden');
+
+                if (typeof showToast === 'function') {
+                    showToast('Configuration mise à jour avec succès', 'success');
+                }
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.replace('bg-green-600', 'bg-black');
+                    status.classList.add('hidden');
+                }, 2000);
+            }
+        });
+
+        // Test Data Reset Logic
+        document.getElementById('resetTestDataBtn').addEventListener('click', () => {
+            if (typeof showPasswordConfirm === 'function') {
+                showPasswordConfirm(
+                    "Réinitialisation",
+                    "Entrez le mot de passe administrateur (PHOENIX) pour effacer les données de test de votre base de données.",
+                    async () => {
+                        window.LoaderManager.show('Suppression en cours...');
+                        try {
+                            const orders = await window.SupabaseAdapter.fetch('orders');
+                            for (let order of orders) {
+                                await window.SupabaseAdapter.delete('orders', order.id);
+                            }
+
+                            const activities = await window.SupabaseAdapter.fetch('activities');
+                            for (let activity of activities) {
+                                await window.SupabaseAdapter.delete('activities', activity.id);
+                            }
+
+                            window.LoaderManager.hide();
+                            if (typeof showToast === 'function') {
+                                showToast("Données de test réinitialisées avec succès.", "success");
+                            }
+                            // Reload after a short delay
+                            setTimeout(() => location.reload(), 1500);
+                        } catch (e) {
+                            console.error("Error resetting data:", e);
+                            window.LoaderManager.hide();
+                            if (typeof showToast === 'function') {
+                                showToast("Une erreur est survenue lors de la suppression.", "error");
+                            }
+                        }
+                    }
+                );
+            } else {
+                alert("Erreur: Le gestionnaire de mot de passe n'est pas disponible.");
+            }
+        });
+    </script>
+</body>
+
+</html>

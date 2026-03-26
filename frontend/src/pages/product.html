@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../services/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../assets/Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../assets/Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Produit — NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../services/supabase-client.js"></script>
+    <script type="module" src="../services/supabase-adapter.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 999px;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #000000;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .thumbnail-active {
+            border-color: #000000;
+            box-shadow: 0 0 0 2px #f3f4f6;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-900 antialiased">
+
+    <div id="header-placeholder"></div>
+
+
+    <div class="h-28 sm:h-24 lg:h-32"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 ring-gray-100">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8" id="product-breadcrumb">
+            <a href="index.html" class="hover:text-gray-900 transition-colors">Accueil</a>
+            <iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon>
+            <a href="/pages/catalog.html" class="hover:text-gray-900 transition-colors">Catalogue</a>
+            <iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon>
+            <span class="text-gray-900 font-medium" id="breadcrumb-curr">Chargement...</span>
+        </nav>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
+            <!-- Left: Gallery -->
+            <div class="space-y-4 sticky top-40">
+                <div
+                    class="bg-gray-50 rounded-3xl overflow-hidden aspect-square flex items-center justify-center p-8 relative group">
+                    <img src="" id="main-product-img" class="w-full h-full object-contain mix-blend-multiply" alt=""
+                        onclick="openZoom()">
+                    <button
+                        class="wishlist-btn absolute top-6 left-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-red-500 transition-all"
+                        onclick="addToWishlist(getProductId(), event)">
+                        <iconify-icon icon="solar:heart-linear" width="24"></iconify-icon>
+                    </button>
+                    <button
+                        class="absolute bottom-6 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-gray-900 transition-all"
+                        onclick="shareProduct('native')" title="Partager">
+                        <iconify-icon icon="solar:share-linear" width="24"></iconify-icon>
+                    </button>
+                    <span id="product-badge"
+                        class="absolute top-20 left-6 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg hidden"></span>
+                </div>
+                <div class="grid grid-cols-4 gap-4" id="thumbnail-gallery">
+                    <!-- Thumbnails will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="space-y-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="product-category-tag"
+                            class="text-xs font-bold text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">CATEGORIE</span>
+                        <div class="flex items-center gap-1 ml-auto">
+                            <iconify-icon icon="solar:star-bold" width="16" class="text-amber-400"></iconify-icon>
+                            <span class="text-sm font-semibold text-gray-900" id="product-rating-val">4.5</span>
+                            <span class="text-sm text-gray-400" id="product-reviews-count">(128 avis)</span>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 tracking-tight leading-tight"
+                        id="product-name">Nom du produit</h1>
+                    <div class="flex items-baseline gap-4 mb-6">
+                        <span class="text-3xl font-bold text-gray-900" id="product-price">0 FC</span>
+                        <span class="text-lg text-gray-400 line-through hidden" id="product-old-price">0 FC</span>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed" id="product-description">
+                        Description du produit...
+                    </p>
+                </div>
+
+                <div class="h-px bg-gray-100"></div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider">Caractéristiques
+                        </h4>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="product-features-list">
+                            <!-- Features will be injected here -->
+                        </ul>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
+                                <button onclick="updateQty(-1)"
+                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors text-lg font-bold">
+                                    -
+                                </button>
+                                <input type="number" id="qty-input" value="1" readonly
+                                    class="w-12 text-center font-semibold bg-transparent border-none focus:ring-0">
+                                <button onclick="updateQty(1)"
+                                    class="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors text-lg font-bold">
+                                    +
+                                </button>
+                            </div>
+                            <button
+                                class="flex-1 bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-3 shadow-xl addToCart-btn"
+                                onclick="const qReq = parseInt(document.getElementById('qty-input').value) || 1; addToCart(getProductId(), qReq, event)">
+                                <iconify-icon icon="solar:bag-3-outline" width="20"></iconify-icon>
+                                Ajouter au panier
+                            </button>
+                            <button
+                                class="wishlist-btn w-14 h-14 bg-white border border-gray-200 rounded-xl flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm"
+                                onclick="addToWishlist(getProductId(), event)" title="Ajouter aux favoris">
+                                <iconify-icon icon="solar:heart-linear" width="22" class="text-gray-900"></iconify-icon>
+                            </button>
+                        </div>
+                        <p class="text-xs text-center text-gray-500">Expédié sous 24-48h · Livraison gratuite disponible
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partager -->
+            <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Partager</span>
+                <div class="flex items-center gap-3">
+                    <button onclick="shareProduct('whatsapp')"
+                        class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:text-[#25D366] hover:border-[#25D366] transition-colors"
+                        title="Partager sur WhatsApp">
+                        <iconify-icon icon="line-md:whatsapp" width="20"></iconify-icon>
+                    </button>
+                    <button onclick="shareProduct('facebook')"
+                        class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:text-[#1877F2] hover:border-[#1877F2] transition-colors"
+                        title="Partager sur Facebook">
+                        <iconify-icon icon="line-md:facebook" width="20"></iconify-icon>
+                    </button>
+                    <button onclick="shareProduct('twitter')"
+                        class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:text-black hover:border-black transition-colors"
+                        title="Partager sur X">
+                        <iconify-icon icon="line-md:twitter-x" width="20"></iconify-icon>
+                    </button>
+                    <button onclick="shareProduct('copy')"
+                        class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                        title="Copier le lien">
+                        <iconify-icon icon="solar:link-bold" width="20"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trusted Info -->
+            <div class="bg-gray-50 rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-900">
+                        <iconify-icon icon="solar:shield-check-linear" width="20"></iconify-icon>
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        <div class="font-bold text-gray-900">Garantie 2 ans</div>
+                        <div>Achat 100% sécurisé</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-900">
+                        <iconify-icon icon="solar:undo-left-linear" width="20"></iconify-icon>
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        <div class="font-bold text-gray-900">Retours Faciles</div>
+                        <div>Satisfait ou remboursé</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="mt-20 border-t border-gray-100 pt-16">
+            <div class="flex items-center justify-between mb-10">
+                <h2 class="text-2xl font-bold">Avis clients</h2>
+                <button class="text-sm font-semibold text-gray-900 hover:text-black">Donner mon avis</button>
+            </div>
+            <div id="reviews-container" class="space-y-6">
+                <!-- Reviews injected by JS -->
+            </div>
+        </div>
+    </main>
+
+
+
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../services/auth.js"></script>
+    <script type="module" src="../services/cart.js"></script>
+    <script type="module" src="../services/favorites.js"></script>
+    <script type="module" src="../services/currency.js"></script>
+    <script type="module" src="../services/products.js"></script>
+    <script type="module" src="../services/orders.js"></script>
+    <script type="module" src="../services/managers.js"></script>
+    <script type="module" src="../services/ui-helpers.js"></script>
+    <script type="module" src="../services/ui.js"></script>
+    <script type="module" src="../services/search.js"></script>
+    <script type="module" src="../services/main.js"></script>
+    <script type="module" src="../services/components-loader.js"></script>
+    <script type="module" src="../services/realtime-notifications.js"></script>
+
+    <script>
+        const productsDB = {
+            'parfum': {
+                name: 'Parfum Élégance',
+                category: 'Beauté',
+                priceCDF: 50000,
+                priceUSD: 20,
+                image: 'Images/flacon.png',
+                badge: 'Nouveau',
+                rating: 4.8,
+                reviews: 156,
+                description: 'Un parfum unique qui allie raffinement et mystère. Ses notes de tête florales laissent place à un cœur boisé intense. Parfait pour vos soirées prestigieuses.',
+                features: ['Format 100ml', 'Eau de parfum', 'Notes : Iris, Santal', 'Flacon luxe'],
+                review: 'Une tenue exceptionnelle toute la journée. Je ne reçois que des compliments !'
+            },
+            'voiture': {
+                name: 'Mini EV Nammi S31',
+                category: 'Automobile',
+                priceCDF: 25000000,
+                priceUSD: 10000,
+                image: 'Images/Factory-Direct-Sales-Dongfeng-2024-New-Product-Trending-Small-Electric-Car-Nammi-S31-Mini-EV-Cheapest-Ev-Car-From-China.jpg_300x300.avif',
+                badge: 'Promo',
+                rating: 4.2,
+                reviews: 28,
+                description: 'La révolution électrique à portée de main. Compacte, silencieuse et incroyablement maniable en ville. Idéale pour les trajets quotidiens.',
+                features: ['Zéro émission', 'Autonomie 200km', 'Recharge rapide', 'Connectivité BlueTooth'],
+                review: 'Le meilleur choix pour Kinshasa ! Finis les bruits de moteur et les frais d\'essence.'
+            },
+            'laptop': {
+                name: 'Ordinateur Portable HP I7',
+                category: 'High-Tech',
+                priceCDF: 525000,
+                priceUSD: 210,
+                image: 'Images/3a7cdf50-be32-4d07-b2a0-2cee2df8308a_390x286.jpg',
+                rating: 5,
+                reviews: 89,
+                description: 'Performance et élégance réunies. Ce laptop HP i7 vous offre une rapidité exceptionnelle pour vos créations graphiques ou votre bureautique exigeante.',
+                features: ['Core i7 12th Gen', '16Go RAM DDR4', 'SSD 512Go NVMe', 'Windows 11 Pro'],
+                review: 'Une rapidité incroyable. L\'écran est magnifique !'
+            },
+            'cosmetiques': {
+                name: 'Kit Cosmétiques Premium',
+                category: 'Beauté',
+                priceCDF: 95000,
+                priceUSD: 38,
+                image: 'Images/tconvfimg-les-dupes-ces-copies-legales-de-produit-best-seller-que-vous-avez-deja-du-a.jpg',
+                badge: 'Tendance',
+                rating: 4.6,
+                reviews: 215,
+                description: 'Les indispensables de votre routine beauté réunis en un seul kit. Des formules testées dermatologiquement pour un soin complet de votre peau.',
+                features: ['Set de 5 produits', 'Ingrédients bio', 'Texture soyeuse', 'Tous types de peau'],
+                review: 'Ma peau revit depuis que j\'utilise ce kit. Un pur bonheur.'
+            }
+        };
+
+        function getProductId() {
+            return new URLSearchParams(window.location.search).get('id') || 'parfum';
+        }
+
+        async function loadProduct() {
+            const id = getProductId();
+            let p = null;
+
+            // Try ProductManager first (Global Storage)
+            if (window.ProductManager) {
+                const globalProduct = ProductManager.getProduct(id);
+                if (globalProduct) {
+                    p = {
+                        id: globalProduct.id,
+                        name: globalProduct.name,
+                        category: globalProduct.category,
+                        priceCDF: globalProduct.price,
+                        priceUSD: Math.round(globalProduct.price / 2500),
+                        image: globalProduct.image,
+                        badge: globalProduct.isNew ? 'Nouveau' : (globalProduct.isPromo ? 'Promo' : null),
+                        rating: globalProduct.rating || 4.5,
+                        reviews: globalProduct.reviews || 0,
+                        description: globalProduct.description || 'Découvrez ce produit exceptionnel de notre collection.',
+                        features: globalProduct.features || ['Qualité Premium', 'Garantie NewKet', 'Satisfaction client'],
+                        review: globalProduct.review || 'Excellent produit, conforme à mes attentes !'
+                    };
+                }
+            }
+
+            // Fallback to local productsDB
+            if (!p) p = productsDB[id];
+
+            if (!p) {
+                console.error("L'article d'exception recherché (id: " + id + ") s'est dérobé à nos archives.");
+                if (window.showToast) showToast('Produit introuvable', 'error');
+
+                // Show a friendly 404 message in the main area
+                document.querySelector('main').innerHTML = `
+                    <div class="py-20 text-center">
+                        <iconify-icon icon="solar:ghost-broken" width="64" class="text-gray-300 mb-6"></iconify-icon>
+                        <h1 class="text-3xl font-black text-gray-900 mb-4 tracking-tighter uppercase">Produit Introuvable</h1>
+                        <p class="text-gray-500 mb-8 max-w-md mx-auto">Le produit que vous recherchez semble avoir disparu ou l'URL est incorrecte.</p>
+                        <a href="/pages/catalog.html" class="bg-gray-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-colors inline-block uppercase tracking-wider text-sm">Retour au catalogue</a>
+                    </div>
+                `;
+                return;
+            }
+
+            document.title = `${p.name} — NewKet`;
+
+            // Image & Gallery Handling
+            const images = p.image.split(',').filter(src => src.trim() !== '');
+            const mainImg = document.getElementById('main-product-img');
+            mainImg.src = images[0] || 'https://via.placeholder.com/600';
+            mainImg.alt = p.name;
+            mainImg.onerror = () => mainImg.src = 'https://via.placeholder.com/600';
+
+            const thumbGallery = document.getElementById('thumbnail-gallery');
+            thumbGallery.innerHTML = '';
+
+            images.forEach((src, i) => {
+                const thumb = document.createElement('div');
+                thumb.className = `cursor-pointer border-2 ${i === 0 ? 'border-gray-900' : 'border-gray-100'} rounded-xl p-2 bg-gray-50 hover:border-gray-900 transition-all aspect-square flex items-center justify-center overflow-hidden h-16 sm:h-20`;
+                thumb.innerHTML = `<img src="${src}" class="w-full h-full object-contain mix-blend-multiply" alt="" onerror="this.src='https://via.placeholder.com/100'">`;
+
+                thumb.onclick = () => {
+                    mainImg.src = src;
+                    // Update active border
+                    document.querySelectorAll('#thumbnail-gallery > div').forEach(d => d.classList.replace('border-gray-900', 'border-gray-100'));
+                    thumb.classList.replace('border-gray-100', 'border-gray-900');
+                };
+
+                thumbGallery.appendChild(thumb);
+            });
+
+            // Text Info
+            document.getElementById('product-name').textContent = p.name;
+            document.getElementById('breadcrumb-curr').textContent = p.name;
+            document.getElementById('product-category-tag').textContent = p.category;
+            document.getElementById('product-description').textContent = p.description;
+
+            // Initial rating/reviews display (will be updated by loadReviews)
+            document.getElementById('product-rating-val').textContent = p.rating;
+            document.getElementById('product-reviews-count').textContent = `(${p.reviews} avis)`;
+
+            const priceEl = document.getElementById('product-price');
+            priceEl.dataset.priceCdf = p.priceCDF;
+            priceEl.dataset.priceUsd = p.priceUSD;
+
+            // Use CurrencyManager if available
+            if (window.CurrencyManager) {
+                priceEl.textContent = CurrencyManager.formatPrice(p.priceCDF);
+            } else {
+                priceEl.textContent = `${p.priceCDF.toLocaleString()} FC`;
+            }
+
+            // Badge
+            const badge = document.getElementById('product-badge');
+            if (p.badge) {
+                badge.textContent = p.badge;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // Features
+            const featuresList = document.getElementById('product-features-list');
+            featuresList.innerHTML = p.features.map(f => `
+                <li class="flex items-center gap-2 text-sm text-gray-700">
+                    <iconify-icon icon="solar:check-circle-bold" width="18" class="text-green-500"></iconify-icon>
+                    ${f}
+                </li>
+            `).join('');
+
+            // Load Real Reviews
+            loadReviews(id);
+
+            // Populate Sticky Bar
+            const stickyImg = document.getElementById('sticky-product-img');
+            const stickyName = document.getElementById('sticky-product-name');
+            const stickyPrice = document.getElementById('sticky-product-price');
+
+            if (stickyImg) stickyImg.src = images[0] || 'https://via.placeholder.com/600';
+            if (stickyName) stickyName.textContent = p.name;
+            if (stickyPrice) {
+                stickyPrice.dataset.priceCdf = p.priceCDF;
+                stickyPrice.dataset.priceUsd = p.priceUSD;
+                if (window.CurrencyManager) stickyPrice.textContent = CurrencyManager.formatPrice(p.priceCDF);
+                else stickyPrice.textContent = `${p.priceCDF.toLocaleString()} FC`;
+            }
+
+            // Tracking
+            if (window.RecentlyViewedManager) {
+                RecentlyViewedManager.addItem(p);
+                RecentlyViewedManager.render('recently-viewed-container');
+            }
+
+            // Finalize UI
+            if (window.FavoritesManager) {
+                FavoritesManager.updateUI();
+            }
+        }
+
+        // ========== STICKY CART BAR VISIBILITY ==========
+        window.addEventListener('scroll', () => {
+            const stickyBar = document.getElementById('sticky-cart-bar');
+            const addToCartBtn = document.querySelector('button[onclick*="addToCart"]');
+
+            if (stickyBar && addToCartBtn) {
+                const btnPosition = addToCartBtn.getBoundingClientRect().bottom;
+                // Show sticky bar when the main add to cart button is scrolled out of view
+                if (btnPosition < 0 && window.innerWidth < 640) {
+                    stickyBar.classList.add('active');
+                } else {
+                    stickyBar.classList.remove('active');
+                }
+            }
+        });
+
+        async function loadReviews(productId) {
+            const reviewsCont = document.getElementById('reviews-container');
+            reviewsCont.innerHTML = '<div class="py-10 text-center text-gray-400"><iconify-icon icon="solar:refresh-linear" width="30" class="animate-spin mb-2"></iconify-icon><br>Chargement des avis...</div>';
+
+            try {
+                const reviews = await SupabaseAdapter.fetchWithFilters('product_reviews', {
+                    eq: [['product_id', productId]],
+                    order: ['created_at', { ascending: false }]
+                });
+
+                if (!reviews || reviews.length === 0) {
+                    reviewsCont.innerHTML = `
+                        <div class="bg-gray-50 rounded-2xl p-10 text-center border border-dashed border-gray-200">
+                            <iconify-icon icon="solar:chat-line-broken" width="48" class="text-gray-300 mb-4"></iconify-icon>
+                            <p class="text-gray-500">Aucun avis pour le moment. Soyez le premier à partager votre expérience !</p>
+                        </div>
+                    `;
+                    renderReviewForm();
+                    return;
+                }
+
+                // Update product rating and count if we have reviews
+                const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+                document.getElementById('product-rating-val').textContent = avgRating;
+                document.getElementById('product-reviews-count').textContent = `(${reviews.length} avis)`;
+
+                reviewsCont.innerHTML = `
+                    <div class="grid gap-6">
+                        ${reviews.map(r => {
+                    const date = new Date(r.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    return `
+                                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xs">
+                                                ${r.user_name ? r.user_name.charAt(0).toUpperCase() : '?'}
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900">${r.user_name || 'Client NewKet'}</div>
+                                                <div class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">${date}</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-amber-500">
+                                            ${Array(r.rating).fill('<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>').join('')}
+                                            ${Array(5 - r.rating).fill('<iconify-icon icon="solar:star-linear" width="14" class="text-gray-200"></iconify-icon>').join('')}
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">${r.comment}</p>
+                                    ${r.photo_url ? `
+                                        <div class="mt-4 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                            <img src="${r.photo_url}" class="w-24 h-24 object-cover rounded-xl border border-gray-100 hover:scale-105 transition-transform cursor-zoom-in" onclick="window.open('${r.photo_url}', '_blank')">
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                }).join('')}
+                    </div>
+                `;
+                renderReviewForm();
+
+            } catch (err) {
+                console.error("Error loading reviews:", err);
+                reviewsCont.innerHTML = '<p class="text-red-500 text-sm">Erreur lors du chargement des avis.</p>';
+            }
+        }
+
+        function renderReviewForm(productId) {
+            const reviewsCont = document.getElementById('reviews-container');
+            const formHtml = `
+                <div class="mt-12 bg-gray-50 rounded-[2.5rem] p-8 sm:p-12 border border-gray-100">
+                    <h3 class="text-2xl font-black text-gray-900 mb-8 uppercase tracking-tighter">Votre expérience</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- Star Selection -->
+                        <div class="flex flex-col gap-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Note globale</span>
+                            <div class="flex gap-2" id="star-rating-selector">
+                                ${[1, 2, 3, 4, 5].map(i => `
+                                    <iconify-icon icon="solar:star-bold" width="32" 
+                                        class="cursor-pointer transition-all ${i <= currentRating ? 'text-amber-400' : 'text-gray-200'} hover:scale-110" 
+                                        onclick="setRating(${i})"></iconify-icon>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div class="flex flex-col gap-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Photos du produit (optionnel)</span>
+                            <div class="flex items-center gap-4">
+                                <label class="w-24 h-24 rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-gray-900 hover:bg-white transition-all group overflow-hidden">
+                                    <iconify-icon icon="solar:camera-add-linear" width="28" class="text-gray-300 group-hover:text-gray-900"></iconify-icon>
+                                    <span class="text-[9px] font-bold text-gray-400 mt-1 uppercase">Ajouter</span>
+                                    <input type="file" id="review-photo-input" accept="image/*" class="hidden" onchange="previewReviewPhoto(this)">
+                                </label>
+                                <div id="photo-preview-container" class="hidden relative w-24 h-24">
+                                    <img id="photo-preview" src="" class="w-full h-full object-cover rounded-3xl">
+                                    <button onclick="removeReviewPhoto()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors">
+                                        <iconify-icon icon="solar:close-circle-bold" width="18"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="flex flex-col gap-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Votre commentaire</span>
+                            <textarea id="reviewText" placeholder="Partagez votre avis sur cet article d'exception..." 
+                                class="w-full bg-white border border-gray-100 rounded-3xl p-6 text-sm outline-none focus:ring-4 focus:ring-gray-50 transition-all min-h-[150px]"></textarea>
+                        </div>
+                        
+                        <button onclick="submitReview('${productId}')" id="submit-review-btn" 
+                            class="w-full bg-gray-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-2xl shadow-gray-900/10 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 group">
+                            <iconify-icon icon="solar:send-square-bold" width="20" class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                            Publier mon avis
+                        </button>
+                    </div>
+                </div>
+            `;
+            reviewsCont.insertAdjacentHTML('beforeend', formHtml);
+        }
+
+        window.previewReviewPhoto = function (input) {
+            const container = document.getElementById('photo-preview-container');
+            const preview = document.getElementById('photo-preview');
+            if (input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.removeReviewPhoto = function () {
+            document.getElementById('review-photo-input').value = '';
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        };
+
+        let currentRating = 5;
+        function setRating(val) {
+            currentRating = val;
+            const container = document.getElementById('star-rating-selector');
+            if (!container) return;
+
+            const stars = container.querySelectorAll('iconify-icon');
+            stars.forEach((s, idx) => {
+                const isActive = (idx + 1) <= val;
+                s.classList.toggle('text-amber-400', isActive);
+                s.classList.toggle('text-gray-300', !isActive);
+            });
+        }
+
+        async function submitReview(productId) {
+            if (!window.AuthManager || !AuthManager.getRole()) {
+                if (window.showToast) showToast('Veuillez vous connecter pour laisser un avis.', 'error');
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+
+            const text = document.getElementById('reviewText').value.trim();
+            const photoInput = document.getElementById('review-photo-input');
+            if (!text) {
+                if (window.showToast) showToast('Veuillez écrire un commentaire.', 'warning');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-review-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<iconify-icon icon="solar:refresh-linear" width="20" class="animate-spin"></iconify-icon> Publication...';
+
+            try {
+                const user = await AuthManager.getCurrentUser();
+                if (!user) throw new Error("Utilisateur non trouvé");
+
+                let photoUrl = null;
+                if (photoInput && photoInput.files[0]) {
+                    const fileName = `review_${Date.now()}_${user.id}`;
+                    photoUrl = await SupabaseAdapter.uploadFile('reviews', `products/${productId}/${fileName}`, photoInput.files[0]);
+                }
+
+                const reviewData = {
+                    product_id: productId,
+                    user_id: user.id,
+                    user_name: user.name || user.email.split('@')[0],
+                    rating: currentRating,
+                    comment: text,
+                    photo_url: photoUrl
+                };
+
+                const result = await SupabaseAdapter.insert('product_reviews', reviewData);
+
+                if (result) {
+                    if (window.showToast) showToast('Merci ! Votre avis a été publié.', 'success');
+                    document.getElementById('reviewText').value = '';
+                    if (photoInput) photoInput.value = '';
+                    document.getElementById('photo-preview-container').classList.add('hidden');
+                    currentRating = 5;
+                    loadReviews(productId);
+                } else {
+                    throw new Error("Échec de l'insertion");
+                }
+            } catch (err) {
+                console.error("Error submitting review:", err);
+                if (window.showToast) showToast('Une erreur est survenue lors de la publication.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<iconify-icon icon="solar:send-square-bold" width="20" class="group-hover:translate-x-1 transition-transform"></iconify-icon> Publier l\'avis';
+            }
+        }
+
+        function addToWishlist(id, event) {
+            if (window.addToWishlist) {
+                window.addToWishlist(id, event);
+                // Force UI update
+                setTimeout(() => { if (window.FavoritesManager) FavoritesManager.updateUI(); }, 100);
+            }
+        }
+
+        function updateQty(val) {
+            const input = document.getElementById('qty-input');
+            let curr = parseInt(input.value);
+            curr = Math.max(1, curr + val);
+            input.value = curr;
+        }
+
+        function shareProduct(platform) {
+            const rawUrl = window.location.href;
+            const url = encodeURIComponent(rawUrl);
+            const title = encodeURIComponent(document.title);
+            const productName = document.getElementById('product-name')?.textContent || 'Produit NewKet';
+
+            // Try native share first for 'native' platform
+            if (platform === 'native' && navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: 'Découvrez ' + productName + ' sur NewKet !',
+                    url: rawUrl
+                }).catch(() => { });
+                return;
+            }
+
+            let shareUrl = '';
+            switch (platform) {
+                case 'native':
+                    // Fallback if native share not supported
+                    navigator.clipboard.writeText(rawUrl).then(() => {
+                        if (window.showToast) showToast('Lien copié dans le presse-papier !', 'success');
+                        else alert('Lien copié !');
+                    });
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://api.whatsapp.com/send?text=${title}%20${url}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                case 'copy':
+                    navigator.clipboard.writeText(rawUrl).then(() => {
+                        if (window.showToast) showToast('Lien copié dans le presse-papier !', 'success');
+                        else alert('Lien copié !');
+                    });
+                    break;
+            }
+        }
+
+        // ========== ZOOM FUNCTIONALITY ==========
+        function openZoom() {
+            const mainImg = document.getElementById('main-product-img');
+            const zoomModal = document.getElementById('zoomModal');
+            const zoomImg = document.getElementById('zoomModalImg');
+
+            if (mainImg && zoomModal && zoomImg) {
+                zoomImg.src = mainImg.src;
+                zoomModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeZoom() {
+            const zoomModal = document.getElementById('zoomModal');
+            if (zoomModal) {
+                zoomModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeZoom();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.newketInitialized) {
+                loadProduct();
+            } else {
+                window.addEventListener('newketInitialized', loadProduct);
+            }
+        });
+    </script>
+
+    <!-- Zoom Modal -->
+    <div id="zoomModal" class="zoom-modal" onclick="closeZoom()">
+        <button class="zoom-close-btn" onclick="closeZoom(event)">
+            <iconify-icon icon="solar:close-circle-bold" width="32"></iconify-icon>
+        </button>
+        <div class="zoom-modal-content">
+            <img id="zoomModalImg" src="" class="zoom-modal-img" alt="Product Zoom">
+        </div>
+    </div>
+
+    <!-- ========== STICKY ADD TO CART (MOBILE) ========== -->
+    <div id="sticky-cart-bar"
+        class="fixed bottom-[72px] left-0 right-0 bg-white/90  border-t border-gray-100 p-4 translate-y-full transition-transform duration-300 z-40 sm:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                <img id="sticky-product-img" src="" class="w-full h-full object-contain mix-blend-multiply" alt="">
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-gray-900 truncate" id="sticky-product-name">Nom du produit</div>
+                <div class="text-sm font-black text-gray-900" id="sticky-product-price">0 FC</div>
+            </div>
+            <button class="bg-gray-900 text-white px-6 py-3 rounded-xl text-xs font-bold"
+                onclick="const qSticky = parseInt(document.getElementById('qty-input').value) || 1; addToCart(getProductId(), qSticky, event)">
+                AJOUTER
+            </button>
+        </div>
+    </div>
+
+    <!-- Recently Viewed -->
+    <div id="recently-viewed-section" class="mt-20 border-t border-gray-100 pt-16 mb-20 max-w-7xl mx-auto px-4 sm:px-6"
+        style="display:none;">
+        <div class="flex items-center justify-between mb-10">
+            <h2 class="text-2xl font-bold uppercase tracking-tighter">Vu Récemment</h2>
+            <button class="text-sm font-semibold text-gray-400 hover:text-gray-900 transition-colors"
+                onclick="RecentlyViewedManager.clearAll(); location.reload();">Effacer tout</button>
+        </div>
+        <div id="recently-viewed-container" class="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0"
+            style="scrollbar-width:none;">
+            <!-- Recently viewed items injected by JS -->
+        </div>
+    </div>
+
+
+</body>
+
+</html>
