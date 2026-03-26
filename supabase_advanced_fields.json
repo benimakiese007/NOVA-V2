@@ -1,3 +1,0 @@
-{
-  "query": "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS store_description TEXT; ALTER TABLE public.users ADD COLUMN IF NOT EXISTS store_address TEXT; ALTER TABLE public.users ADD COLUMN IF NOT EXISTS store_phone_whatsapp TEXT; ALTER TABLE public.users ADD COLUMN IF NOT EXISTS preferred_payout_method TEXT;"
-}

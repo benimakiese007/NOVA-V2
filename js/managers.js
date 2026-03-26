@@ -39,9 +39,9 @@ const RecentlyViewedManager = {
         if (container.parentElement) container.parentElement.style.display = 'block';
         container.innerHTML = items.map(p => `
             <div class="flex-shrink-0 w-40 group">
-                <a href="product.html?id=${p.id}" class="block">
+                <a href="/pages/product.html?id=${p.id}" class="block">
                     <div class="aspect-square bg-gray-50 rounded-2xl p-4 mb-3 flex items-center justify-center relative overflow-hidden group-hover:bg-gray-100 transition-colors">
-                        <img src="${p.image}" class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" alt="${p.name}">
+                        <img src="${p.image}" loading="lazy" class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" alt="${p.name}">
                     </div>
                     <h4 class="text-xs font-bold text-gray-900 truncate mb-1">${p.name}</h4>
                     <div class="text-xs font-black text-gray-900">${window.CurrencyManager ? CurrencyManager.formatPrice(p.price) : p.price + ' FC'}</div>
@@ -94,21 +94,21 @@ const PromoManager = {
         }
         return { valid: true };
     },
-    async incrementUsage(code, userId) {
-        const promo = this.promos[code];
-        if (promo) {
-            const newUses = (promo.currentUses || 0) + 1;
-            const newUsedBy = [...(promo.usedBy || [])];
-            if (userId && !newUsedBy.includes(userId)) newUsedBy.push(userId);
-            const updated = await window.SupabaseAdapter.update('promos', code, {
-                current_uses: newUses,
-                used_by: newUsedBy
-            }, 'code');
-            if (updated) {
-                promo.currentUses = newUses;
-                promo.usedBy = newUsedBy;
-                window.dispatchEvent(new CustomEvent('promosUpdated'));
-            }
+    async incrementUsage(code) {
+        if (!window.supabaseClient) return;
+        
+        const { data, error } = await window.supabaseClient.rpc('apply_promo_secure', {
+            p_code: code
+        });
+
+        if (error) {
+            console.error('[NewKet] Error applying promo:', error);
+            return;
+        }
+
+        if (data && data.success) {
+            // Update local state and trigger refresh
+            await this.init(); 
         }
     }
 };

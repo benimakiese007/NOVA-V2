@@ -1,11 +1,9 @@
 /* NewKet EMarket - Main Orchestrator */
 
 window.newketConfig = {
-    exchangeRate: 2500,
-    adminEmails: ['tmautuimane00@gmail.com', 'admin@newket.com']
+    exchangeRate: 2500
 };
-
-window.ADMIN_EMAILS = window.newketConfig.adminEmails;
+// window.ADMIN_EMAILS removed - Roles are handled by Supabase
 
 const App = {
     async init() {
@@ -20,12 +18,23 @@ const App = {
         if (window.ProductManager) initPromises.push(ProductManager.init());
         if (window.OrderManager) initPromises.push(OrderManager.init());
 
+        console.log('[NewKet] Awaiting Manager initializations...');
         await Promise.all(initPromises);
+        console.log('[NewKet] Managers initialized.');
 
         // 3. Initialize UI State
-        if (window.CurrencyManager) CurrencyManager.init();
-        if (window.CartManager) CartManager.updateBadge();
-        if (window.FavoritesManager) FavoritesManager.updateUI();
+        if (window.CurrencyManager) {
+            console.log('[NewKet] Initializing CurrencyManager...');
+            CurrencyManager.init();
+        }
+        if (window.CartManager) {
+            console.log('[NewKet] Updating cart badges...');
+            CartManager.updateBadge();
+        }
+        if (window.FavoritesManager) {
+            console.log('[NewKet] Updating Favorites UI...');
+            FavoritesManager.updateUI();
+        }
 
         // 4. Global Event Listeners
         this.bindGlobalEvents();
@@ -101,7 +110,7 @@ const App = {
     },
 
     shakeFavoritesIcon() {
-        const favLinks = document.querySelectorAll('a[href="favorites.html"], a[href*="favorites"]');
+        const favLinks = document.querySelectorAll('a[href="/pages/favorites.html"], a[href*="favorites"]');
         favLinks.forEach(link => {
             link.classList.remove('fav-shake');
             // Force reflow to restart animation

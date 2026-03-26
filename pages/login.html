@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../js/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Connexion — NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../js/supabase-client.js"></script>
+    <script type="module" src="../js/supabase-adapter.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            900: '#000000',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .floating-input:focus-within label,
+        .floating-input input:not(:placeholder-shown)+label {
+            transform: translateY(-12px) scale(0.75);
+            font-weight: 800;
+            color: #000;
+        }
+
+        .split-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .loader-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+
+        .social-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            position: relative;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #000;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+    </style>
+</head>
+
+<body class="text-brand-900 antialiased h-screen flex flex-col relative">
+
+    <div id="header-placeholder"></div>
+
+    <div class="flex-1 flex w-full h-full relative">
+        <!-- Left Side: Immersive Image (Hidden on smaller screens) -->
+        <div class="hidden lg:flex lg:w-1/2 relative split-image overflow-hidden items-end p-16">
+            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1920&fm=jpg&fit=crop"
+                alt="NewKet Experience"
+                class="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center" id="bgImage">
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-10"></div>
+
+            <!-- Animated floating particles/stars could go here -->
+
+            <div class="relative z-20 text-white w-full max-w-lg mb-10" id="heroContent">
+                <h1 class="text-5xl font-black tracking-tighter mb-4 leading-tight text-white">Découvrez <br>l'expérience
+                    ultime.</h1>
+                <p class="text-lg text-gray-300 font-medium mb-8 leading-relaxed">Rejoignez des milliers d'acheteurs et de
+                    vendeurs. Une plateforme pensée pour la performance et le raffinement.</p>
+
+                <div class="flex items-center gap-4">
+                    <div class="flex -space-x-3">
+                        <img class="w-10 h-10 rounded-full border-2 border-black object-cover"
+                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop"
+                            alt="User">
+                        <img class="w-10 h-10 rounded-full border-2 border-black object-cover"
+                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150&auto=format&fit=crop"
+                            alt="User">
+                        <img class="w-10 h-10 rounded-full border-2 border-black object-cover"
+                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop"
+                            alt="User">
+                        <div
+                            class="w-10 h-10 rounded-full border-2 border-black bg-white text-black flex items-center justify-center text-xs font-black">
+                            +2k</div>
+                    </div>
+                    <div class="text-sm font-bold text-gray-300">
+                        Membres actifs
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Interactive Form -->
+        <div class="w-full lg:w-1/2 h-full flex flex-col relative bg-white overflow-y-auto pt-20">
+
+            <!-- Form Container -->
+            <main class="flex-1 flex items-center justify-center px-6 py-24 md:px-12 lg:px-20 w-full max-w-xl mx-auto">
+                <div class="w-full">
+
+                    <!-- Logo for Desktop inside form -->
+                    <div class="hidden lg:block mb-10 animate-item">
+
+                    </div>
+
+                    <!-- Header Texts -->
+                    <div class="mb-10 animate-item">
+                        <h2 class="text-3xl font-black tracking-tighter text-gray-900 mb-2" id="formTitle">Bienvenue</h2>
+                        <p class="text-sm text-gray-500 font-medium" id="formSubtitle">Veuillez renseigner vos identifiants.
+                        </p>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div id="tabsContainer" class="flex items-center gap-8 mb-8 border-b border-gray-100 animate-item">
+                        <button id="tabLogin"
+                            class="tab-btn active pb-3 text-sm font-bold uppercase tracking-widest text-black transition-colors">
+                            Connexion
+                        </button>
+                        <button id="tabSignup"
+                            class="tab-btn pb-3 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                            Inscription
+                        </button>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="authForm" novalidate class="space-y-5 relative">
+
+                        <!-- Role Selection (Signup Only) -->
+                        <div id="roleContainer" class="hidden overflow-hidden transition-all duration-500 animate-item">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Je
+                                souhaite</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="cursor-pointer relative group">
+                                    <input type="radio" name="role" value="customer" class="peer sr-only" checked>
+                                    <div
+                                        class="p-3 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-black peer-checked:text-black text-gray-400 transition-all flex items-center gap-3 hover:bg-gray-50">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-gray-100 peer-checked:bg-black peer-checked:text-white flex items-center justify-center transition-colors">
+                                            <iconify-icon icon="solar:bag-heart-bold" width="16"></iconify-icon>
+                                        </div>
+                                        <span class="text-xs font-bold uppercase tracking-wide">Acheter</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative group">
+                                    <input type="radio" name="role" value="supplier" class="peer sr-only">
+                                    <div
+                                        class="p-3 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-black peer-checked:text-black text-gray-400 transition-all flex items-center gap-3 hover:bg-gray-50">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-gray-100 peer-checked:bg-black peer-checked:text-white flex items-center justify-center transition-colors">
+                                            <iconify-icon icon="solar:shop-bold" width="16"></iconify-icon>
+                                        </div>
+                                        <span class="text-xs font-bold uppercase tracking-wide">Vendre</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Email Input -->
+                        <div id="emailContainer" class="relative floating-input animate-item">
+                            <input type="email" id="email" required placeholder=" "
+                                class="peer w-full h-14 bg-gray-50 border border-transparent focus:border-black focus:bg-white rounded-2xl px-5 pt-5 pb-1 outline-none transition-all text-sm font-semibold text-gray-900 shadow-sm shadow-gray-100">
+                            <label for="email"
+                                class="absolute left-5 top-4.5 text-gray-400 text-sm font-medium transition-all pointer-events-none origin-left uppercase tracking-wider text-[11px]">Adresse
+                                email</label>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
+                                <iconify-icon icon="solar:letter-bold-duotone" width="20"></iconify-icon>
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="relative floating-input animate-item">
+                            <input type="password" id="password" required placeholder=" "
+                                class="peer w-full h-14 bg-gray-50 border border-transparent focus:border-black focus:bg-white rounded-2xl pl-5 pr-12 pt-5 pb-1 outline-none transition-all text-sm font-semibold text-gray-900 shadow-sm shadow-gray-100">
+                            <label for="password"
+                                class="absolute left-5 top-4.5 text-gray-400 text-sm font-medium transition-all pointer-events-none origin-left uppercase tracking-wider text-[11px]">Mot
+                                de passe</label>
+                            <button type="button" id="togglePassword"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors focus:outline-none">
+                                <iconify-icon icon="solar:eye-linear" width="20"></iconify-icon>
+                            </button>
+                        </div>
+
+                        <!-- Password Strength Meter (Signup Only) -->
+                        <div id="passwordStrengthContainer" class="hidden animate-item">
+                            <div class="flex gap-1 h-1 w-full rounded-full overflow-hidden bg-gray-100 mb-1">
+                                <div class="strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300"></div>
+                                <div class="strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300"></div>
+                                <div class="strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300"></div>
+                                <div class="strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300"></div>
+                            </div>
+                            <p id="passwordFeedback"
+                                class="text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Faible</p>
+                        </div>
+
+                        <!-- Confirm Password Input (Signup Only) -->
+                        <div id="confirmPasswordContainer" class="hidden relative floating-input animate-item">
+                            <input type="password" id="confirmPassword" placeholder=" "
+                                class="peer w-full h-14 bg-gray-50 border border-transparent focus:border-black focus:bg-white rounded-2xl pl-5 pr-12 pt-5 pb-1 outline-none transition-all text-sm font-semibold text-gray-900 shadow-sm shadow-gray-100">
+                            <label for="confirmPassword"
+                                class="absolute left-5 top-4.5 text-gray-400 text-sm font-medium transition-all pointer-events-none origin-left uppercase tracking-wider text-[11px]">Confirmer
+                                le mot de passe</label>
+                        </div>
+
+                        <!-- Extra Actions (Login Only) -->
+                        <div id="loginActions" class="flex items-center justify-between animate-item pt-1">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox"
+                                    class="w-4 h-4 rounded border-gray-300 text-black focus:ring-black transition-all cursor-pointer accent-black">
+                                <span
+                                    class="text-[11px] font-bold text-gray-500 group-hover:text-black transition-colors uppercase tracking-wider">Se
+                                    souvenir de moi</span>
+                            </label>
+                            <a href="javascript:void(0)" onclick="handleForgotPassword()"
+                                class="text-[11px] font-black uppercase tracking-widest text-black hover:underline decoration-2 underline-offset-4">Oublié
+                                ?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="submitBtn"
+                            class="w-full h-14 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-900 active:scale-[0.98] transition-all flex items-center justify-center gap-3 group shadow-xl shadow-black/10 mt-6 animate-item">
+                            <span>Se connecter</span>
+                            <div class="loader-spinner"></div>
+                            <iconify-icon icon="solar:arrow-right-linear" width="18"
+                                class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                        </button>
+
+                        <p id="formError" class="text-[11px] font-bold text-red-500 text-center mt-2 hidden"></p>
+                    </form>
+
+                    <!-- Divider -->
+                    <div class="relative my-8 animate-item">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-100"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span class="bg-white px-4 text-[10px] font-black uppercase tracking-widest text-gray-300">Ou
+                                via</span>
+                        </div>
+                    </div>
+
+                    <!-- Oauth Providers -->
+                    <div class="grid grid-cols-1 gap-4 animate-item">
+                        <button type="button" onclick="signInWithGoogle()"
+                            class="social-btn h-12 flex items-center justify-center gap-3 border-2 border-gray-100 rounded-2xl bg-white text-[11px] font-black uppercase tracking-widest text-gray-700 hover:border-gray-200 hover:bg-gray-50">
+                            <iconify-icon icon="logos:google-icon" width="16"></iconify-icon>
+                            Google
+                        </button>
+                    </div>
+
+                    <p class="text-[10px] font-medium text-gray-400 text-center mt-12 animate-item">
+                        En continuant, vous acceptez nos <br><a href="/pages/terms.html"
+                            class="text-black font-bold hover:underline">Conditions d'utilisation</a> et notre <a
+                            href="/pages/privacy.html" class="text-black font-bold hover:underline">Politique de
+                            confidentialité</a>.
+                    </p>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Ensure Toast logic is available (normally in main.js, but we need it here if main.js loads late) -->
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/favorites.js"></script>
+    <script type="module" src="../js/currency.js"></script>
+    <script type="module" src="../js/products.js"></script>
+    <script type="module" src="../js/orders.js"></script>
+    <script type="module" src="../js/managers.js"></script>
+    <script type="module" src="../js/ui-helpers.js"></script>
+    <script type="module" src="../js/ui.js"></script>
+    <script type="module" src="../js/search.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/components-loader.js"></script>
+    <script type="module" src="../js/realtime-notifications.js"></script>
+
+    <script>
+        // --- 1. GSAP Intros ---
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.to("#bgImage", { scale: 1, duration: 10, ease: "power1.out" });
+
+            const tl = gsap.timeline();
+            tl.from("#heroContent > *", { opacity: 0, y: 30, stagger: 0.1, duration: 0.8, ease: "power2.out", delay: 0.2 })
+                .from(".animate-item", { opacity: 0, y: 15, stagger: 0.05, duration: 0.6, ease: "power2.out", clearProps: "all" }, "-=0.6");
+        });
+
+        // --- 2. State & Elements ---
+        let isLogin = true;
+        let isRecovery = window.location.hash.includes('type=recovery');
+
+        const tabLogin = document.getElementById('tabLogin');
+        const tabSignup = document.getElementById('tabSignup');
+        const tabsContainer = document.getElementById('tabsContainer');
+        const formTitle = document.getElementById('formTitle');
+        const formSubtitle = document.getElementById('formSubtitle');
+        const roleContainer = document.getElementById('roleContainer');
+        const confirmPasswordContainer = document.getElementById('confirmPasswordContainer');
+        const passwordStrengthContainer = document.getElementById('passwordStrengthContainer');
+        const loginActions = document.getElementById('loginActions');
+        const submitBtnSpan = document.getElementById('submitBtn').querySelector('span');
+        const authForm = document.getElementById('authForm');
+        const formError = document.getElementById('formError');
+        const togglePwdBtn = document.getElementById('togglePassword');
+        const pwdInput = document.getElementById('password');
+        const emailContainer = document.getElementById('emailContainer');
+
+        // Setup initial UI for recovery
+        if (isRecovery) {
+            tabsContainer.classList.add('hidden');
+            emailContainer.classList.add('hidden');
+            document.getElementById('email').removeAttribute('required');
+            roleContainer.classList.add('hidden');
+            loginActions.classList.add('hidden');
+            confirmPasswordContainer.classList.remove('hidden');
+            passwordStrengthContainer.classList.remove('hidden');
+
+            formTitle.textContent = "Nouveau mot de passe";
+            formSubtitle.textContent = "Veuillez entrer votre nouveau mot de passe.";
+            submitBtnSpan.textContent = "Mettre à jour";
+        }
+
+        // --- 3. UI Interactions ---
+        // Toggle Password
+        togglePwdBtn.addEventListener('click', () => {
+            const type = pwdInput.type === 'password' ? 'text' : 'password';
+            pwdInput.type = type;
+            togglePwdBtn.innerHTML = `<iconify-icon icon="solar:${type === 'password' ? 'eye' : 'eye-closed'}-linear" width="20"></iconify-icon>`;
+        });
+
+        // Switch Tabs
+        function switchTab(toLogin) {
+            if (isLogin === toLogin) return;
+            isLogin = toLogin;
+
+            formError.classList.add('hidden');
+
+            // GSAP Transition for Form Elements
+            const tl = gsap.timeline();
+            tl.to("#authForm", {
+                opacity: 0, scale: 0.98, duration: 0.2, ease: "power1.inOut", onComplete: () => {
+
+                    if (isLogin) {
+                        tabLogin.classList.replace('text-gray-400', 'text-black');
+                        tabLogin.classList.add('active');
+                        tabSignup.classList.replace('text-black', 'text-gray-400');
+                        tabSignup.classList.remove('active');
+
+                        formTitle.textContent = "Bienvenue";
+                        formSubtitle.textContent = "Veuillez renseigner vos identifiants.";
+                        submitBtnSpan.textContent = "Se connecter";
+
+                        roleContainer.classList.add('hidden');
+                        confirmPasswordContainer.classList.add('hidden');
+                        passwordStrengthContainer.classList.add('hidden');
+                        loginActions.classList.remove('hidden');
+                    } else {
+                        tabSignup.classList.replace('text-gray-400', 'text-black');
+                        tabSignup.classList.add('active');
+                        tabLogin.classList.replace('text-black', 'text-gray-400');
+                        tabLogin.classList.remove('active');
+
+                        formTitle.textContent = "Créer un compte";
+                        formSubtitle.textContent = "Rejoignez la nouvelle ère du commerce.";
+                        submitBtnSpan.textContent = "S'inscrire";
+
+                        roleContainer.classList.remove('hidden');
+                        confirmPasswordContainer.classList.remove('hidden');
+                        passwordStrengthContainer.classList.remove('hidden');
+                        loginActions.classList.add('hidden');
+                    }
+
+                    authForm.reset();
+                    resetPasswordStrength();
+
+                }
+            }).to("#authForm", { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.2)" });
+        }
+
+        tabLogin.addEventListener('click', () => switchTab(true));
+        tabSignup.addEventListener('click', () => switchTab(false));
+
+        // --- 4. Password Strength Logic ---
+        pwdInput.addEventListener('input', (e) => {
+            if (isLogin) return;
+            const val = e.target.value;
+            const bars = document.querySelectorAll('.strength-bar');
+            const feedback = document.getElementById('passwordFeedback');
+
+            let strength = 0;
+            if (val.length >= 6) strength++;
+            if (val.length >= 10) strength++;
+            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+            bars.forEach(b => b.className = 'strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300');
+
+            if (val.length === 0) {
+                feedback.textContent = "Requis";
+                feedback.className = "text-[9px] font-black uppercase tracking-widest text-gray-400 text-right";
+                return;
+            }
+
+            if (strength === 1) {
+                bars[0].classList.replace('bg-gray-200', 'bg-red-500');
+                feedback.textContent = "Faible";
+                feedback.className = "text-[9px] font-black uppercase tracking-widest text-red-500 text-right";
+            } else if (strength === 2) {
+                bars[0].classList.replace('bg-gray-200', 'bg-orange-400');
+                bars[1].classList.replace('bg-gray-200', 'bg-orange-400');
+                feedback.textContent = "Moyen";
+                feedback.className = "text-[9px] font-black uppercase tracking-widest text-orange-400 text-right";
+            } else if (strength === 3) {
+                bars[0].classList.replace('bg-gray-200', 'bg-yellow-400');
+                bars[1].classList.replace('bg-gray-200', 'bg-yellow-400');
+                bars[2].classList.replace('bg-gray-200', 'bg-yellow-400');
+                feedback.textContent = "Bon";
+                feedback.className = "text-[9px] font-black uppercase tracking-widest text-yellow-500 text-right";
+            } else if (strength >= 4) {
+                bars.forEach(b => b.classList.replace('bg-gray-200', 'bg-green-500'));
+                feedback.textContent = "Excellent";
+                feedback.className = "text-[9px] font-black uppercase tracking-widest text-green-500 text-right";
+            }
+        });
+
+        function resetPasswordStrength() {
+            const bars = document.querySelectorAll('.strength-bar');
+            bars.forEach(b => b.className = 'strength-bar w-1/4 h-full bg-gray-200 transition-colors duration-300');
+            document.getElementById('passwordFeedback').textContent = "Faible";
+            document.getElementById('passwordFeedback').className = "text-[9px] font-black uppercase tracking-widest text-gray-400 text-right";
+        }
+
+        // --- 5. Form Submission ---
+        function setBtnLoading(isLoading) {
+            const btn = document.getElementById('submitBtn');
+            const span = btn.querySelector('span');
+            const icon = btn.querySelector('iconify-icon');
+            const loader = btn.querySelector('.loader-spinner');
+
+            if (isLoading) {
+                btn.style.pointerEvents = 'none';
+                span.style.display = 'none';
+                icon.style.display = 'none';
+                loader.style.display = 'block';
+            } else {
+                btn.style.pointerEvents = 'auto';
+                span.style.display = 'block';
+                icon.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        }
+
+        function showError(msg) {
+            formError.textContent = msg;
+            formError.classList.remove('hidden');
+            gsap.fromTo(formError, { x: -5 }, { x: 5, yoyo: true, repeat: 3, duration: 0.1 });
+        }
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            formError.classList.add('hidden');
+
+            const email = document.getElementById('email').value.trim();
+            const password = pwdInput.value;
+
+            // Form Validations
+            if (!isRecovery && !email) {
+                showError("Veuillez remplir l'email.");
+                return;
+            }
+            if (!password) {
+                showError("Veuillez renseigner le mot de passe.");
+                return;
+            }
+
+            if (!isLogin || isRecovery) {
+                const confirm = document.getElementById('confirmPassword').value;
+                if (password !== confirm) {
+                    showError("Les mots de passe ne correspondent pas.");
+                    return;
+                }
+                if (password.length < 6) {
+                    showError("Le mot de passe doit contenir au moins 6 caractères.");
+                    return;
+                }
+            }
+
+            setBtnLoading(true);
+
+            try {
+                if (isRecovery) {
+                    // RECOVERY Logic
+                    const { error } = await supabaseClient.auth.updateUser({ password: password });
+                    if (error) throw error;
+
+                    if (typeof showToast !== 'undefined') showToast("Mot de passe mis à jour avec succès !", "success");
+
+                    setTimeout(() => {
+                        window.location.hash = ''; // Remove the hash
+                        window.location.reload();
+                    }, 1500);
+
+                } else if (isLogin) {
+                    // LOGIN Logic — Bypass admin local si Supabase indisponible
+                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+                    const adminPassword = window.ADMIN_PASSWORD || '';
+
+                    if (adminEmails.includes(email.toLowerCase()) && password === adminPassword) {
+                        // Connexion admin locale directe
+                        finalizeAuth({ user_metadata: { role: 'admin' } }, email);
+                        return; // sortir sans appeler Supabase
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+
+                    finalizeAuth(data.user, email);
+
+                } else {
+                    // SIGNUP Logic
+                    let role = document.querySelector('input[name="role"]:checked').value;
+                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+                    if (adminEmails.includes(email.toLowerCase())) {
+                        role = 'admin';
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { full_name: email.split('@')[0], role } }
+                    });
+
+                    if (error) throw error;
+
+                    if (typeof showToast !== 'undefined') showToast("Inscription réussie ! Bienvenue.", "success");
+
+                    if (role === 'customer') {
+                        localStorage.setItem('newketWelcomeBonus', 'true');
+                        if (typeof PromoManager !== 'undefined') PromoManager.addPromo('BIENVENUE', 'percent', 0.05, 1);
+                    } else {
+                        localStorage.setItem('newketSupplierBonus', 'true');
+                    }
+
+                    finalizeAuth(data?.user || { user_metadata: { role } }, email);
+                }
+            } catch (err) {
+                console.error("Auth Error:", err);
+                let msg = err.message;
+                if (msg.includes("Invalid login credentials")) msg = "Email ou mot de passe incorrect.";
+                if (msg.includes("User already registered")) msg = "Cet utilisateur existe déjà.";
+                showError(msg);
+                setBtnLoading(false);
+            }
+        });
+
+        // Redirect based on role
+        function finalizeAuth(user, email) {
+            if (typeof showToast !== 'undefined') showToast("Authentification réussie", "success");
+
+            let role = user?.user_metadata?.role || 'customer';
+            const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+            if (adminEmails.includes(email.toLowerCase())) role = 'admin';
+
+            localStorage.setItem('newketUserEmail', email);
+            localStorage.setItem('newketRole', role);
+
+            setTimeout(() => {
+                if (role === 'admin') window.location.href = 'admin/dashboard.html';
+                else if (role === 'supplier') window.location.href = '/pages/vendor-dashboard.html';
+                else window.location.href = 'index.html';
+            }, 800);
+        }
+
+        // --- 6. Oauth Logic ---
+        async function signInWithProvider(provider) {
+            // UI feedback
+            if (typeof showToast !== 'undefined') showToast(`Connexion via ${provider}...`, "info");
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: provider,
+                    options: {
+                        redirectTo: window.location.origin + '/index.html'
+                    }
+                });
+                if (error) throw error;
+                // Redirect will be handled by supabase SDK immediately
+            } catch (e) {
+                console.error("OAuth Error:", e);
+                showError(`Erreur lors de la connexion via ${provider}.`);
+            }
+        }
+
+        function signInWithGoogle() { signInWithProvider('google'); }
+
+        function handleForgotPassword() {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                showError("Veuillez entrer votre email pour réinitialiser le mot de passe.");
+                return;
+            }
+            // Execute supabase reset (mock or real if configured)
+            supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/login.html',
+            }).then(({ error }) => {
+                if (error) showError("Erreur. L'email est-il correct ?");
+                else if (typeof showToast !== 'undefined') showToast("Email de réinitialisation envoyé.", "success");
+            });
+        }
+    </script>
+</body>
+
+</html>

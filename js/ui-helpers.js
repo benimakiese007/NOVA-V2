@@ -121,14 +121,14 @@ function buildProductCardHTML(p, options = {}) {
                 <button onclick="addToWishlist('${p.id}', event)" class="wishlist-btn ${isFavorite ? 'active' : ''}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
                     <iconify-icon icon="${isFavorite ? 'solar:heart-bold' : 'solar:heart-linear'}" width="18" style="${isFavorite ? 'color:#ef4444' : 'color:#6b7280'}"></iconify-icon>
                 </button>
-                <a href="product.html?id=${p.id}">
+                <a href="/pages/product.html?id=${p.id}">
                     <img src="${mainImg}" alt="${p.name}" loading="lazy" onerror="this.src='Images/default.png'">
                 </a>
             </div>
             <div class="product-info">
                 <div class="product-cat">${p.category || ''}</div>
                 <h3 class="product-title">
-                    <a href="product.html?id=${p.id}">${p.name}</a>
+                    <a href="/pages/product.html?id=${p.id}">${p.name}</a>
                 </h3>
                 <div class="product-rating">
                     ${starsHTML}
@@ -147,7 +147,7 @@ function buildProductCardHTML(p, options = {}) {
                         <iconify-icon icon="solar:cart-large-minimalistic-bold" width="16"></iconify-icon>
                         Ajouter
                     </button>
-                    <button onclick="if(navigator.share){ navigator.share({title:'${p.name.replace(/'/g, "\\'")} — NewKet', url: window.location.origin + '/product.html?id=${p.id}'}); } else { navigator.clipboard.writeText(window.location.origin + '/product.html?id=${p.id}'); if(window.showToast) showToast('Lien copié !', 'info'); }"
+                    <button onclick="if(navigator.share){ navigator.share({title:'${p.name.replace(/'/g, "\\'")} — NewKet', url: window.location.origin + '/pages/product.html?id=${p.id}'}); } else { navigator.clipboard.writeText(window.location.origin + '/pages/product.html?id=${p.id}'); if(window.showToast) showToast('Lien copié !', 'info'); }"
                         style="width:40px; height:40px; border-radius:10px; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:#6b7280; background:white; cursor:pointer; flex-shrink:0; transition: all 0.2s ease;"
                         onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'"
                         title="Partager">

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../js/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Panier — NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../js/supabase-client.js"></script>
+    <script type="module" src="../js/supabase-adapter.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(0, 0, 0, 0.02) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 0, 0, 0.03) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(0, 0, 0, 0.02) 0px, transparent 50%);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
+        }
+
+        /* Mobile Menu styles */
+        #mobileMenu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        #mobileMenu.active {
+            transform: translateX(0);
+        }
+
+        #mobileOverlay {
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        #mobileOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Hide number input spinners */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: none;
+        }
+    </style>
+</head>
+
+<body class="text-gray-900 antialiased min-h-screen flex flex-col">
+    <div class="bg-mesh"></div>
+
+    <div id="header-placeholder"></div>
+
+
+    <!-- Mobile sidebar and overlays now in header component -->
+
+
+    <div class="h-14 sm:h-16"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12">
+        <h1 class="text-4xl font-black tracking-tighter text-gray-900 mb-10">Votre Panier</h1>
+
+        <div class="flex flex-col lg:flex-row gap-10 items-start">
+            <!-- Left: Cart Items -->
+            <div class="flex-1 w-full space-y-6">
+                <div id="cartItemsContainer" class="glass-card rounded-[2.5rem] overflow-hidden">
+                    <div id="cartItemsList" class="divide-y divide-gray-100">
+                        <!-- Items injected by JS -->
+                    </div>
+
+                    <div class="p-12 text-center" id="emptyCartMessage">
+                        <div
+                            class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                            <iconify-icon icon="solar:bag-3-outline" width="40"></iconify-icon>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2">Votre sélection est vide</h2>
+                        <p class="text-gray-500 mb-6">L'élégance n'attend que vous. Explorez nos collections exclusives
+                            pour commencer votre expérience NewKet.</p>
+                        <a href="/pages/catalog.html"
+                            class="inline-flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                            Voir le catalogue
+                            <iconify-icon icon="solar:alt-arrow-right-linear" width="18"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Summary -->
+            <div class="w-full lg:w-[420px] space-y-6">
+                <div class="glass-card rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 sticky top-36">
+                    <h3 class="text-xl font-black tracking-tighter mb-6 sm:mb-8">Résumé</h3>
+
+                    <div class="space-y-4 text-sm mb-6">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Sous-total</span>
+                            <span class="font-semibold text-gray-900" id="summarySubtotal">0 FC</span>
+                        </div>
+                        <div id="shippingDetailsContainer" class="space-y-1 mb-2 mt-2">
+                            <!-- Dynamically injected shipping per shop -->
+                            <div class="flex justify-between text-gray-600 text-xs">
+                                <span>Livraison</span>
+                                <span class="text-green-600 font-medium">Gratuite</span>
+                            </div>
+                        </div>
+                        <!-- Points NewKet Section -->
+                        <div class="space-y-3 pb-4 border-b border-gray-100" id="pointsSection">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 flex items-center gap-1">
+                                    <iconify-icon icon="solar:star-bold" width="16"
+                                        class="text-gray-400"></iconify-icon>
+                                    Points NewKet
+                                </span>
+                                <span class="text-xs font-bold text-gray-400 text-right flex-1 ml-2"
+                                    id="availablePointsText">Chargement...</span>
+                            </div>
+                            <div id="usePointsContainer" class="hidden">
+                                <button id="applyPointsBtn"
+                                    class="w-full flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-black transition-all group">
+                                    <span
+                                        class="text-xs font-bold uppercase tracking-wider text-gray-500 group-hover:text-black">Utiliser
+                                        mes points</span>
+                                    <div
+                                        class="w-10 h-6 bg-gray-100 rounded-full p-1 transition-all group-data-[active=true]:bg-black relative">
+                                        <div
+                                            class="w-4 h-4 bg-white rounded-full shadow-sm transition-all group-data-[active=true]:translate-x-4">
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3" id="promoSection">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Code promo</span>
+                                <button id="addPromoBtn"
+                                    class="text-gray-900 hover:text-black font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:add-circle-linear" width="16"></iconify-icon>
+                                    Ajouter
+                                </button>
+                            </div>
+
+                            <!-- Promo Input (Hidden by default) -->
+                            <div id="promoInputContainer" class="hidden">
+                                <div class="flex gap-2">
+                                    <input type="text" id="promoInput" placeholder="Saisir un code"
+                                        class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 uppercase">
+                                    <button id="applyPromoBtn"
+                                        class="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-black transition-colors">
+                                        Appliquer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Active Promo (Hidden by default) -->
+                            <div id="activePromoBadge"
+                                class="hidden bg-gray-50 border border-gray-100 rounded-xl p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <iconify-icon icon="solar:ticket-bold" width="18"></iconify-icon>
+                                    <span class="text-xs font-bold uppercase tracking-wider"
+                                        id="appliedCodeText">NEWKET10</span>
+                                </div>
+                                <button id="removePromoBtn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <iconify-icon icon="solar:close-circle-bold" width="20"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remise (Hidden by default) -->
+                        <div id="summaryDiscountRow" class="hidden flex justify-between text-green-600">
+                            <span>Remise</span>
+                            <span class="font-semibold" id="summaryDiscount">-0 FC</span>
+                        </div>
+
+                        <div class="h-px bg-gray-100 pt-2"></div>
+                        <div class="flex justify-between text-lg font-bold text-gray-900 uppercase tracking-tight">
+                            <span>Total</span>
+                            <span id="summaryTotal">0 FC</span>
+                        </div>
+                    </div>
+
+                    <button onclick="checkout()"
+                        class="w-full hero-gradient text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/20 hover:shadow-black/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-500 flex items-center justify-center gap-3">
+                        Payer maintenant
+                        <iconify-icon icon="solar:lock-password-bold" width="20"></iconify-icon>
+                    </button>
+
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center gap-2 text-[11px] text-gray-500 bg-gray-50 p-3 rounded-lg">
+                            <iconify-icon icon="solar:verified-check-bold" width="16"
+                                class="text-blue-500"></iconify-icon>
+                            Paiement sécurisé avec cryptage SSL 256-bits.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="checkoutOverlay"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60  opacity-0 invisible transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-10 text-center shadow-2xl transform scale-95 transition-all duration-500 overflow-hidden"
+            id="checkoutModal">
+
+            <!-- Step 1: Selection -->
+            <div id="step-selection" class="space-y-8">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mb-4">
+                        <iconify-icon icon="solar:wallet-money-bold" width="32"></iconify-icon>
+                    </div>
+                    <h2 class="text-2xl font-black tracking-tight text-gray-900">Paiement Sécurisé</h2>
+                    <p class="text-gray-500 text-sm">Choisissez votre opérateur Mobile Money</p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="selectOperator('M-Pesa', '#e11d48')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center group-hover:bg-rose-100">
+                                <!-- M-Pesa Modal Icon -->
+                                <svg width="28" height="28" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="45" y="5" width="30" height="55" rx="4" stroke="#e11d48" stroke-width="5"
+                                        fill="none" />
+                                    <path d="M20 30 Q60 5 100 30 L95 40 Q60 15 25 40 Z" fill="#2eb44b" />
+                                    <text x="60" y="85" font-family="Arial" font-weight="900" font-size="22"
+                                        text-anchor="middle" fill="#e11d48">m-pesa</text>
+                                </svg>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">M-Pesa</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+
+                    <button onclick="selectOperator('Orange Money', '#ea580c')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center group-hover:bg-orange-100">
+                                <!-- Orange Money Modal Icon -->
+                                <svg width="28" height="28" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 70 L55 35 M55 35 V55 M55 35 H35" stroke="#ff7900" stroke-width="12"
+                                        stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                                    <path d="M80 30 L45 65 M45 65 V45 M45 65 H65" stroke="#ff7900" stroke-width="12"
+                                        stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5" />
+                                </svg>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">Orange Money</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+
+                    <button onclick="selectOperator('Airtel Money', '#dc2626')"
+                        class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100">
+                                <span class="text-red-600 font-black text-xs">AM</span>
+                            </div>
+                            <div class="text-left font-bold text-gray-900 uppercase tracking-tight">Airtel Money</div>
+                        </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" width="18"
+                            class="text-gray-300 group-hover:text-black"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Phone Number -->
+            <div id="step-phone" class="hidden space-y-8 animate-in active">
+                <button onclick="backToSelection()"
+                    class="absolute left-6 top-6 text-gray-400 hover:text-black transition-colors">
+                    <iconify-icon icon="solar:alt-arrow-left-linear" width="24"></iconify-icon>
+                </button>
+
+                <div class="flex flex-col items-center">
+                    <div id="operatorLogo"
+                        class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 text-white font-black text-xl shadow-lg">
+                        <!-- Filled by JS -->
+                    </div>
+                    <h2 class="text-2xl font-black tracking-tight text-gray-900" id="selectedOperatorName">Opérateur
+                    </h2>
+                    <p class="text-gray-500 text-sm">Entrez votre numéro pour valider</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <span
+                            class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors">
+                            <iconify-icon icon="solar:phone-linear" width="22"></iconify-icon>
+                        </span>
+                        <input type="tel" id="checkoutPhone" placeholder="08XXXXXXXX"
+                            class="w-full pl-14 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-black transition-all font-bold tracking-widest">
+                    </div>
+                </div>
+
+                <button onclick="processFinalPayment()" id="finalPayBtn"
+                    class="w-full hero-gradient text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/20 hover:shadow-black/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-500 flex items-center justify-center gap-3">
+                    Confirmer le Paiement
+                    <iconify-icon icon="solar:check-read-bold" width="20"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="successState" class="hidden animate-in active">
+                <div
+                    class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <iconify-icon icon="solar:check-circle-bold" width="48"></iconify-icon>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Paiement Réussi</h2>
+                <p class="text-gray-500 text-sm mb-8 leading-relaxed">Votre acquisition exclusive #<span
+                        id="orderNumber" class="font-bold text-gray-900">XXXX</span> est en route. Un agent vous
+                    contactera sous peu.</p>
+
+                <div class="bg-gray-50 rounded-2xl p-5 mb-8 space-y-3 text-sm">
+                    <div class="flex justify-between text-gray-500 uppercase tracking-widest text-[10px] font-black">
+                        <span>Opérateur</span>
+                        <span class="text-gray-900" id="receiptOperator">-</span>
+                    </div>
+                    <div class="flex justify-between text-gray-500 uppercase tracking-widest text-[10px] font-black">
+                        <span>Montant</span>
+                        <span class="text-gray-900 font-black" id="modalTotal">0 FC</span>
+                    </div>
+                </div>
+
+                <button onclick="closeCheckoutModal()"
+                    class="w-full bg-black hover:bg-zinc-800 text-white py-4 rounded-xl font-bold transition-all shadow-xl">
+                    Retour à l'accueil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-[101]"></div>
+
+
+
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/favorites.js"></script>
+    <script type="module" src="../js/currency.js"></script>
+    <script type="module" src="../js/products.js"></script>
+    <script type="module" src="../js/orders.js"></script>
+    <script type="module" src="../js/managers.js"></script>
+    <script type="module" src="../js/ui-helpers.js"></script>
+    <script type="module" src="../js/ui.js"></script>
+    <script type="module" src="../js/search.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/components-loader.js"></script>
+    <script type="module" src="../js/realtime-notifications.js"></script>
+
+    <script>
+        function renderCart() {
+            console.log('[NewKet] Rendering cart...');
+            const listContainer = document.getElementById('cartItemsList');
+            const emptyMsg = document.getElementById('emptyCartMessage');
+
+            if (!listContainer || !emptyMsg) {
+                console.error('[NewKet] Cart containers not found');
+                return;
+            }
+
+            const cart = window.CartManager ? CartManager.getCart() : [];
+
+            if (cart.length === 0) {
+                listContainer.innerHTML = '';
+                listContainer.classList.add('hidden');
+                emptyMsg.classList.remove('hidden');
+                updateSummary(0, 0, []);
+                return;
+            }
+
+            emptyMsg.classList.add('hidden');
+            listContainer.classList.remove('hidden');
+
+            // 1. Group items by shop (using vendorInfo.shopName if available, else "Boutique Officielle" or category)
+            const groupedCart = {};
+            cart.forEach(item => {
+                let shopName = 'Boutique Officielle';
+                if (item.vendorInfo && item.vendorInfo.shopName) {
+                    shopName = item.vendorInfo.shopName;
+                } else if (item.shop) {
+                    shopName = item.shop;
+                }
+
+                if (!groupedCart[shopName]) {
+                    groupedCart[shopName] = [];
+                }
+                groupedCart[shopName].push(item);
+            });
+
+            let html = '';
+            let totalSubtotalCDF = 0;
+            let totalShippingCDF = 0;
+            const shippingPerShop = [];
+            const BASE_SHIPPING_FEE_CDF = 10000; // Example: 10,000 FC per shop
+
+            for (const [shopName, items] of Object.entries(groupedCart)) {
+
+                // Add Shop Header
+                html += `
+                    <div class="bg-gray-50/50 px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                        <iconify-icon icon="solar:shop-bold" width="18" class="text-gray-400"></iconify-icon>
+                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest">${shopName}</h3>
+                    </div>
+                    <div class="divide-y divide-gray-50">
+                `;
+
+                // Calculate shipping for this shop
+                // We could make it free over a certain amount per shop, for now it's a flat fee.
+                let shopSubtotal = 0;
+
+                items.forEach(item => {
+                    try {
+                        const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+                        shopSubtotal += itemTotal;
+                        totalSubtotalCDF += itemTotal;
+
+                        html += `
+                            <div class="px-2 py-3 sm:p-5 flex items-center gap-2 sm:gap-4 group">
+                                <div class="w-14 h-14 sm:w-20 sm:h-20 bg-gray-50 rounded-xl sm:rounded-2xl overflow-hidden flex-shrink-0 p-1 sm:p-2">
+                                    <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 sm:mb-1">${item.category || 'Collection'}</h4>
+                                    <h3 class="text-[11px] sm:text-base font-bold text-gray-900 mb-0.5 truncate">${item.name}</h3>
+                                    <div class="text-gray-900 font-bold text-[10px] sm:text-sm">${CurrencyManager.formatPrice(item.price, CurrencyManager.currentCurrency, true)}</div>
+                                </div>
+                                <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                                    <div class="flex items-center bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl overflow-hidden h-7 sm:h-9 w-20 sm:w-28 shadow-sm">
+                                        <button onclick="updateQty('${item.id}', -1)" class="w-7 sm:w-9 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-r border-gray-200 text-gray-900 text-xs sm:text-lg font-bold">
+                                            -
+                                        </button>
+                                        <input type="number" value="${item.quantity}" 
+                                            oninput="handleManualQtyInput('${item.id}', this)"
+                                            onblur="handleManualQty('${item.id}', this.value)"
+                                            onfocus="this.select()"
+                                            class="flex-1 min-w-0 h-full text-center bg-transparent border-none text-[10px] sm:text-xs font-bold focus:ring-0 p-0 text-gray-900">
+                                        <button onclick="updateQty('${item.id}', 1)" class="w-7 sm:w-9 h-full flex items-center justify-center shrink-0 hover:bg-gray-200 transition-colors border-l border-gray-200 text-gray-900 text-xs sm:text-lg font-bold">
+                                            +
+                                        </button>
+                                    </div>
+                                    <button onclick="removeItem('${item.id}')" class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                        <iconify-icon icon="solar:trash-bin-trash-bold" width="12" class="sm:hidden"></iconify-icon>
+                                        <iconify-icon icon="solar:trash-bin-trash-bold" width="16" class="hidden sm:block"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } catch (err) {
+                        console.error("[NewKet] Error rendering cart item:", err, item);
+                    }
+                });
+
+                // Apply free shipping rule per shop (e.g. over 125,000 FC)
+                let shopShippingFee = BASE_SHIPPING_FEE_CDF;
+                if (shopSubtotal >= 125000) {
+                    shopShippingFee = 0;
+                }
+
+                totalShippingCDF += shopShippingFee;
+                shippingPerShop.push({ name: shopName, fee: shopShippingFee });
+
+                html += `</div>`; // End divide-y
+            }
+
+            listContainer.innerHTML = html;
+            updateSummary(totalSubtotalCDF, totalShippingCDF, shippingPerShop);
+        }
+
+        function handleManualQty(id, value) {
+            CartManager.setQuantity(id, value);
+            renderCart();
+        }
+
+        function handleManualQtyInput(id, input) {
+            CartManager.setQuantity(id, input.value);
+            // Will re-render completely instead of partial update to handle complex shipping logic correctly
+            if (typeof debounce === 'function') {
+                debounce(renderCart, 500)();
+            }
+        }
+
+        function updateQty(id, delta) {
+            console.log(`[NewKet] updateQty: ${id}, delta: ${delta}`);
+            CartManager.updateQuantity(id, delta);
+            renderCart();
+        }
+
+        function removeItem(id) {
+            CartManager.removeItem(id);
+            renderCart();
+            if (window.showToast) showToast('Article retiré du panier', 'info');
+        }
+
+        let currentPromo = null;
+        let pointsUsed = 0;
+        let usePointsActive = false;
+        let availablePoints = 0;
+
+        async function initPoints() {
+            const email = localStorage.getItem('newketUserEmail');
+            if (!email) {
+                document.getElementById('availablePointsText').textContent = 'Connectez-vous';
+                return;
+            }
+
+            const stats = OrderManager.getCustomerStats(email);
+            availablePoints = stats.newketPoints;
+            document.getElementById('availablePointsText').textContent = availablePoints + ' PTS';
+
+            if (availablePoints > 0) {
+                document.getElementById('usePointsContainer').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('applyPointsBtn').addEventListener('click', () => {
+            const btn = document.getElementById('applyPointsBtn');
+            usePointsActive = !usePointsActive;
+            btn.setAttribute('data-active', usePointsActive);
+
+            if (usePointsActive) {
+                pointsUsed = availablePoints;
+                const pointsValueCDF = pointsUsed * 50;
+                if (window.showToast) showToast(`Remise de ${CurrencyManager.formatPrice(pointsValueCDF, 'CDF', false)} appliquée !`, 'success');
+            } else {
+                pointsUsed = 0;
+            }
+
+            const cart = CartManager.getCart();
+            renderCart();
+        });
+
+        function updateSummary(subtotal, totalShipping = 0, shippingDetails = []) {
+            // subtotal is in CDF
+            document.getElementById('summarySubtotal').textContent = CurrencyManager.formatPrice(subtotal, CurrencyManager.currentCurrency, true);
+
+            // Render shipping details
+            const shippingContainer = document.getElementById('shippingDetailsContainer');
+            if (shippingContainer) {
+                if (shippingDetails.length === 0) {
+                    shippingContainer.innerHTML = `
+                        <div class="flex justify-between text-gray-600 text-xs">
+                            <span>Livraison</span>
+                            <span class="text-green-600 font-medium">Gratuite</span>
+                        </div>
+                    `;
+                } else {
+                    let shippingHtml = '';
+                    shippingDetails.forEach(shop => {
+                        const feeDisplay = shop.fee === 0
+                            ? '<span class="text-green-600 font-medium">Gratuite</span>'
+                            : `<span class="font-medium text-gray-900">${CurrencyManager.formatPrice(shop.fee, CurrencyManager.currentCurrency, true)}</span>`;
+                        shippingHtml += `
+                        <div class="flex justify-between text-gray-500 text-[10px] sm:text-xs">
+                            <span class="truncate pr-2">Livraison (${shop.name})</span>
+                            ${feeDisplay}
+                        </div>
+                        `;
+                    });
+
+                    if (totalShipping > 0) {
+                        shippingHtml += `
+                        <div class="flex justify-between text-gray-600 text-xs font-bold pt-1 border-t border-gray-100 mt-1">
+                            <span>Total Livraison</span>
+                            <span class="text-gray-900 font-bold">${CurrencyManager.formatPrice(totalShipping, CurrencyManager.currentCurrency, true)}</span>
+                        </div>
+                        `;
+                    }
+                    shippingContainer.innerHTML = shippingHtml;
+                }
+            }
+
+            let promoDiscountUSD = 0;
+            const subtotalUSD = CurrencyManager.convert(subtotal, true);
+            const shippingUSD = CurrencyManager.convert(totalShipping, true);
+
+            if (currentPromo) {
+                if (currentPromo.type === 'percent') {
+                    promoDiscountUSD = subtotalUSD * parseFloat(currentPromo.value);
+                } else {
+                    promoDiscountUSD = parseFloat(currentPromo.value);
+                }
+            }
+
+            const pointsDiscountCDF = usePointsActive ? (pointsUsed * 50) : 0;
+            const pointsDiscountUSD = CurrencyManager.convert(pointsDiscountCDF, true);
+
+            const totalDiscountUSD = promoDiscountUSD + pointsDiscountUSD;
+            const finalTotalUSD = Math.max(0, (subtotalUSD + shippingUSD) - totalDiscountUSD);
+            const finalTotalCDF = CurrencyManager.convert(finalTotalUSD, false);
+
+            const discountRow = document.getElementById('summaryDiscountRow');
+            if (totalDiscountUSD > 0) {
+                discountRow.classList.remove('hidden');
+                // totalDiscountUSD is in USD, so isBaseAmount should be false
+                document.getElementById('summaryDiscount').textContent = '-' + CurrencyManager.formatPrice(totalDiscountUSD, CurrencyManager.currentCurrency, false);
+            } else {
+                discountRow.classList.add('hidden');
+            }
+
+            // finalTotalCDF is in CDF, so isBaseAmount should be true
+            document.getElementById('summaryTotal').textContent = CurrencyManager.formatPrice(finalTotalCDF, CurrencyManager.currentCurrency, true);
+        }
+
+        let selectedOperator = null;
+
+        function checkout() {
+            const cart = CartManager.getCart();
+            if (cart.length === 0) {
+                if (window.showToast) showToast('Votre panier est vide', 'error');
+                return;
+            }
+
+            const email = localStorage.getItem('newketUserEmail');
+            if (!email) {
+                if (window.showToast) showToast('Veuillez vous connecter pour commander', 'error');
+                window.location.href = '/pages/login.html';
+                return;
+            }
+
+            // Show Modal and Reset to Selection Step
+            const overlay = document.getElementById('checkoutOverlay');
+            overlay.classList.remove('invisible', 'opacity-0');
+            backToSelection();
+        }
+
+        function selectOperator(name, color) {
+            selectedOperator = name;
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('step-phone').classList.remove('hidden');
+
+            const logo = document.getElementById('operatorLogo');
+            logo.style.backgroundColor = color;
+            logo.textContent = name.split(' ').map(n => n[0]).join('');
+            document.getElementById('selectedOperatorName').textContent = name;
+        }
+
+        function backToSelection() {
+            selectedOperator = null;
+            document.getElementById('step-phone').classList.add('hidden');
+            document.getElementById('successState').classList.add('hidden');
+            document.getElementById('step-selection').classList.remove('hidden');
+        }
+
+        async function processFinalPayment() {
+            const phone = document.getElementById('checkoutPhone').value.trim();
+            if (!phone || phone.length < 10) {
+                if (window.showToast) showToast('Veuillez entrer un numéro Mobile Money valide.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('finalPayBtn');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon> Initialisation...'
+
+            try {
+                const cart = CartManager.getCart();
+                if (!cart || cart.length === 0) throw new Error('Panier vide');
+
+                // 1. Recalculate Verified Total (Security)
+                const productIds = cart.map(item => item.id);
+                const serverProducts = await window.SupabaseAdapter.fetchWithFilters('products', {
+                    select: 'id, price',
+                    in: [['id', productIds]],
+                    skipCache: true
+                });
+
+                let verifiedSubtotal = 0;
+                const verifiedCart = [];
+                if (serverProducts && serverProducts.length > 0) {
+                    const serverPriceMap = {};
+                    serverProducts.forEach(p => { serverPriceMap[p.id] = p.price; });
+                    for (const item of cart) {
+                        const serverPrice = serverPriceMap[item.id] || parseFloat(item.price);
+                        verifiedCart.push({ ...item, price: serverPrice });
+                        verifiedSubtotal += serverPrice * item.quantity;
+                    }
+                } else {
+                    verifiedCart.push(...cart);
+                    verifiedSubtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                }
+
+                const verifiedSubtotalUSD = CurrencyManager.convert(verifiedSubtotal, true);
+                let promoDiscountUSD = 0;
+                if (currentPromo) {
+                    promoDiscountUSD = currentPromo.type === 'percent'
+                        ? verifiedSubtotalUSD * parseFloat(currentPromo.value)
+                        : parseFloat(currentPromo.value);
+                }
+                const pointsDiscountCDF = usePointsActive ? (pointsUsed * 50) : 0;
+                const pointsDiscountUSD = CurrencyManager.convert(pointsDiscountCDF, true);
+
+                const finalAmountUSD = Math.max(0, verifiedSubtotalUSD - (promoDiscountUSD + pointsDiscountUSD));
+                const finalAmountCDF = Math.round(CurrencyManager.convert(finalAmountUSD, false));
+                const orderId = 'EN-' + Date.now();
+
+                // 2. REAL PAYMENT CALL (Supabase Edge Function)
+                btn.innerHTML = '<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon> Traitement Mobile Money...';
+
+                if (!window.supabaseClient) {
+                    throw new Error("Client Supabase non initialisé.");
+                }
+
+                const { data, error } = await window.supabaseClient.functions.invoke('pay', {
+                    body: {
+                        amount: finalAmountCDF,
+                        phone: phone,
+                        orderId: orderId,
+                        operator: selectedOperator
+                    }
+                });
+
+                if (error) throw new Error("Erreur API Paiement: " + error.message);
+                if (data && data.status === 'failed') throw new Error("Paiement refusé : " + (data.message || 'Hélas, réessayez.'));
+
+                // 3. Create Order in DB (Post-Payment Initiation)
+                const orderData = {
+                    id: orderId,
+                    total: finalAmountCDF,
+                    customer_email: localStorage.getItem('newketUserEmail'),
+                    items: verifiedCart,
+                    paymentMethod: selectedOperator,
+                    phoneNumber: phone,
+                    pointsUsed: pointsUsed
+                };
+
+                const order = await OrderManager.addOrder(orderData);
+
+                if (order) {
+                    ActivityManager.log(`Commande ${order.id} initiée via ${selectedOperator} (${phone})`, 'order');
+                    if (currentPromo) await PromoManager.incrementUsage(currentPromo.code, orderData.customer_email);
+
+                    document.getElementById('step-phone').classList.add('hidden');
+                    document.getElementById('successState').classList.remove('hidden');
+                    document.getElementById('orderNumber').textContent = order.id;
+                    document.getElementById('receiptOperator').textContent = selectedOperator;
+                    document.getElementById('modalTotal').textContent = CurrencyManager.formatPrice(finalAmountCDF, 'CDF', true);
+
+                    CartManager.clear();
+                    createConfetti();
+                    if (window.showToast) showToast('Veuillez confirmer le paiement sur votre téléphone !', 'success');
+                } else {
+                    throw new Error("Paiement initié mais échec de création de commande.");
+                }
+            } catch (err) {
+                console.error(err);
+                const msg = err.message || 'Erreur lors du paiement.';
+                if (window.showToast) showToast(msg, 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutOverlay').classList.add('invisible', 'opacity-0');
+            location.href = 'index.html';
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('div');
+                c.className = 'absolute w-2 h-2 rounded-full';
+                c.style.backgroundColor = ['#000000', '#333333', '#666666', '#999999'][Math.floor(Math.random() * 4)];
+                c.style.left = Math.random() * 100 + '%';
+                c.style.top = '-10px';
+                c.style.transition = `all ${1 + Math.random() * 2}s linear`;
+                container.appendChild(c);
+                setTimeout(() => {
+                    c.style.top = '100%';
+                    c.style.opacity = '0';
+                    c.style.transform = `translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 360}deg)`;
+                }, 10);
+            }
+        }
+
+        // Promo Logic
+        document.getElementById('addPromoBtn').addEventListener('click', () => {
+            document.getElementById('promoInputContainer').classList.remove('hidden');
+            document.getElementById('addPromoBtn').classList.add('hidden');
+        });
+
+        document.getElementById('applyPromoBtn').addEventListener('click', () => {
+            const code = document.getElementById('promoInput').value.trim().toUpperCase();
+            if (!code) return;
+
+            const res = PromoManager.canApply(code);
+            if (res.valid) {
+                const promos = PromoManager.getPromos();
+                currentPromo = promos[code];
+                document.getElementById('appliedCodeText').textContent = code;
+                document.getElementById('activePromoBadge').classList.remove('hidden');
+                document.getElementById('promoInputContainer').classList.add('hidden');
+
+                const cart = CartManager.getCart();
+                const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                updateSummary(total);
+                if (window.showToast) showToast('Code promo appliqué !', 'success');
+            } else {
+                if (window.showToast) showToast(res.message, 'error');
+            }
+        });
+
+        document.getElementById('removePromoBtn').addEventListener('click', () => {
+            currentPromo = null;
+            document.getElementById('activePromoBadge').classList.add('hidden');
+            document.getElementById('addPromoBtn').classList.remove('hidden');
+            document.getElementById('promoInput').value = '';
+
+            const cart = CartManager.getCart();
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            updateSummary(total);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.newketInitialized) {
+                renderCart();
+                initPoints();
+            } else {
+                window.addEventListener('newketInitialized', () => {
+                    renderCart();
+                    initPoints();
+                });
+            }
+            window.addEventListener('currencyChanged', renderCart);
+        });
+    </script>
+
+</body>
+
+</html>

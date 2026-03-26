@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <script src="../js/theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="../Images/Logo NewKet V2.jpeg">
+    <link rel="icon" type="image/png" href="../Images/Logo NewKet V2.jpeg">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NewKet">
+    <title>Mon Espace Client | NewKet</title>
+    <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
+    <link rel="stylesheet" href="/src/input.css">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../js/supabase-client.js"></script>
+    <script type="module" src="../js/supabase-adapter.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .sidebar-link.active {
+            background: #000000;
+            color: white;
+        }
+
+        /* Tab transitions */
+        .tab-content {
+            animation: tabFadeIn 0.25s ease forwards;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Avatar initials */
+        .user-avatar-display {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 9999px;
+        }
+
+        .status-standard {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .status-premium {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        .status-vip {
+            background: #0f172a;
+            color: #fbbf24;
+        }
+
+        /* Logout button */
+        .sidebar-logout {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            width: 100%;
+            cursor: pointer;
+            background: none;
+            border: none;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div id="header-placeholder"></div>
+
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 flex-shrink-0">
+            <div class="glass-panel p-6 sticky top-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div id="userAvatarDisplay"
+                        class="user-avatar-display w-12 h-12 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-gray-900" id="userDisplayName">Mon Compte</h2>
+                        <span id="userStatusBadge" class="status-badge status-standard">Standard</span>
+                    </div>
+                </div>
+                <nav class="space-y-1">
+                    <a href="#" onclick="switchTab('orders')" class="sidebar-link active" id="link-orders">
+                        <iconify-icon icon="solar:bag-3-bold" width="20"></iconify-icon>
+                        Mes Commandes
+                    </a>
+                    <a href="#" onclick="switchTab('favorites')" class="sidebar-link" id="link-favorites">
+                        <iconify-icon icon="solar:heart-bold" width="20"></iconify-icon>
+                        Mes Favoris
+                    </a>
+                    <a href="#" onclick="switchTab('notifications')" class="sidebar-link" id="link-notifications">
+                        <iconify-icon icon="solar:bell-bold" width="20"></iconify-icon>
+                        Notifications
+                        <span
+                            class="notification-badge ml-auto bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </a>
+                    <a href="#" onclick="switchTab('settings')" class="sidebar-link" id="link-settings">
+                        <iconify-icon icon="solar:settings-bold" width="20"></iconify-icon>
+                        Paramètres
+                    </a>
+                    <!-- Admin Link for Suppliers -->
+                    <div id="supplier-link-container" class="hidden">
+                        <div class="h-px bg-gray-100 my-4 mx-2"></div>
+                        <a href="admin/dashboard.html" class="sidebar-link bg-red-50 text-red-600 hover:bg-red-100">
+                            <iconify-icon icon="solar:shield-user-bold" width="20"></iconify-icon>
+                            Espace Vendeur
+                        </a>
+                    </div>
+                </nav>
+                <!-- Logout -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <button class="sidebar-logout" onclick="logoutUser()">
+                        <iconify-icon icon="solar:logout-2-bold" width="20"></iconify-icon>
+                        Se déconnecter
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="flex-1 min-w-0">
+            <!-- Orders Tab -->
+            <div id="tab-orders" class="space-y-6 tab-content">
+                <h1 class="text-2xl font-bold tracking-tight">Historique des commandes</h1>
+                <div id="orders-list" class="space-y-4">
+                    <!-- Orders injected here -->
+                </div>
+            </div>
+
+            <!-- Favorites Tab -->
+            <div id="tab-favorites" class="space-y-6 hidden">
+                <h1 class="text-2xl font-bold tracking-tight">Mes produits favoris</h1>
+                <div id="favorites-grid"
+                    class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <!-- Favorites injected here -->
+                </div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="space-y-8 animate-in active">
+                <!-- Stats Grid for Customers -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:wallet-money-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total dépensé</p>
+                        <div class="text-2xl font-black text-gray-900" id="customer-total-spent">0 FC</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:bag-heart-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Commandes</p>
+                        <div class="text-2xl font-black text-gray-900" id="customer-order-count">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:star-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Moyenne / Panier</p>
+                        <div class="text-2xl font-black text-gray-900" id="customer-avg-order">0 FC</div>
+                    </div>
+                    <div class="bg-black text-white p-6 rounded-3xl shadow-xl shadow-black/10 flex flex-col gap-1">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:star-square-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Points NewKet</p>
+                        <div class="text-2xl font-black" id="customer-newket-points">0 PTS</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-bold">Activités Récentes</h2>
+                        <iconify-icon icon="solar:history-bold" width="20" class="text-gray-300"></iconify-icon>
+                    </div>
+                    <div id="customer-activity-feed" class="space-y-4">
+                        <!-- Activities injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div id="tab-notifications" class="space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold tracking-tight">Mes Notifications</h1>
+                    <div class="flex gap-2">
+                        <button onclick="NotificationManager.markAllAsRead(); renderDashboardNotifications();"
+                            class="text-[10px] font-bold uppercase tracking-widest px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">Tout
+                            lire</button>
+                        <button onclick="NotificationManager.clearAll(); renderDashboardNotifications();"
+                            class="text-[10px] font-bold uppercase tracking-widest px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">Effacer</button>
+                    </div>
+                </div>
+                <div id="dashboard-notifications-list" class="space-y-3">
+                    <!-- Notifications injected here -->
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="tab-settings" class="space-y-8 hidden">
+                <h1 class="text-2xl font-bold tracking-tight">Mon Profil</h1>
+
+                <!-- Profile Info -->
+                <div class="glass-panel p-8 max-w-xl">
+                    <h2 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-6">Informations
+                        personnelles</h2>
+                    <form class="space-y-5" id="profileForm">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                            <input type="text" id="profName"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="profEmail"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                            <input type="tel" id="profPhone"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">Enregistrer
+                            le profil</button>
+                    </form>
+                </div>
+
+                <!-- Delivery Address -->
+                <div class="glass-panel p-8 max-w-xl">
+                    <h2 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-6">Adresse de livraison
+                    </h2>
+                    <form class="space-y-5" id="addressForm">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Rue / Avenue</label>
+                            <input type="text" id="addrStreet" placeholder="Ex: Av. du 24 Novembre"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quartier</label>
+                                <input type="text" id="addrQuartier" placeholder="Ex: Gombe"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                                <input type="text" id="addrCity" placeholder="Ex: Kinshasa"
+                                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tél. secondaire
+                                (livraison)</label>
+                            <input type="tel" id="addrPhone" placeholder="Ex: +243 8XX XXX XXX"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">Sauvegarder
+                            l'adresse</button>
+                    </form>
+                </div>
+
+                <!-- Change Password -->
+                <div class="glass-panel p-8 max-w-xl">
+                    <h2 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-6">Modifier le mot de passe
+                    </h2>
+                    <form class="space-y-5" id="passwordForm">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nouveau mot de passe</label>
+                            <input type="password" id="newPassword" placeholder="Minimum 8 caractères"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de
+                                passe</label>
+                            <input type="password" id="confirmPassword" placeholder="Répéter le mot de passe"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-black transition-colors">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">Mettre
+                            à jour</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderModal"
+        class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/60  p-4">
+        <div
+            class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden animate-in fade-in zoom-in duration-300">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <div>
+                    <h2 class="text-xl font-bold" id="modalOrderIdText">Détails de la commande</h2>
+                    <p class="text-sm text-gray-500" id="modalOrderDateText"></p>
+                </div>
+                <button onclick="closeOrderModal()"
+                    class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+                    <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-8">
+                <!-- Status & Info -->
+                <div class="flex flex-wrap gap-4 justify-between items-start">
+                    <div class="space-y-1">
+                        <div class="text-xs font-bold text-gray-400 uppercase">Statut</div>
+                        <div id="modalOrderStatus" class="px-3 py-1 rounded-full text-xs font-bold inline-block"></div>
+                    </div>
+                    <div class="space-y-1 text-right">
+                        <div class="text-xs font-bold text-gray-400 uppercase">Mode de paiement</div>
+                        <div class="text-sm font-medium">Paiement à la livraison</div>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div class="space-y-4">
+                    <div class="text-xs font-bold text-gray-400 uppercase pb-2 border-b border-gray-100">Articles</div>
+                    <div id="modalOrderItems" class="space-y-4">
+                        <!-- Items injected here -->
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="bg-gray-50 rounded-xl p-6 space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Sous-total</span>
+                        <span id="modalOrderSubtotal" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Livraison</span>
+                        <span class="font-medium text-green-600">Gratuit</span>
+                    </div>
+                    <div class="flex justify-between pt-3 border-t border-gray-200">
+                        <span class="font-bold">Total</span>
+                        <span id="modalOrderTotal" class="font-black text-xl"></span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button onclick="downloadInvoice()"
+                        class="flex-1 py-3 bg-gray-100 text-black rounded-xl font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                        <iconify-icon icon="solar:download-bold" width="20"></iconify-icon>
+                        Facture PDF
+                    </button>
+                    <button onclick="closeOrderModal()"
+                        class="flex-1 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-colors">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Invoice Template (for printing) -->
+    <div id="invoiceTemplate" class="hidden">
+        <div style="padding: 40px; font-family: sans-serif; color: #333;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900;">NEWKET EMARKET</h1>
+                    <p style="color: #666; font-size: 14px;">Marketplace Premium</p>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; color: #999;">FACTURE</h2>
+                    <p id="invId" style="font-weight: bold; margin: 5px 0;"></p>
+                    <p id="invDate" style="color: #666; font-size: 12px;"></p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 40px;">
+                <h3 style="font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 10px;">Client</h3>
+                <p id="invClient" style="font-weight: bold; margin: 0;"></p>
+                <p id="invEmail" style="color: #666; margin: 5px 0;"></p>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                        <th style="padding: 10px 0;">Description</th>
+                        <th style="padding: 10px 0; text-align: center;">Qté</th>
+                        <th style="padding: 10px 0; text-align: right;">Prix</th>
+                        <th style="padding: 10px 0; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="invItems"></tbody>
+            </table>
+
+            <div style="margin-left: auto; width: 250px;">
+                <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span>Sous-total:</span>
+                    <span id="invSubtotal"></span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 2px solid #000; font-weight: 900; font-size: 18px; margin-top: 10px;">
+                    <span>Total:</span>
+                    <span id="invTotal"></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 80px; text-align: center; color: #999; font-size: 12px;">
+                Merci de votre confiance chez NewKet !<br>
+                Ceci est une facture générée automatiquement.
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-nav-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/favorites.js"></script>
+    <script type="module" src="../js/currency.js"></script>
+    <script type="module" src="../js/products.js"></script>
+    <script type="module" src="../js/orders.js"></script>
+    <script type="module" src="../js/managers.js"></script>
+    <script type="module" src="../js/ui-helpers.js"></script>
+    <script type="module" src="../js/ui.js"></script>
+    <script type="module" src="../js/search.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/components-loader.js"></script>
+    <script type="module" src="../js/realtime-notifications.js"></script>
+
+    <script>
+        let currentSelectedOrder = null;
+
+        function switchTab(tabId) {
+            ['orders', 'favorites', 'notifications', 'settings'].forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                const link = document.getElementById('link-' + t);
+                if (el) { el.classList.add('hidden'); el.classList.remove('tab-content'); }
+                if (link) link.classList.remove('active');
+            });
+            const targetEl = document.getElementById('tab-' + tabId);
+            const targetLink = document.getElementById('link-' + tabId);
+            if (targetEl) {
+                targetEl.classList.remove('hidden');
+                void targetEl.offsetWidth; // reflow to re-trigger animation
+                targetEl.classList.add('tab-content');
+            }
+            if (targetLink) targetLink.classList.add('active');
+            if (tabId === 'notifications') renderDashboardNotifications();
+        }
+
+        // ── Avatar helpers ──────────────────────────────────────────
+        function getAvatarColor(name) {
+            const palette = [
+                '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
+                '#10b981', '#3b82f6', '#f97316', '#14b8a6'
+            ];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            return palette[Math.abs(hash) % palette.length];
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.trim().split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        function renderAvatar(name) {
+            const el = document.getElementById('userAvatarDisplay');
+            if (!el) return;
+            el.textContent = getInitials(name);
+            el.style.background = getAvatarColor(name || 'User');
+        }
+
+        // ── Status badge ────────────────────────────────────────────
+        function renderStatusBadge(points) {
+            const badge = document.getElementById('userStatusBadge');
+            if (!badge) return;
+            let cls, icon, label;
+            if (points >= 500) {
+                cls = 'status-vip'; icon = '⭐'; label = 'VIP';
+            } else if (points >= 100) {
+                cls = 'status-premium'; icon = '🏅'; label = 'Premium';
+            } else {
+                cls = 'status-standard'; icon = ''; label = 'Standard';
+            }
+            badge.className = `status-badge ${cls}`;
+            badge.textContent = (icon ? icon + ' ' : '') + label;
+        }
+
+        // ── Logout ──────────────────────────────────────────────────
+        function logoutUser() {
+            if (!confirm('Se déconnecter de NewKet ?')) return;
+            const keys = ['newketUserEmail', 'newketRole', 'newketUser', 'newketToken'];
+            keys.forEach(k => localStorage.removeItem(k));
+            window.location.href = '/pages/login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOrders();
+            renderFavorites();
+            renderDashboardNotifications();
+
+            // Show Admin Link for Suppliers
+            const role = localStorage.getItem('newketRole');
+            if (role === 'supplier') {
+                const supplierLink = document.getElementById('supplier-link-container');
+                if (supplierLink) supplierLink.classList.remove('hidden');
+            }
+
+            // Load Dashboard Stats
+            renderCustomerDashboardStats();
+
+            // Load Profile Settings
+            const profile = ProfileManager.getProfile();
+            document.getElementById('profName').value = profile.name || '';
+            document.getElementById('profEmail').value = profile.email || '';
+            document.getElementById('profPhone').value = profile.phone || '';
+
+            // Load Address
+            const addr = JSON.parse(localStorage.getItem('newketAddress') || '{}');
+            if (document.getElementById('addrStreet')) document.getElementById('addrStreet').value = addr.street || '';
+            if (document.getElementById('addrQuartier')) document.getElementById('addrQuartier').value = addr.quartier || '';
+            if (document.getElementById('addrCity')) document.getElementById('addrCity').value = addr.city || '';
+            if (document.getElementById('addrPhone')) document.getElementById('addrPhone').value = addr.phone || '';
+
+            // Avatar & name
+            const displayName = profile.name || localStorage.getItem('newketUserEmail') || 'Utilisateur';
+            document.getElementById('userDisplayName').textContent = profile.name || 'Mon Compte';
+            renderAvatar(displayName);
+
+            // Status badge (after stats load)
+            setTimeout(() => {
+                const ptsEl = document.getElementById('customer-newket-points');
+                const pts = ptsEl ? parseInt(ptsEl.textContent) || 0 : 0;
+                renderStatusBadge(pts);
+            }, 600);
+
+            // Listen to data updates from Supabase
+            window.addEventListener('ordersUpdated', () => {
+                renderOrders();
+                renderCustomerDashboardStats();
+            });
+            window.addEventListener('activitiesUpdated', () => {
+                renderCustomerDashboardStats();
+            });
+            window.addEventListener('notificationsUpdated', () => {
+                renderDashboardNotifications();
+            });
+            window.addEventListener('favoritesUpdated', () => {
+                renderFavorites();
+            });
+        });
+
+        // Profile Form Submit
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('profName').value;
+            const profile = {
+                name,
+                email: document.getElementById('profEmail').value,
+                phone: document.getElementById('profPhone').value
+            };
+            ProfileManager.saveProfile(profile);
+            document.getElementById('userDisplayName').textContent = name || 'Mon Compte';
+            renderAvatar(name);
+            showToast('Profil mis à jour avec succès !', 'success');
+        });
+
+        // Address Form Submit
+        document.getElementById('addressForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const addr = {
+                street: document.getElementById('addrStreet').value,
+                quartier: document.getElementById('addrQuartier').value,
+                city: document.getElementById('addrCity').value,
+                phone: document.getElementById('addrPhone').value
+            };
+            localStorage.setItem('newketAddress', JSON.stringify(addr));
+            showToast('Adresse de livraison sauvegardée !', 'success');
+        });
+
+        // Password Form Submit
+        document.getElementById('passwordForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const np = document.getElementById('newPassword').value;
+            const cp = document.getElementById('confirmPassword').value;
+            if (np.length < 8) { showToast('Le mot de passe doit faire au moins 8 caractères.', 'error'); return; }
+            if (np !== cp) { showToast('Les mots de passe ne correspondent pas.', 'error'); return; }
+            // Persisted locally (Supabase update would go here)
+            localStorage.setItem('newketPwdHash', btoa(np));
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            showToast('Mot de passe mis à jour !', 'success');
+        });
+
+        function renderDashboardNotifications() {
+            const list = document.getElementById('dashboard-notifications-list');
+            if (!list) return;
+
+            const notifications = NotificationManager.getNotifications();
+
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="glass-panel p-12 text-center text-gray-400">
+                        <iconify-icon icon="solar:bell-off-linear" width="48" class="mb-4 text-gray-200"></iconify-icon>
+                        <p>Aucune notification</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = notifications.map(n => {
+                    let icon = 'solar:bell-linear';
+                    let iconColor = 'bg-gray-50 text-gray-400';
+                    if (n.type === 'success') { icon = 'solar:check-circle-bold'; iconColor = 'bg-green-50 text-green-500'; }
+                    else if (n.type === 'error') { icon = 'solar:danger-circle-bold'; iconColor = 'bg-red-50 text-red-500'; }
+                    else if (n.type === 'warning') { icon = 'solar:bell-bing-bold'; iconColor = 'bg-orange-50 text-orange-500'; }
+                    else if (n.type === 'info') { icon = 'solar:info-circle-bold'; iconColor = 'bg-blue-50 text-blue-500'; }
+
+                    return `
+                        <div class="glass-panel p-4 flex gap-4 items-center ${!n.read ? 'bg-black/[0.02] border-black/10' : ''} cursor-pointer hover:border-black/20 transition-all" onclick="NotificationManager.markAsRead('${n.id}'); renderDashboardNotifications();">
+                            <div class="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center ${iconColor}">
+                                <iconify-icon icon="${icon}" width="20"></iconify-icon>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <h3 class="font-bold text-sm ${!n.read ? 'text-black' : 'text-gray-600'}">${n.title}</h3>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">${new Date(n.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+                                </div>
+                                <p class="text-xs text-gray-500 truncate">${n.message}</p>
+                            </div>
+                            ${!n.read ? '<div class="w-1.5 h-1.5 rounded-full bg-black"></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderCustomerDashboardStats() {
+            const email = localStorage.getItem('newketUserEmail');
+            if (!email) return;
+
+            const stats = OrderManager.getCustomerStats(email);
+
+            const spentEl = document.getElementById('customer-total-spent');
+            const countEl = document.getElementById('customer-order-count');
+            const avgEl = document.getElementById('customer-avg-order');
+            const pointsEl = document.getElementById('customer-newket-points');
+
+            if (spentEl) spentEl.textContent = CurrencyManager.formatPrice(stats.totalSpent);
+            if (countEl) countEl.textContent = stats.totalOrders;
+            if (avgEl) avgEl.textContent = CurrencyManager.formatPrice(stats.avgOrderValue);
+            if (pointsEl) pointsEl.textContent = stats.newketPoints + ' PTS';
+
+            // Render Activity Feed
+            const feed = document.getElementById('customer-activity-feed');
+            if (feed) {
+                const activities = ActivityManager.getRecentActivity(4);
+                if (activities.length === 0) {
+                    feed.innerHTML = '<p class="text-sm text-gray-400 py-4">Aucune activité pour le moment.</p>';
+                } else {
+                    feed.innerHTML = activities.map(a => `
+                        <div class="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-2xl transition-all">
+                            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs flex-shrink-0">
+                                ${a.type === 'stock' ? '' : ''}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">${a.text}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${ActivityManager.formatTime(a.time)}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        function renderOrders() {
+            const email = localStorage.getItem('newketUserEmail');
+            let orders = [];
+
+            if (email) {
+                orders = OrderManager.getOrders().filter(o => o.customer_email === email);
+            }
+
+            const ordersList = document.getElementById('orders-list');
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="glass-panel p-12 text-center text-gray-500">
+                        <iconify-icon icon="solar:box-minimalistic-linear" width="48" class="mb-4 text-gray-300"></iconify-icon>
+                        <p>Votre carnet de commandes est encore vierge. L'exceptionnel vous attend.</p>
+                        <a href="/pages/catalog.html" class="inline-block mt-4 text-sm font-bold text-black border-b border-black uppercase tracking-widest">Commencer l'expérience</a>
+                    </div>
+                `;
+            } else {
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="glass-panel p-6 cursor-pointer hover:border-black transition-all group" onclick="openOrderModal('${order.id}')">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-gray-100">
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commande #${order.id}</div>
+                                <div class="text-sm text-gray-500">${new Date(order.date).toLocaleDateString()}</div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}">
+                                    ${order.status}
+                                </div>
+                                <iconify-icon icon="solar:alt-arrow-right-linear" width="20" class="text-gray-300 group-hover:text-black transition-colors"></iconify-icon>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                            ${order.items.slice(0, 3).map(item => `
+                                <div class="w-10 h-10 bg-gray-50 rounded border border-gray-100 flex-shrink-0 p-1">
+                                    <img src="${item.image}" alt="" loading="lazy" class="w-full h-full object-contain">
+                                </div>
+                            `).join('')}
+                            ${order.items.length > 3 ? `<div class="text-xs font-bold text-gray-400">+${order.items.length - 3}</div>` : ''}
+                            <div class="ml-auto text-lg font-black text-gray-900">${CurrencyManager.formatPrice(order.total)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderFavorites() {
+            const favorites = FavoritesManager.getFavorites();
+            const favoritesGrid = document.getElementById('favorites-grid');
+
+            if (favorites.length === 0) {
+                favoritesGrid.innerHTML = `
+                    <div class="col-span-full glass-panel p-12 text-center text-gray-500">
+                        <iconify-icon icon="solar:heart-broken-linear" width="48" class="mb-4 text-gray-300"></iconify-icon>
+                        <p>Votre liste de désirs est vide. Laissez-vous séduire par nos pièces d'exception.</p>
+                        <a href="/pages/catalog.html" class="inline-block mt-4 text-sm font-bold text-black border-b border-black uppercase tracking-widest">Explorer le catalogue</a>
+                    </div>
+                `;
+            } else {
+                favoritesGrid.innerHTML = favorites.map(item => `
+                    <div class="glass-panel p-3 sm:p-6 flex flex-col relative group">
+                        <button onclick="removeFavorite('${item.id}')" class="absolute top-2 right-2 p-2 text-gray-300 hover:text-red-500 transition-colors z-10">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-bold" width="18"></iconify-icon>
+                        </button>
+                        <div class="aspect-square bg-gray-50 rounded-xl mb-4 overflow-hidden">
+                             <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-[10px] sm:text-base mb-1 truncate">${item.name}</h3>
+                        <div class="text-[9px] sm:text-sm text-gray-500 mb-4">${CurrencyManager.formatPrice(item.price)}</div>
+                        <button onclick="addToCart('${item.id}')" class="w-full py-2 bg-black text-white rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'En attente': return 'bg-yellow-100 text-yellow-700';
+                case 'En livraison': return 'bg-blue-100 text-blue-700';
+                case 'Livré': return 'bg-green-100 text-green-700';
+                default: return 'bg-gray-100 text-gray-700';
+            }
+        }
+
+        function openOrderModal(id) {
+            const order = OrderManager.getOrders().find(o => o.id === id);
+            if (!order) return;
+            currentSelectedOrder = order;
+
+            document.getElementById('modalOrderIdText').textContent = 'Commande #' + order.id;
+            document.getElementById('modalOrderDateText').textContent = new Date(order.date).toLocaleDateString('fr-FR', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const statusEl = document.getElementById('modalOrderStatus');
+            statusEl.textContent = order.status;
+            statusEl.className = `px-3 py-1 rounded-full text-xs font-bold inline-block ${getStatusColor(order.status)}`;
+
+            const itemsList = document.getElementById('modalOrderItems');
+            itemsList.innerHTML = order.items.map(item => `
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-100 p-2 flex-shrink-0">
+                        <img src="${item.image}" loading="lazy" class="w-full h-full object-contain" alt="">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-sm sm:text-base truncate">${item.name}</div>
+                        <div class="text-xs text-gray-500">Quantité: ${item.quantity} × ${CurrencyManager.formatPrice(item.price)}</div>
+                    </div>
+                    <div class="text-sm font-bold text-right">${CurrencyManager.formatPrice(item.price * item.quantity)}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('modalOrderSubtotal').textContent = CurrencyManager.formatPrice(order.total);
+            document.getElementById('modalOrderTotal').textContent = CurrencyManager.formatPrice(order.total);
+
+            document.getElementById('orderModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function downloadInvoice() {
+            if (!currentSelectedOrder) return;
+
+            const o = currentSelectedOrder;
+            document.getElementById('invId').textContent = '#' + o.id;
+            document.getElementById('invDate').textContent = new Date(o.date).toLocaleDateString();
+            document.getElementById('invClient').textContent = o.customer?.name || 'Client NewKet';
+            document.getElementById('invEmail').textContent = o.customer?.email || '';
+
+            const invItems = document.getElementById('invItems');
+            invItems.innerHTML = o.items.map(item => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px 0;">${item.name}</td>
+                    <td style="padding: 10px 0; text-align: center;">${item.quantity}</td>
+                    <td style="padding: 10px 0; text-align: right;">${CurrencyManager.formatPrice(item.price)}</td>
+                    <td style="padding: 10px 0; text-align: right;">${CurrencyManager.formatPrice(item.price * item.quantity)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('invSubtotal').textContent = CurrencyManager.formatPrice(o.total);
+            document.getElementById('invTotal').textContent = CurrencyManager.formatPrice(o.total);
+
+            // Trigger Print
+            const printContent = document.getElementById('invoiceTemplate').innerHTML;
+            const originalContent = document.body.innerHTML;
+
+            printWindow.document.write('<html><head><title>Facture NewKet</title>    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'><path fill=\'%23000\' d=\'m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.51Z\'/></svg>">');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html > ');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        function removeFavorite(id) {
+            FavoritesManager.removeItem(id);
+            renderFavorites(); // Dynamic refresh
+        }
+
+        function addToCart(id) {
+            const product = ProductManager.getProduct(id);
+            if (product) {
+                CartManager.addItem(product);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -86,37 +86,36 @@ const OrderManager = {
     getOrders() { return this.orders; },
 
     async addOrder(order) {
-        const recalculatedSubtotal = (order.items || []).reduce(
-            (acc, item) => acc + (parseFloat(item.price) * parseInt(item.quantity || 1)),
-            0
-        );
-        const pointsUsedAmount = parseFloat(order.pointsUsed || 0);
-        const safeFinalTotal = order.total !== undefined
-            ? Math.max(0, Math.min(order.total, recalculatedSubtotal))
-            : Math.max(0, recalculatedSubtotal - pointsUsedAmount);
+        const userId = localStorage.getItem('newketUserId');
+        if (!userId) return null;
 
-        const itemsWithSuppliers = (order.items || []).map(item => {
-            const product = window.ProductManager ? ProductManager.getProduct(item.id) : null;
-            return {
-                ...item,
-                supplier_email: product ? product.supplier_email : (item.supplier_email || null)
-            };
-        });
-
-        const newOrderData = {
-            id: order.id || 'EN-' + Date.now(),
-            date: new Date().toISOString(),
-            status: 'En attente',
-            total: safeFinalTotal,
+        const orderData = {
+            customer_id: userId,
             customer_name: order.customer?.name || order.customer_name,
             customer_email: order.customer?.email || order.customer_email,
-            items: itemsWithSuppliers,
+            items: (order.items || []).map(item => {
+                const product = window.ProductManager ? ProductManager.getProduct(item.id) : null;
+                return {
+                    ...item,
+                    supplier_id: product ? product.user_id : (item.supplier_id || null)
+                };
+            }),
             payment_method: order.paymentMethod || 'Non spécifié',
             phone_number: order.phoneNumber || '',
             points_used: order.pointsUsed || 0
         };
 
-        const inserted = await window.SupabaseAdapter.insert('orders', newOrderData);
+        // Call the secure RPC instead of direct insert
+        const { data: inserted, error } = await window.supabaseClient.rpc('create_secure_order', {
+            p_order: orderData
+        });
+
+        if (error) {
+            console.error('[NewKet] Error creating secure order:', error);
+            if (typeof showToast === 'function') showToast('Erreur lors de la création de la commande: ' + error.message, 'error');
+            return null;
+        }
+
         if (inserted) {
             const mappedOrder = { ...inserted, customer: { name: inserted.customer_name, email: inserted.customer_email } };
             this.orders.unshift(mappedOrder);
@@ -142,6 +141,7 @@ const OrderManager = {
         const newWithdrawal = {
             id: 'WDR-' + Date.now(),
             created_at: new Date().toISOString(),
+            supplier_id: localStorage.getItem('newketUserId'),
             supplier_email: withdrawal.supplier_email,
             amount: withdrawal.amount,
             method: withdrawal.method,
@@ -170,8 +170,8 @@ const OrderManager = {
         return updated;
     },
 
-    getCustomerStats(email) {
-        const allOrders = this.orders.filter(o => o.customer_email === email && o.status !== 'Annulé');
+    getCustomerStats(userId) {
+        const allOrders = this.orders.filter(o => o.customer_id === userId && o.status !== 'Annulé');
         const totalSpent = allOrders.reduce((sum, o) => sum + o.total, 0);
 
         let earnedUSD = 0;
@@ -197,7 +197,7 @@ const OrderManager = {
         };
     },
 
-    getVendorStats(vendorEmail) {
+    getVendorStats(vendorId) {
         const allOrders = this.getOrders();
         let vendorTotalSales = 0;
         let vendorOrderCount = 0;
@@ -213,7 +213,7 @@ const OrderManager = {
         allOrders.forEach(order => {
             const vendorItems = order.items.filter(item => {
                 const product = window.ProductManager ? ProductManager.getProduct(item.id) : null;
-                return product && product.supplier_email === vendorEmail;
+                return product && product.user_id === vendorId;
             });
 
             if (vendorItems.length > 0) {
@@ -231,7 +231,7 @@ const OrderManager = {
         const platformCommission = vendorTotalSales * 0.05;
         const netGains = vendorTotalSales - platformCommission;
 
-        const vendorWithdrawals = this.withdrawals.filter(w => w.supplier_email === vendorEmail);
+        const vendorWithdrawals = this.withdrawals.filter(w => w.supplier_id === vendorId);
         const totalWithdrawn = vendorWithdrawals
             .filter(w => w.status === 'Approuvé')
             .reduce((sum, w) => sum + w.amount, 0);
@@ -259,7 +259,7 @@ const OrderManager = {
             recentOrders: allOrders.filter(order =>
                 order.items.some(item => {
                     const product = window.ProductManager ? ProductManager.getProduct(item.id) : null;
-                    return product && product.supplier_email === vendorEmail;
+                    return product && product.user_id === vendorId;
                 })
             ).slice(0, 5),
             payouts: vendorWithdrawals.map(w => ({
@@ -274,7 +274,7 @@ const OrderManager = {
 
     getAdvancedStats(timeframe = 'all') {
         const role = localStorage.getItem('newketRole');
-        const email = localStorage.getItem('newketUserEmail');
+        const userId = localStorage.getItem('newketUserId');
         let orders = this.orders;
 
         if (timeframe !== 'all') {
@@ -291,10 +291,10 @@ const OrderManager = {
             });
         }
 
-        if (role === 'supplier' && email) {
+        if (role === 'supplier' && userId) {
             orders = orders.filter(o => (o.items || []).some(item => {
                 const p = window.ProductManager ? ProductManager.getProduct(item.id) : null;
-                return p && p.supplier_email === email;
+                return p && p.user_id === userId;
             }));
         }
 
@@ -353,7 +353,7 @@ const OrderManager = {
                 date: w.created_at,
                 amount: w.amount,
                 status: w.status,
-                supplier_email: w.supplier_email
+                supplier_id: w.supplier_id
             })),
             pendingPayout: pendingPayout
         };

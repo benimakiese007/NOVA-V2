@@ -170,10 +170,10 @@ const ProductManager = {
     },
 
     async addProduct(product) {
-        const userEmail = localStorage.getItem('newketUserEmail');
+        const userId = localStorage.getItem('newketUserId');
         const productWithSupplier = {
             ...product,
-            supplier_email: userEmail
+            user_id: userId
         };
 
         const newProd = await window.SupabaseAdapter.insert('products', productWithSupplier);

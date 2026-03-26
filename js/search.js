@@ -71,7 +71,7 @@ const SearchManager = {
                     return `
                     <a href="product.html?id=${p.id}" class="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                         <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl p-1.5 flex-shrink-0">
-                            <img src="${optImg}" class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" alt="${p.name}">
+                            <img src="${optImg}" loading="lazy" class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" alt="${p.name}">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-xs font-black text-gray-900 dark:text-gray-100 truncate group-hover:text-black dark:group-hover:text-white transition-colors">${p.name}</div>

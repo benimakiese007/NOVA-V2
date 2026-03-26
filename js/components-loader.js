@@ -1,4 +1,4 @@
-﻿/* NewKet EMarket Component Loader */
+/* NewKet EMarket Component Loader */
 
 /**
  * Header HTML inlined to avoid CORS issues with file:// protocol.
@@ -9,13 +9,13 @@ const HEADER_HTML = `
     <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 flex items-center justify-between px-4 py-3 shadow-sm sm:px-8">
         <a href="index.html" class="text-xl font-bold tracking-tighter">NEWKET</a>
         <div class="flex items-center gap-4">
-            <a href="cart.html" class="p-2 hover:bg-gray-100 rounded-lg relative">
+            <a href="/pages/cart.html" class="p-2 hover:bg-gray-100 rounded-lg relative">
                 <iconify-icon icon="solar:bag-3-outline" width="22"></iconify-icon>
             </a>
-            <a href="vendor-dashboard.html" class="p-2 hover:bg-gray-100 rounded-lg hidden sm:block" id="headerDashboardLink">
+            <a href="/pages/vendor-dashboard.html" class="p-2 hover:bg-gray-100 rounded-lg hidden sm:block" id="headerDashboardLink">
                 <iconify-icon icon="solar:chart-square-linear" width="22"></iconify-icon>
             </a>
-            <a href="login.html" class="p-2 hover:bg-gray-100 rounded-lg" id="accountLink">
+            <a href="/pages/login.html" class="p-2 hover:bg-gray-100 rounded-lg" id="accountLink">
                 <iconify-icon icon="solar:user-outline" width="22"></iconify-icon>
             </a>
         </div>
@@ -33,7 +33,7 @@ const HEADER_HTML = `
                     class="text-lg sm:text-xl font-bold tracking-tighter text-gray-900 max-[360px]:hidden">NEWKET</span>
             </a>
             <!-- Mobile Publish Button (+) - Hidden as requested -->
-            <a href="publish.html" class="p-1 hidden rounded-lg hover:bg-gray-100 transition-colors" title="Vendre">
+            <a href="/pages/publish.html" class="p-1 hidden rounded-lg hover:bg-gray-100 transition-colors" title="Vendre">
                 <iconify-icon icon="solar:add-circle-linear" width="24" class="text-gray-900"></iconify-icon>
             </a>
         </div>
@@ -50,7 +50,7 @@ const HEADER_HTML = `
                     class="bg-slate-900 text-white px-5 py-2 m-1 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all uppercase tracking-wider hidden sm:block">RECHERCHE</button>
             </div>
             <!-- Publish Button (Desktop Only) -->
-            <a href="publish.html"
+            <a href="/pages/publish.html"
                 class="shrink-0 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-2 publish-btn h-[40px] whitespace-nowrap">
                 <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
                 Vendre
@@ -72,7 +72,7 @@ const HEADER_HTML = `
             </div>
 
             <!-- Notifications -->
-            <a href="notifications.html"
+            <a href="/pages/notifications.html"
                 class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Notifications">
                 <iconify-icon icon="solar:bell-linear" width="22" class="text-gray-600"></iconify-icon>
@@ -82,7 +82,7 @@ const HEADER_HTML = `
             </a>
 
             <!-- Favorites -->
-            <a href="favorites.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+            <a href="/pages/favorites.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Favoris">
                 <iconify-icon icon="solar:heart-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
@@ -91,7 +91,7 @@ const HEADER_HTML = `
             </a>
 
             <!-- Cart -->
-            <a href="cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+            <a href="/pages/cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Panier">
                 <iconify-icon icon="solar:bag-3-linear" width="22" class="text-gray-600"></iconify-icon>
                 <span
@@ -100,13 +100,13 @@ const HEADER_HTML = `
             </a>
 
             <!-- Dashboard -->
-            <a href="vendor-dashboard.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+            <a href="/pages/vendor-dashboard.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Tableau de bord" id="headerDashboardLink">
                 <iconify-icon icon="solar:chart-square-linear" width="22" class="text-gray-600"></iconify-icon>
             </a>
 
             <!-- Account -->
-            <a href="login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
+            <a href="/pages/login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                 title="Compte" id="accountLink">
                 <iconify-icon icon="solar:user-linear" width="22" class="text-gray-600"></iconify-icon>
             </a>
@@ -126,12 +126,12 @@ const HEADER_HTML = `
     <div class="border-t border-gray-50 bg-white hidden sm:block">
         <div class="w-full px-4 sm:px-8">
             <nav class="flex items-center gap-1 overflow-x-auto py-1 -mx-2" style="scrollbar-width:none;">
-                <a href="catalog.html"
+                <a href="/pages/catalog.html"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Toutes
                     les pièces</a>
-                <a href="shops.html"
+                <a href="/pages/shops.html"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Boutiques</a>
-                <a href="forum.html"
+                <a href="/pages/forum.html"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Forum</a>
                 <a href="catalog.html?category=Collections Femme"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Collections
@@ -145,7 +145,7 @@ const HEADER_HTML = `
                 <a href="catalog.html?category=Art de vivre"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap rounded-lg hover:bg-gray-50 transition-colors">Art
                     de vivre</a>
-                <a href="catalog.html"
+                <a href="/pages/catalog.html"
                     class="nav-link px-3 py-1.5 text-sm font-medium text-gray-900 hover:text-black whitespace-nowrap rounded-lg hover:bg-100 transition-colors flex items-center gap-1">
                     <iconify-icon icon="solar:fire-bold" width="14"></iconify-icon>Promos
                 </a>
@@ -169,15 +169,15 @@ const HEADER_HTML = `
         <div class="px-4 mb-6">
             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Catégories</h3>
             <nav class="flex flex-col gap-1">
-                <a href="catalog.html"
+                <a href="/pages/catalog.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
                     <iconify-icon icon="solar:shop-linear" width="20"></iconify-icon> Toutes les pièces
                 </a>
-                <a href="shops.html"
+                <a href="/pages/shops.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
                     <iconify-icon icon="solar:shop-2-linear" width="20"></iconify-icon> Boutiques
                 </a>
-                <a href="forum.html"
+                <a href="/pages/forum.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
                     <iconify-icon icon="solar:chat-round-line-linear" width="20"></iconify-icon> Forum Communauté
                 </a>
@@ -188,14 +188,14 @@ const HEADER_HTML = `
         <div class="px-4 mb-6 border-t border-gray-50 pt-6">
             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Personnel</h3>
             <nav class="flex flex-col gap-1">
-                <a href="notifications.html"
+                <a href="/pages/notifications.html"
                     class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
                     <span class="flex items-center gap-3"><iconify-icon icon="solar:bell-linear"
                             width="20"></iconify-icon> Notifications</span>
                     <span
                         class="notification-badge bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full hidden">0</span>
                 </a>
-                <a href="favorites.html"
+                <a href="/pages/favorites.html"
                     class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">
                     <span class="flex items-center gap-3"><iconify-icon icon="solar:heart-linear"
                             width="20"></iconify-icon> Favoris</span>
@@ -206,7 +206,7 @@ const HEADER_HTML = `
                     class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 font-medium w-full text-left" title="Changer le thème">
                     <span class="flex items-center gap-3"><iconify-icon data-theme-icon icon="solar:moon-bold" width="20"></iconify-icon> Mode Sombre</span>
                 </button>
-                <a href="publish.html"
+                <a href="/pages/publish.html"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900 text-white font-medium mt-2 publish-btn">
                     <iconify-icon icon="solar:add-circle-linear" width="20"></iconify-icon> Vendre un article
                 </a>
@@ -252,10 +252,10 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
             <div class="lg:col-span-2 space-y-6">
                 <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
                 <ul class="space-y-4">
-                    <li><a href="customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
-                    <li><a href="customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a></li>
-                    <li><a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide & FAQ</a></li>
-                    <li><a href="publish.html" class="text-gray-400 hover:text-white text-sm transition-colors publish-btn">Vendre un article</a></li>
+                    <li><a href="/pages/customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
+                    <li><a href="/pages/customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a></li>
+                    <li><a href="/pages/about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide & FAQ</a></li>
+                    <li><a href="/pages/publish.html" class="text-gray-400 hover:text-white text-sm transition-colors publish-btn">Vendre un article</a></li>
                 </ul>
             </div>
             <div class="lg:col-span-4 space-y-6">
@@ -270,8 +270,8 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
         <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
             <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">© 2026 NEWKET — Expérience Luxe</p>
             <div class="flex gap-8">
-                <a href="privacy.html" class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
-                <a href="terms.html" class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
+                <a href="/pages/privacy.html" class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Confidentialité</a>
+                <a href="/pages/terms.html" class="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Conditions</a>
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-gray-500 text-[10px] uppercase tracking-widest font-semibold italic">Designed by</span>
@@ -289,15 +289,15 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
             <span>Accueil</span>
         </a>
-        <a href="catalog.html" class="nav-item" title="Boutique" id="nav-catalog">
+        <a href="/pages/catalog.html" class="nav-item" title="Boutique" id="nav-catalog">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="22"></iconify-icon></div>
             <span>Boutique</span>
         </a>
-        <a href="forum.html" class="nav-item" title="Forum" id="nav-forum">
+        <a href="/pages/forum.html" class="nav-item" title="Forum" id="nav-forum">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="22"></iconify-icon></div>
             <span>Forum</span>
         </a>
-        <a href="customer-dashboard.html" class="nav-item" title="Compte" id="mobileBottomAccountCustomer">
+        <a href="/pages/customer-dashboard.html" class="nav-item" title="Compte" id="mobileBottomAccountCustomer">
             <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="22"></iconify-icon></div>
             <span>Compte</span>
         </a>
@@ -309,23 +309,23 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Accueil</span>
         </a>
-        <a href="catalog.html" class="nav-item shrink-0" title="Boutique" style="min-width: 46px;">
+        <a href="/pages/catalog.html" class="nav-item shrink-0" title="Boutique" style="min-width: 46px;">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Boutique</span>
         </a>
-        <a href="publish.html" class="nav-item shrink-0 publish-btn relative" title="Vendre" style="min-width: 60px;">
+        <a href="/pages/publish.html" class="nav-item shrink-0 publish-btn relative" title="Vendre" style="min-width: 60px;">
             <div class="nav-icon-wrap bg-gray-900 text-white rounded-full w-12 h-12 flex items-center justify-center absolute -top-8 left-1/2 transform -translate-x-1/2 shadow-lg border-4 border-white"><iconify-icon icon="solar:add-circle-bold" width="26"></iconify-icon></div>
             <span style="font-size: 9px; margin-top: 18px;">Vendre</span>
         </a>
-        <a href="forum.html" class="nav-item shrink-0" title="Forum" style="min-width: 46px;">
+        <a href="/pages/forum.html" class="nav-item shrink-0" title="Forum" style="min-width: 46px;">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Forum</span>
         </a>
-        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Dashboard" style="min-width: 46px;">
+        <a href="/pages/vendor-dashboard.html" class="nav-item shrink-0" title="Dashboard" style="min-width: 46px;">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Dashboard</span>
         </a>
-        <a href="vendor-dashboard.html" class="nav-item shrink-0" title="Compte" id="mobileBottomAccountVendor" style="min-width: 46px;">
+        <a href="/pages/vendor-dashboard.html" class="nav-item shrink-0" title="Compte" id="mobileBottomAccountVendor" style="min-width: 46px;">
             <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Compte</span>
         </a>
@@ -380,7 +380,10 @@ const ComponentLoader = {
         window.dispatchEvent(new CustomEvent('componentsLoaded'));
 
         // Re-initialize UI managers that depend on header/footer
-        if (window.AuthManager) AuthManager.updateAccountLink();
+        if (window.AuthManager) {
+            AuthManager.enforcePermissions();
+            AuthManager.updateAccountLink();
+        }
         if (window.CartManager) CartManager.updateBadge();
         if (window.FavoritesManager) FavoritesManager.updateUI();
         if (window.CurrencyManager) CurrencyManager.updateCurrencyUI();

@@ -6,98 +6,72 @@ const AuthManager = {
     _authChecking: true, // Prevents redirect loops while checking auth
 
     async init() {
-        this._authChecking = true; // Set flag: auth check in progress
-        // Subscribe to auth state changes
+        this._authChecking = true;
         if (window.supabaseClient) {
-            window.supabaseClient.auth.onAuthStateChange((event, session) => {
-                console.log('Auth State Change:', event, session);
+            window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                console.log('Auth State Change:', event);
 
                 if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     const user = session.user;
                     const role = user.user_metadata.role || 'customer';
                     const email = user.email;
+                    
+                    this.role = role;
+                    localStorage.setItem('newketRole', role);
+                    localStorage.setItem('newketUserEmail', email);
+                    localStorage.setItem('newketUserId', user.id);
+                    
                     const avatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture || null;
+                    if (avatarUrl) localStorage.setItem('newketUserAvatar', avatarUrl);
 
-                    // Admin Override Logic
-                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
-                    let finalRole = role;
-                    if (adminEmails.includes(email.toLowerCase())) {
-                        finalRole = 'admin';
-                    }
-
-                    // Sync LocalStorage
-                    if (localStorage.getItem('newketRole') !== finalRole) {
-                        this.setRole(finalRole);
-                    }
-                    if (localStorage.getItem('newketUserEmail') !== email) {
-                        localStorage.setItem('newketUserEmail', email);
-                    }
-                    if (avatarUrl) {
-                        localStorage.setItem('newketUserAvatar', avatarUrl);
-                    }
-
-                    // Fetch actual status from public.users for KYC
-                    this.fetchUserStatus(email).then(status => {
-                        this.status = status;
-                        localStorage.setItem('newketUserStatus', status);
-                        this.enforcePermissions();
-                    });
-
-                    // Sync cart and favorites from Supabase on login
+                    const status = await this.fetchUserStatus(email);
+                    this.status = status;
+                    localStorage.setItem('newketUserStatus', status);
+                    
+                    this.enforcePermissions();
+                    
                     if (window.CartManager) CartManager.syncFromSupabase();
                     if (window.FavoritesManager) FavoritesManager.syncFromSupabase();
                 } else if (event === 'SIGNED_OUT') {
                     this.role = null;
                     this.status = null;
-                    localStorage.removeItem('newketRole');
-                    localStorage.removeItem('newketUserEmail');
-                    localStorage.removeItem('newketUserAvatar');
-                    localStorage.removeItem('newketUserStatus');
+                    this.clearSession();
                     this.enforcePermissions();
-                    this.updateAccountLink();
-                    // Redirect to home if on protected page
                     if (window.location.pathname.includes('/admin/') || window.location.pathname.includes('customer-dashboard')) {
-                        window.location.href = '../index.html';
+                        window.location.href = '/index.html';
                     }
                 }
             });
 
-            // Initial Check
             const { data } = await window.supabaseClient.auth.getSession();
             if (data.session) {
                 const user = data.session.user;
-                const role = user.user_metadata.role || 'customer';
-
-                const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
-                let finalRole = role;
-                if (adminEmails.includes(user.email.toLowerCase())) {
-                    finalRole = 'admin';
-                }
-
-                const avatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture || null;
-                if (avatarUrl) {
-                    localStorage.setItem('newketUserAvatar', avatarUrl);
-                }
-
-                this.setRole(finalRole);
-                this.status = localStorage.getItem('newketUserStatus') || 'pending';
+                this.role = user.user_metadata.role || 'customer';
+                this.status = await this.fetchUserStatus(user.email);
                 
-                // Refresh status asynchronously
-                this.fetchUserStatus(user.email).then(status => {
-                    this.status = status;
-                    localStorage.setItem('newketUserStatus', status);
-                    this.enforcePermissions();
-                });
+                localStorage.setItem('newketRole', this.role);
+                localStorage.setItem('newketUserStatus', this.status);
+                localStorage.setItem('newketUserId', user.id);
             } else {
-                // No Supabase session — strict security lockdown, no local fallbacks permitted
-                this.setRole(null);
+                this.role = null;
+                this.status = null;
+                this.clearSession();
             }
         }
 
-        this._authChecking = false; // Auth check done
+        this._authChecking = false;
         this.enforcePermissions();
         this.updateAccountLink();
         this.checkWelcomeBonus();
+    },
+
+    clearSession() {
+        localStorage.removeItem('newketRole');
+        localStorage.removeItem('newketUserEmail');
+        localStorage.removeItem('newketUserId');
+        localStorage.removeItem('newketUserAvatar');
+        localStorage.removeItem('newketUserStatus');
+        sessionStorage.removeItem('adminAuth');
     },
 
     checkWelcomeBonus() {
@@ -150,10 +124,30 @@ const AuthManager = {
             await window.supabaseClient.auth.signOut();
         }
         this.role = null;
-        localStorage.removeItem('newketRole');
-        localStorage.removeItem('newketUserEmail');
-        localStorage.removeItem('newketUserAvatar');
-        window.location.href = 'index.html';
+        this.status = null;
+        this.clearSession();
+        window.location.href = '/index.html';
+    },
+
+    async adminLogin(email, password) {
+        if (!window.supabaseClient) return { error: 'Système non initialisé' };
+        
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) return { error: error.message };
+
+        const user = data.user;
+        const role = user.user_metadata.role || 'customer';
+
+        if (role !== 'admin') {
+            await window.supabaseClient.auth.signOut();
+            return { error: 'Accès non autorisé. Identité admin requise.' };
+        }
+
+        return { success: true };
     },
 
     enforcePermissions() {
@@ -218,14 +212,14 @@ const AuthManager = {
 
                 const path = window.location.pathname;
                 if (path.includes('publish.html')) {
-                    window.location.href = 'index.html';
+                    window.location.href = '/index.html';
                 }
             } else if (this.status === 'rejected') {
                 this.showRejectedNotice();
             }
 
             if (window.location.pathname.includes('/admin/')) {
-                window.location.href = '../vendor-dashboard.html';
+                window.location.href = '/pages/vendor-dashboard.html';
             }
         }
 
@@ -238,11 +232,11 @@ const AuthManager = {
             });
 
             if (window.location.pathname.includes('/admin/')) {
-                window.location.href = '../customer-dashboard.html';
+                window.location.href = '/pages/customer-dashboard.html';
             }
 
             if (window.location.pathname.includes('publish.html') || window.location.pathname.includes('vendor-dashboard.html')) {
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             }
         }
 
@@ -252,7 +246,7 @@ const AuthManager = {
             const isLoginPage = path.endsWith('/admin/') || path.endsWith('index.html');
 
             if (isAdminFolder && !isLoginPage) {
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             }
         }
     },
@@ -380,7 +374,7 @@ const AuthManager = {
             <div class="flex-1">
                 <div class="text-sm font-black text-gray-900 leading-tight">Profil vendeur en attente</div>
                 <div class="text-[10px] text-gray-500 font-medium mb-2">Veuillez finaliser votre dossier pour vendre.</div>
-                <a href="seller-onboarding.html" class="text-[11px] font-bold text-yellow-600 underline">Compléter mon profil</a>
+                <a href="/pages/seller-onboarding.html" class="text-[11px] font-bold text-yellow-600 underline">Compléter mon profil</a>
             </div>
             <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-900">
                 <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
@@ -401,7 +395,7 @@ const AuthManager = {
             <div class="flex-1">
                 <div class="text-sm font-black text-gray-900 leading-tight">Profil vendeur rejeté</div>
                 <div class="text-[10px] text-gray-500 font-medium mb-2">Veuillez contacter le support pour plus d'infos.</div>
-                <a href="seller-onboarding.html" class="text-[11px] font-bold text-red-600 underline">Soumettre à nouveau</a>
+                <a href="/pages/seller-onboarding.html" class="text-[11px] font-bold text-red-600 underline">Soumettre à nouveau</a>
             </div>
             <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-900">
                 <iconify-icon icon="solar:close-circle-bold"></iconify-icon>

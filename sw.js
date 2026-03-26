@@ -2,17 +2,28 @@ const CACHE_NAME = 'newket-cache-v1';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/catalog.html',
-    '/product.html',
-    '/cart.html',
-    '/favorites.html',
-    '/shops.html',
-    '/shop.html',
+    '/pages/catalog.html',
+    '/pages/product.html',
+    '/pages/cart.html',
+    '/pages/favorites.html',
+    '/pages/shops.html',
+    '/pages/shop.html',
     '/css/style.css',
     '/css/tailwind.css',
     '/js/main.js',
     '/js/supabase-client.js',
     '/js/supabase-adapter.js',
+    '/js/auth.js',
+    '/js/cart.js',
+    '/js/favorites.js',
+    '/js/currency.js',
+    '/js/products.js',
+    '/js/orders.js',
+    '/js/managers.js',
+    '/js/ui-helpers.js',
+    '/js/ui.js',
+    '/js/search.js',
+    '/js/components-loader.js',
     '/manifest.json',
     '/Images/Logo NewKet V2.jpeg'
 ];
@@ -52,24 +63,37 @@ self.addEventListener('fetch', (event) => {
         caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
                 // Return cached response then update in background
-                fetch(event.request).then((networkResponse) => {
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, networkResponse.clone());
+                if (event.request.url.startsWith('http')) {
+                    fetch(event.request).then((networkResponse) => {
+                        if (networkResponse && networkResponse.ok) {
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(event.request, networkResponse.clone());
+                            });
+                        }
+                    }).catch(err => {
+                        console.warn('[Service Worker] Background fetch failed for:', event.request.url, err);
                     });
-                });
+                }
                 return cachedResponse;
             }
 
+            if (!event.request.url.startsWith('http')) return fetch(event.request);
+
             return fetch(event.request).then((networkResponse) => {
-                return caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
-                });
-            }).catch(() => {
+                if (networkResponse && networkResponse.ok) {
+                    return caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone());
+                        return networkResponse;
+                    });
+                }
+                return networkResponse;
+            }).catch((err) => {
+                console.error('[Service Worker] Fetch failed:', event.request.url, err);
                 // Offline fallback for HTML pages
                 if (event.request.headers.get('accept').includes('text/html')) {
                     return caches.match('/index.html');
                 }
+                throw err;
             });
         })
     );

@@ -155,7 +155,7 @@ const CartManager = {
             badge.classList.add('count-update');
         });
 
-        const cartIcons = document.querySelectorAll('.main-header a[href="cart.html"], .main-header a[title="Panier"]');
+        const cartIcons = document.querySelectorAll('.main-header a[href="/pages/cart.html"], .main-header a[title="Panier"]');
         cartIcons.forEach(icon => {
             icon.classList.remove('cart-shake');
             void icon.offsetWidth;
