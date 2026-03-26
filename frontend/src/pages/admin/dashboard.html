@@ -12,12 +12,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>Espace Vendeur | NewKet</title>
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../../services/supabase-client.js"></script>
-    <script type="module" src="../../services/supabase-adapter.js"></script>
+    <script type="module" src="../../services/app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -195,7 +194,6 @@
         </main>
     </div>
 
-    <script type="module" src="../../services/main.js"></script>
     <script type="module" src="../../services/admin-layout.js"></script>
     <script>
         let currentTimeframe = 'all';
@@ -539,7 +537,7 @@
 
             list.innerHTML = lowStockItems.map(p => `
                 <div class="flex items-center gap-3">
-                    <img src="../${p.image}" class="w-10 h-10 rounded-lg object-contain bg-gray-50 border border-gray-100 p-1">
+                    <img loading="lazy" src="../${p.image}" class="w-10 h-10 rounded-lg object-contain bg-gray-50 border border-gray-100 p-1">
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold truncate">${p.name}</div>
                         <div class="h-1.5 w-full bg-gray-100 rounded-full mt-1.5 overflow-hidden">
@@ -584,7 +582,7 @@
 
             list.innerHTML = topProducts.map(p => `
                 <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <img src="../${p.image}" class="w-10 h-10 rounded-lg object-contain bg-white">
+                    <img loading="lazy" src="../${p.image}" class="w-10 h-10 rounded-lg object-contain bg-white">
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold truncate">${p.name}</div>
                         <div class="text-[10px] text-gray-400 font-bold uppercase">${p.salesCount} ventes</div>

@@ -12,11 +12,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>Utilisateurs | NewKet Admin</title>
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../../services/supabase-client.js"></script>
-    <script type="module" src="../../services/supabase-adapter.js"></script>
+    <script type="module" src="../../services/app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -246,7 +245,6 @@
         </main>
     </div>
 
-    <script type="module" src="../../services/main.js"></script>
     <script type="module" src="../../services/admin-layout.js"></script>
     <script>
         let currentFilter = 'supplier';
@@ -591,7 +589,7 @@
                 return `
                     <div class="glass-panel overflow-hidden group">
                         <div class="aspect-square bg-gray-100 relative">
-                            <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover">
+                            <img loading="lazy" src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover">
                             ${!p.isActive ? '<div class="absolute inset-x-0 bottom-0 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest text-center py-1">Inactif</div>' : ''}
                         </div>
                         <div class="p-3">

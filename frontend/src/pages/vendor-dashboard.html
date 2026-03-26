@@ -2,19 +2,17 @@
 <html lang="fr">
 
 <head>
-    <script src="../services/theme.js"></script>
+    <script type="module" src="../services/app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Vendeur | NewKet</title>
     <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="../services/supabase-client.js"></script>
-    <script type="module" src="../services/supabase-adapter.js"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
     <style>
@@ -50,7 +48,7 @@
                             <iconify-icon icon="solar:chart-square-bold" width="20"></iconify-icon>
                             Tableau de bord
                         </a>
-                        <a href="/pages/publish.html" class="sidebar-link">
+                        <a href="./publish.html" class="sidebar-link">
                             <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
                             Publier
                         </a>
@@ -77,7 +75,7 @@
                         <h1 class="text-3xl font-bold tracking-tight">Bonjour, <span id="vendorDisplay">Vendeur</span></h1>
                         <p class="text-gray-500 mt-1">Voici un aperçu de l'activité de votre boutique aujourd'hui.</p>
                     </div>
-                    <a href="/pages/publish.html"
+                    <a href="./publish.html"
                         class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-sm hover:shadow-xl transition-all">Ajouter
                         un produit</a>
                 </div>
@@ -352,19 +350,6 @@
     <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
-            <script type="module" src="../services/auth.js"></script>
-            <script type="module" src="../services/cart.js"></script>
-            <script type="module" src="../services/favorites.js"></script>
-            <script type="module" src="../services/currency.js"></script>
-            <script type="module" src="../services/products.js"></script>
-            <script type="module" src="../services/orders.js"></script>
-            <script type="module" src="../services/managers.js"></script>
-            <script type="module" src="../services/ui-helpers.js"></script>
-            <script type="module" src="../services/ui.js"></script>
-            <script type="module" src="../services/search.js"></script>
-            <script type="module" src="../services/main.js"></script>
-            <script type="module" src="../services/components-loader.js"></script>
-    <script type="module" src="../services/realtime-notifications.js"></script>
 
             <script>
                 let salesChart = null;

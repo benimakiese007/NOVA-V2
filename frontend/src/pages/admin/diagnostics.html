@@ -12,11 +12,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>Analyses & Diagnostics | NewKet</title>
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../../services/supabase-client.js"></script>
-    <script type="module" src="../../services/supabase-adapter.js"></script>
+    <script type="module" src="../../services/app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -129,7 +128,6 @@
         </main>
     </div>
 
-    <script type="module" src="../../services/main.js"></script>
     <script type="module" src="../../services/admin-layout.js"></script>
     <script>
         const currentCharts = {};
@@ -277,7 +275,7 @@
 
             list.innerHTML = stats.topProducts.map(p => `
                 <div class="glass-panel p-4 flex gap-4 items-center">
-                    <img src="../${p.image}" class="w-16 h-16 rounded-xl object-contain bg-gray-50 p-2">
+                    <img loading="lazy" src="../${p.image}" class="w-16 h-16 rounded-xl object-contain bg-gray-50 p-2">
                     <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-gray-900 truncate">${p.name}</h4>
                         <div class="text-[10px] font-black text-gray-400 uppercase">${p.salesCount} ventes régulières</div>

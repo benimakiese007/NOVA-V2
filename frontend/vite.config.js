@@ -25,6 +25,7 @@ export default defineConfig({
         privacy: './src/pages/privacy.html',
         terms: './src/pages/terms.html',
         error404: './src/pages/404.html',
+        error500: './src/pages/500.html',
         
         // Admin pages
         admin_dashboard: './src/pages/admin/dashboard.html',

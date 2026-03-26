@@ -12,11 +12,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>Profil Utilisateur | NewKet</title>
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../../services/supabase-client.js"></script>
-    <script type="module" src="../../services/supabase-adapter.js"></script>
+    <script type="module" src="../../services/app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -189,7 +188,6 @@
         </div>
     </main>
 
-    <script type="module" src="../../services/main.js"></script>
     <script>
         async function loadUserDetails() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -361,7 +359,7 @@
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = products.map(p => `
                 <div class="group relative bg-gray-50 rounded-xl overflow-hidden border border-transparent hover:border-gray-200 transition-all p-3">
-                    <img src="../${p.image}" class="w-full aspect-square object-contain mb-3">
+                    <img loading="lazy" src="../${p.image}" class="w-full aspect-square object-contain mb-3">
                     <div class="font-bold text-xs truncate">${p.name}</div>
                     <div class="text-[10px] text-gray-400 font-black">${CurrencyManager.formatPrice(p.price)}</div>
                 </div>

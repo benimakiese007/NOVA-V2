@@ -2,7 +2,7 @@
 <html lang="fr">
 
 <head>
-    <script src="../services/theme.js"></script>
+    <script type="module" src="../services/app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="../manifest.json">
@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="NewKet">
     <title>À Propos — NewKet</title>
     <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
-    <link rel="stylesheet" href="/src/input.css">
+    <link rel="stylesheet" href="../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <div class="bg-slate-100 rounded-[3rem] aspect-[4/5] overflow-hidden">
-                    <img src="../assets/Images/marketplace-hero.jpg"
+                    <img loading="lazy" src="../assets/Images/marketplace-hero.jpg"
                         class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
                         alt="Notre Story">
                 </div>
@@ -129,7 +129,7 @@
                 <h2 class="text-3xl font-bold mb-8">Rejoignez l'Aventure</h2>
                 <p class="text-slate-600 mb-12 italic">"Le luxe n'est pas un prix, c'est une émotion. Chez NewKet, nous
                     construisons le pont entre ces deux mondes."</p>
-                <a href="/pages/catalog.html"
+                <a href="./catalog.html"
                     class="inline-flex items-center gap-2 bg-black text-white px-10 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-all">Découvrir
                     la Collection</a>
             </div>
@@ -139,19 +139,6 @@
     <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
-    <script type="module" src="../services/auth.js"></script>
-    <script type="module" src="../services/cart.js"></script>
-    <script type="module" src="../services/favorites.js"></script>
-    <script type="module" src="../services/currency.js"></script>
-    <script type="module" src="../services/products.js"></script>
-    <script type="module" src="../services/orders.js"></script>
-    <script type="module" src="../services/managers.js"></script>
-    <script type="module" src="../services/ui-helpers.js"></script>
-    <script type="module" src="../services/ui.js"></script>
-    <script type="module" src="../services/search.js"></script>
-    <script type="module" src="../services/main.js"></script>
-    <script type="module" src="../services/components-loader.js"></script>
-    <script type="module" src="../services/realtime-notifications.js"></script>
 </body>
 
 
