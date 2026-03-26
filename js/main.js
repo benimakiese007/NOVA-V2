@@ -9,6 +9,9 @@ const App = {
     async init() {
         console.log('[NewKet] App initializing...');
 
+        // 0. Initialize Configuration
+        if (window.ConfigManager) await ConfigManager.init();
+
         // 1 & 2. Initialize Managers
         // AuthManager is critical for session state, we usually await it.
         if (window.AuthManager) await AuthManager.init();

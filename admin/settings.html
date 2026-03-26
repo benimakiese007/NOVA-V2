@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -15,8 +15,9 @@
     <link rel="stylesheet" href="/src/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../js/supabase-client.js"></script>
-    <script type="module" src="../js/supabase-adapter.js"></script>
+    <script type="module" src="/js/config-manager.js"></script>
+    <script type="module" src="/js/supabase-client.js"></script>
+    <script type="module" src="/js/supabase-adapter.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
@@ -27,7 +28,8 @@
 <body class="text-gray-900">
     <div id="adminNavbarPlaceholder"></div>
 
-    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">        <div id="adminSidebarPlaceholder"></div>
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-8 pt-32 pb-12 flex flex-col md:flex-row gap-6">
+        <div id="adminSidebarPlaceholder"></div>
 
         <!-- Main Content -->
         <main class="flex-1 min-w-0 space-y-8">
@@ -245,8 +247,8 @@
     </main>
     </div>
 
-    <script type="module" src="../js/main.js"></script>
-    <script type="module" src="../js/admin-layout.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/admin-layout.js"></script>
     <script>
         let currentShippingCurrency = 'USD';
 
@@ -265,9 +267,7 @@
             currentShippingCurrency = curr;
             const btnUSD = document.getElementById('shipUSD');
             const btnCDF = document.getElementById('shipCDF');
-            const feeLabel = document.querySelector('label[for="shippingFee"]') || document.querySelectorAll('label')[4]; // Fallback if no for
-            const thresholdLabel = document.querySelector('label[for="freeShippingThreshold"]') || document.querySelectorAll('label')[5];
-
+            
             // Update Buttons
             if (curr === 'USD') {
                 btnUSD.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-black text-white shadow-lg shadow-black/20";
@@ -288,7 +288,7 @@
             if (convert) {
                 const feeInput = document.getElementById('shippingFee');
                 const thresholdInput = document.getElementById('freeShippingThreshold');
-                const rate = 2500;
+                const rate = ConfigManager ? ConfigManager.getExchangeRate() : 2800;
 
                 if (curr === 'CDF') {
                     feeInput.value = Math.round(parseFloat(feeInput.value || 0) * rate);
@@ -348,9 +348,8 @@
                     facebook: document.getElementById('socialFacebook').value
                 },
                 maintenanceMode: document.getElementById('maintenanceMode').checked,
-                exchangeRate: parseFloat(document.getElementById('exchangeRate').value) || 2500,
+                exchangeRate: parseFloat(document.getElementById('exchangeRate').value) || 2800,
                 targetAOV: parseFloat(document.getElementById('targetAOV').value) || 0,
-                // Preserve other values if any
                 primaryColor: window.newketConfig ? window.newketConfig.primaryColor : '#000000'
             };
 

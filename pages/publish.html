@@ -21,8 +21,9 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="../js/supabase-client.js"></script>
-    <script type="module" src="../js/supabase-adapter.js"></script>
+    <script type="module" src="/js/config-manager.js"></script>
+    <script type="module" src="/js/supabase-client.js"></script>
+    <script type="module" src="/js/supabase-adapter.js"></script>
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -63,7 +64,7 @@
                     <label class="text-sm font-bold text-gray-700 ml-1">Titre de l'annonce</label>
                     <div
                         class="relative group input-focus border border-gray-200 rounded-2xl transition-all duration-300 bg-white">
-                        <input type="text" required placeholder="ex: iPhone 15 Pro Max - Titanium"
+                        <input type="text" id="pTitleInput" required placeholder="ex: iPhone 15 Pro Max - Titanium"
                             class="w-full px-5 py-4 rounded-2xl outline-none text-gray-900 placeholder:text-gray-400">
                     </div>
                 </div>
@@ -73,7 +74,7 @@
                         <label class="text-sm font-bold text-gray-700 ml-1">Catégorie</label>
                         <div
                             class="relative group input-focus border border-gray-200 rounded-2xl transition-all duration-300 bg-white">
-                            <select
+                            <select id="pCategoryInput"
                                 class="w-full px-5 py-4 rounded-2xl outline-none text-gray-900 appearance-none bg-transparent">
                                 <option>High-Tech</option>
                                 <option>Mode</option>
@@ -168,7 +169,7 @@
                     <label class="text-sm font-bold text-gray-700 ml-1">Description</label>
                     <div
                         class="relative group input-focus border border-gray-200 rounded-2xl transition-all duration-300 bg-white">
-                        <textarea rows="5" placeholder="Décrivez votre produit (état, caractéristiques, etc.)"
+                        <textarea id="pDescInput" rows="5" placeholder="Décrivez votre produit (état, caractéristiques, etc.)"
                             class="w-full px-5 py-4 rounded-2xl outline-none text-gray-900 resize-none"></textarea>
                     </div>
                 </div>
@@ -210,261 +211,181 @@
     <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
-    <script type="module" src="../js/auth.js"></script>
-    <script type="module" src="../js/cart.js"></script>
-    <script type="module" src="../js/favorites.js"></script>
-    <script type="module" src="../js/currency.js"></script>
-    <script type="module" src="../js/products.js"></script>
-    <script type="module" src="../js/orders.js"></script>
-    <script type="module" src="../js/managers.js"></script>
-    <script type="module" src="../js/ui-helpers.js"></script>
-    <script type="module" src="../js/ui.js"></script>
-    <script type="module" src="../js/search.js"></script>
-    <script type="module" src="../js/main.js"></script>
-    <script type="module" src="../js/components-loader.js"></script>
-    <script type="module" src="../js/realtime-notifications.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/cart.js"></script>
+    <script type="module" src="/js/favorites.js"></script>
+    <script type="module" src="/js/currency.js"></script>
+    <script type="module" src="/js/products.js"></script>
+    <script type="module" src="/js/orders.js"></script>
+    <script type="module" src="/js/managers.js"></script>
+    <script type="module" src="/js/ui-helpers.js"></script>
+    <script type="module" src="/js/ui.js"></script>
+    <script type="module" src="/js/search.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/components-loader.js"></script>
+    <script type="module" src="/js/realtime-notifications.js"></script>
 
     <script>
-        const priceInput = document.getElementById('priceInput');
-        const currencyInput = document.getElementById('currencyInput');
-        const estimatedPriceEl = document.getElementById('estimatedPrice');
-        const otherCurrencyNameEl = document.getElementById('otherCurrencyName');
-        const exchangeRateInput = document.getElementById('exchangeRate');
-
-        // Set initial configured exchange rate
         document.addEventListener('DOMContentLoaded', () => {
+            const priceInput = document.getElementById('priceInput');
+            const currencyInput = document.getElementById('currencyInput');
+            const estimatedPriceEl = document.getElementById('estimatedPrice');
+            const otherCurrencyNameEl = document.getElementById('otherCurrencyName');
+            const exchangeRateInput = document.getElementById('exchangeRate');
+
+            // Set initial configured exchange rate
             if (window.ConfigManager) {
                 exchangeRateInput.value = ConfigManager.getExchangeRate();
             }
-            updateEstimate();
-        });
 
-        function updateEstimate() {
-            const price = parseFloat(priceInput.value) || 0;
-            const currency = currencyInput.value;
-            const exchangeRate = parseFloat(exchangeRateInput.value) || 2800;
+            function updateEstimate() {
+                const price = parseFloat(priceInput.value) || 0;
+                const currency = currencyInput.value;
+                const exchangeRate = parseFloat(exchangeRateInput.value) || 2800;
 
-            if (currency === 'CDF') {
-                const estimatedAmount = price / exchangeRate;
-                otherCurrencyNameEl.textContent = 'USD';
-                estimatedPriceEl.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(estimatedAmount);
-            } else {
-                const estimatedAmount = price * exchangeRate;
-                otherCurrencyNameEl.textContent = 'CDF';
-                estimatedPriceEl.textContent = new Intl.NumberFormat('fr-CD', { style: 'currency', currency: 'CDF', maximumFractionDigits: 0 }).format(estimatedAmount).replace('CDF', 'FC');
-            }
-        }
-
-        priceInput.addEventListener('input', updateEstimate);
-        currencyInput.addEventListener('change', updateEstimate);
-        exchangeRateInput.addEventListener('input', updateEstimate);
-
-        const pImageUpload = document.getElementById('pImageUpload');
-        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        const removeBackgroundCheck = document.getElementById('removeBackgroundCheck');
-        const bgRemovalContainer = document.getElementById('bgRemovalContainer');
-        const uploadZone = document.getElementById('uploadZone');
-
-        let selectedFileBlobs = []; // Array of File objects
-        let selectedProductImages = []; // Array of DataURLs
-
-        function renderPreviews() {
-            if (selectedProductImages.length === 0) {
-                uploadZone.classList.remove('hidden');
-                imagePreviewContainer.classList.add('hidden');
-                bgRemovalContainer.style.display = 'none';
-                return;
-            }
-
-            uploadZone.classList.add('hidden');
-            imagePreviewContainer.classList.remove('hidden');
-            bgRemovalContainer.style.display = 'flex';
-
-            imagePreviewContainer.innerHTML = selectedProductImages.map((src, index) => `
-                <div class="relative flex-shrink-0 w-32 h-32 rounded-2xl border border-gray-200 overflow-hidden group">
-                    <img src="${src}" class="w-full h-full object-cover">
-                    <button type="button" onclick="removeImage(${index})" 
-                        class="absolute top-2 right-2 bg-white/90  text-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:scale-110 hover:bg-white transition-all">
-                        <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
-                    </button>
-                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] font-bold py-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        Image ${index + 1}
-                    </div>
-                </div>
-            `).join('');
-
-            // If we have less than 5 images, show a small "add more" button
-            if (selectedProductImages.length < 5) {
-                const addButton = document.createElement('div');
-                addButton.className = "flex-shrink-0 w-32 h-32 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-black hover:bg-gray-50 transition-all";
-                addButton.onclick = () => pImageUpload.click();
-                addButton.innerHTML = `
-                    <iconify-icon icon="solar:add-circle-linear" width="24" class="text-gray-400"></iconify-icon>
-                    <span class="text-[10px] font-bold text-gray-400 mt-1">Ajouter</span>
-                `;
-                imagePreviewContainer.appendChild(addButton);
-            }
-        }
-
-        window.removeImage = function (index) {
-            selectedFileBlobs.splice(index, 1);
-            selectedProductImages.splice(index, 1);
-            renderPreviews();
-            if (selectedProductImages.length === 0) {
-                pImageUpload.value = '';
-            }
-        };
-
-        pImageUpload.addEventListener('change', function (e) {
-            if (e.target.files && e.target.files.length > 0) {
-                const files = Array.from(e.target.files);
-
-                // Limit to 5 images total
-                const remainingSlots = 5 - selectedProductImages.length;
-                const filesToProcess = files.slice(0, remainingSlots);
-
-                if (files.length > remainingSlots) {
-                    showToast("Vous pouvez ajouter jusqu'à 5 images maximum.", "warning");
-                }
-
-                let processedCount = 0;
-                filesToProcess.forEach(file => {
-                    selectedFileBlobs.push(file);
-                    const reader = new FileReader();
-                    reader.onload = function (evt) {
-                        selectedProductImages.push(evt.target.result);
-                        processedCount++;
-                        if (processedCount === filesToProcess.length) {
-                            renderPreviews();
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-        });
-
-        document.getElementById('publishForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const titleInput = this.querySelector('input[type="text"]');
-            const categorySelect = this.querySelector('select');
-            const descInput = this.querySelector('textarea');
-            const priceVal = parseFloat(priceInput.value);
-            const currency = currencyInput.value;
-
-            // Custom Validation
-            if (!titleInput.value.trim()) {
-                showToast("Un titre est nécessaire pour votre produit.", "error");
-                titleInput.focus();
-                return;
-            }
-            if (!priceVal || priceVal <= 0) {
-                showToast("Veuillez définir un prix valide.", "error");
-                priceInput.focus();
-                return;
-            }
-
-            if (selectedFileBlobs.length === 0 && selectedProductImages.length === 0) {
-                showToast("Au moins une image est obligatoire pour publier un produit.", "warning");
-                return;
-            }
-
-            if (window.LoaderManager) {
-                LoaderManager.show('Publication de votre annonce...');
-            }
-
-            try {
-                const exchangeRate = parseFloat(exchangeRateInput.value) || (ConfigManager ? ConfigManager.getExchangeRate() : 2800);
-                // Normalize price to CDF for internal storage
-                const finalPrice = currency === 'USD' ? priceVal * exchangeRate : priceVal;
-
-                let finalImagePaths = [];
-
-                // Upload all images to Supabase Storage if available
-                if (selectedFileBlobs.length > 0) {
-                    for (let i = 0; i < selectedFileBlobs.length; i++) {
-                        const file = selectedFileBlobs[i];
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${Date.now()}_${i}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-                        const filePath = `public/${fileName}`;
-
-                        if (window.SupabaseAdapter && window.SupabaseAdapter.uploadFile) {
-                            try {
-                                const uploadedUrl = await window.SupabaseAdapter.uploadFile('product-images', filePath, file);
-                                if (uploadedUrl) {
-                                    finalImagePaths.push(uploadedUrl);
-                                } else {
-                                    console.warn(`L'upload de l'image ${i + 1} a échoué, utilisation de la DataURL locale.`);
-                                    finalImagePaths.push(selectedProductImages[i]);
-                                }
-                            } catch (err) {
-                                console.error(`Error uploading image ${i}:`, err);
-                                finalImagePaths.push(selectedProductImages[i]);
-                            }
-                        } else {
-                            finalImagePaths.push(selectedProductImages[i]);
-                        }
-                    }
+                if (currency === 'CDF') {
+                    const estimatedAmount = price / exchangeRate;
+                    otherCurrencyNameEl.textContent = 'USD';
+                    estimatedPriceEl.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(estimatedAmount);
                 } else {
-                    finalImagePaths = selectedProductImages;
+                    const estimatedAmount = price * exchangeRate;
+                    otherCurrencyNameEl.textContent = 'CDF';
+                    estimatedPriceEl.textContent = new Intl.NumberFormat('fr-CD', { style: 'currency', currency: 'CDF', maximumFractionDigits: 0 }).format(estimatedAmount).replace('CDF', 'FC');
+                }
+            }
+
+            priceInput.addEventListener('input', updateEstimate);
+            currencyInput.addEventListener('change', updateEstimate);
+            exchangeRateInput.addEventListener('input', updateEstimate);
+            updateEstimate();
+
+            const pImageUpload = document.getElementById('pImageUpload');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const bgRemovalContainer = document.getElementById('bgRemovalContainer');
+            const uploadZone = document.getElementById('uploadZone');
+
+            let selectedFileBlobs = []; 
+            let selectedProductImages = []; 
+
+            function renderPreviews() {
+                if (selectedProductImages.length === 0) {
+                    uploadZone.classList.remove('hidden');
+                    imagePreviewContainer.classList.add('hidden');
+                    bgRemovalContainer.style.display = 'none';
+                    return;
                 }
 
-                const finalImagePathString = finalImagePaths.join(',');
+                uploadZone.classList.add('hidden');
+                imagePreviewContainer.classList.remove('hidden');
+                bgRemovalContainer.style.display = 'flex';
 
-                const newProduct = {
-                    id: 'prod-' + Date.now(),
-                    name: titleInput.value.trim(),
-                    category: categorySelect.value,
-                    price: finalPrice,
-                    description: descInput.value.trim(),
-                    image: finalImagePathString,
-                    supplier_email: localStorage.getItem('newketUserEmail') || 'anonymous',
-                    stock: 10,
-                    is_new: true,
-                    created_at: new Date().toISOString(),
-                    custom_exchange_rate: exchangeRate // Store the custom exchange rate
-                };
+                imagePreviewContainer.innerHTML = selectedProductImages.map((src, index) => `
+                    <div class="relative flex-shrink-0 w-32 h-32 rounded-2xl border border-gray-200 overflow-hidden group">
+                        <img src="${src}" class="w-full h-full object-cover">
+                        <button type="button" onclick="window.removeImage(${index})" 
+                            class="absolute top-2 right-2 bg-white/90  text-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:scale-110 hover:bg-white transition-all">
+                            <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
+                        </button>
+                    </div>
+                `).join('');
 
-                await ProductManager.addProduct(newProduct);
-
-                if (window.LoaderManager) LoaderManager.hide();
-
-                const overlay = document.getElementById('publishOverlay');
-                const succ = document.getElementById('successState');
-
-                overlay.classList.remove('invisible', 'opacity-0');
-                succ.classList.remove('hidden');
-                createConfetti();
-
-                // Clear form
-                this.reset();
-                updateEstimate();
-
-            } catch (error) {
-                console.error('Publish error:', error);
-                if (window.LoaderManager) LoaderManager.hide();
-                showToast("Erreur lors de la publication.", "error");
+                if (selectedProductImages.length < 5) {
+                    const addButton = document.createElement('div');
+                    addButton.className = "flex-shrink-0 w-32 h-32 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-black hover:bg-gray-50 transition-all";
+                    addButton.onclick = () => pImageUpload.click();
+                    addButton.innerHTML = `<iconify-icon icon="solar:add-circle-linear" width="24" class="text-gray-400"></iconify-icon>`;
+                    imagePreviewContainer.appendChild(addButton);
+                }
             }
+
+            window.removeImage = function (index) {
+                selectedFileBlobs.splice(index, 1);
+                selectedProductImages.splice(index, 1);
+                renderPreviews();
+                if (selectedProductImages.length === 0) pImageUpload.value = '';
+            };
+
+            pImageUpload.addEventListener('change', function (e) {
+                if (e.target.files && e.target.files.length > 0) {
+                    const files = Array.from(e.target.files);
+                    const remainingSlots = 5 - selectedProductImages.length;
+                    const filesToProcess = files.slice(0, remainingSlots);
+
+                    filesToProcess.forEach(file => {
+                        selectedFileBlobs.push(file);
+                        const reader = new FileReader();
+                        reader.onload = function (evt) {
+                            selectedProductImages.push(evt.target.result);
+                            renderPreviews();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+
+            document.getElementById('publishForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const titleInput = document.getElementById('pTitleInput');
+                const categorySelect = document.getElementById('pCategoryInput');
+                const descInput = document.getElementById('pDescInput');
+                const priceVal = parseFloat(priceInput.value);
+                const currency = currencyInput.value;
+
+                if (!titleInput.value.trim() || !priceVal || priceVal <= 0) {
+                    if (typeof showToast === 'function') showToast("Veuillez remplir les champs obligatoires.", "error");
+                    return;
+                }
+
+                if (selectedProductImages.length === 0) {
+                    if (typeof showToast === 'function') showToast("Une image est obligatoire.", "warning");
+                    return;
+                }
+
+                if (window.LoaderManager) LoaderManager.show('Publication...');
+
+                try {
+                    const exchangeRate = parseFloat(exchangeRateInput.value) || 2800;
+                    const finalPrice = currency === 'USD' ? priceVal * exchangeRate : priceVal;
+
+                    let finalImagePaths = [];
+                    if (window.SupabaseAdapter && window.SupabaseAdapter.uploadFile) {
+                        for (let i = 0; i < selectedFileBlobs.length; i++) {
+                            const file = selectedFileBlobs[i];
+                            const fileName = `${Date.now()}_${i}.${file.name.split('.').pop()}`;
+                            const path = await SupabaseAdapter.uploadFile('product-images', `public/${fileName}`, file);
+                            finalImagePaths.push(path || selectedProductImages[i]);
+                        }
+                    } else {
+                        finalImagePaths = selectedProductImages;
+                    }
+
+                    const newProduct = {
+                        id: 'prod-' + Date.now(),
+                        name: titleInput.value.trim(),
+                        category: categorySelect.value,
+                        price: finalPrice,
+                        description: descInput.value.trim(),
+                        image: finalImagePaths.join(','),
+                        supplier_email: localStorage.getItem('newketUserEmail') || 'anonymous',
+                        stock: 10,
+                        is_new: true,
+                        created_at: new Date().toISOString()
+                    };
+
+                    await ProductManager.addProduct(newProduct);
+                    if (window.LoaderManager) LoaderManager.hide();
+
+                    document.getElementById('publishOverlay').classList.remove('invisible', 'opacity-0');
+                    document.getElementById('successState').classList.remove('hidden');
+                    this.reset();
+                } catch (error) {
+                    console.error('Publish error:', error);
+                    if (window.LoaderManager) LoaderManager.hide();
+                    if (typeof showToast === 'function') showToast("Erreur lors de la publication.", "error");
+                }
+            });
         });
-
-        function createConfetti() {
-            const container = document.getElementById('confettiContainer');
-            for (let i = 0; i < 50; i++) {
-                const c = document.createElement('div');
-                c.className = 'absolute w-2 h-2 rounded-full';
-                c.style.backgroundColor = ['#000000', '#333333', '#666666', '#999999'][Math.floor(Math.random() * 4)];
-                c.style.left = Math.random() * 100 + '%';
-                c.style.top = '-10px';
-                c.style.transition = `all ${1 + Math.random() * 2}s linear`;
-                container.appendChild(c);
-                setTimeout(() => {
-                    c.style.top = '100%';
-                    c.style.opacity = '0';
-                    c.style.transform = `translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 360}deg)`;
-                }, 10);
-                setTimeout(() => c.remove(), 3000);
-            }
-        }
     </script>
 
 </body>

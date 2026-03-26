@@ -32,7 +32,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Caching all assets');
+            console.log('[Service Worker] Caching critical assets');
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
@@ -54,47 +54,35 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event (Stale-while-revalidate strategy)
+// Fetch Event
 self.addEventListener('fetch', (event) => {
-    // Skip Supabase API calls or external resources if needed
-    if (event.request.url.includes('supabase.co')) return;
+    const url = new URL(event.request.url);
+
+    // Only handle http/https and skip Supabase
+    if (!event.request.url.startsWith('http') || url.hostname.includes('supabase.co') || url.hostname.includes('iconify.design')) {
+        return;
+    }
 
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                // Return cached response then update in background
-                if (event.request.url.startsWith('http')) {
-                    fetch(event.request).then((networkResponse) => {
-                        if (networkResponse && networkResponse.ok) {
-                            caches.open(CACHE_NAME).then((cache) => {
-                                cache.put(event.request, networkResponse.clone());
-                            });
-                        }
-                    }).catch(err => {
-                        console.warn('[Service Worker] Background fetch failed for:', event.request.url, err);
-                    });
-                }
-                return cachedResponse;
-            }
-
-            if (!event.request.url.startsWith('http')) return fetch(event.request);
-
-            return fetch(event.request).then((networkResponse) => {
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
                 if (networkResponse && networkResponse.ok) {
-                    return caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, networkResponse.clone());
-                        return networkResponse;
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
                     });
                 }
                 return networkResponse;
             }).catch((err) => {
-                console.error('[Service Worker] Fetch failed:', event.request.url, err);
-                // Offline fallback for HTML pages
+                console.warn('[Service Worker] Fetch failed:', event.request.url, err);
                 if (event.request.headers.get('accept').includes('text/html')) {
                     return caches.match('/index.html');
                 }
-                throw err;
+                // Return a basic error response instead of throwing to avoid "Failed to convert value to Response"
+                return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
             });
+
+            return cachedResponse || fetchPromise;
         })
     );
 });

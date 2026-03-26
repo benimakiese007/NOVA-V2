@@ -22,8 +22,9 @@
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/config-manager.js"></script>
     <script type="module" src="/js/supabase-client.js"></script>
-    <script type="module" src="/js/supabase-adapter.js?v=2.1"></script>
+    <script type="module" src="/js/supabase-adapter.js"></script>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/responsive.css">
@@ -39,10 +40,6 @@
         ::-webkit-scrollbar-thumb {
             background: #d1d5db;
             border-radius: 999px;
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
         }
 
         .hero-bg-image {
@@ -87,45 +84,20 @@
             width: 100%;
         }
 
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.8;
-            }
-        }
-
-        .badge-pulse {
-            animation: pulse 2s infinite;
-        }
-
         @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         .animate-scroll {
             animation: scroll 30s linear infinite;
         }
 
-        .animate-scroll:hover {
-            animation-play-state: paused;
-        }
-
         .features-gradient-edge {
             mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
 
-        /* Mobile Menu styles */
+        /* Mobile Menu sidebar */
         #mobileMenu {
             transition: transform 0.3s ease-in-out;
             transform: translateX(-100%);
@@ -154,29 +126,9 @@
     <!-- Spacer for fixed header -->
     <div class="h-28 sm:h-24 lg:h-32"></div>
 
-    <!-- ========== PRODUITS ÉPINGLÉS ========== -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-2 mb-12" id="pinnedSection">
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gray-900 rounded-xl flex items-center justify-center">
-                    <iconify-icon icon="solar:pin-bold" width="16" class="text-white"></iconify-icon>
-                </div>
-                <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900">Produits épinglés</h2>
-            </div>
-            <a href="/pages/catalog.html"
-                class="text-sm font-medium text-gray-900 hover:text-black flex items-center gap-1 transition-colors">
-                Voir tout <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
-            </a>
-        </div>
-        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="pinnedProductGrid">
-            <!-- Produits épinglés chargés dynamiquement avec Skeletons -->
-        </div>
-    </section>
-
-    <!-- ========== HERO SECTION ========== -->
+    <!-- ========== HERO SECTION FIRST ========== -->
     <section class="relative overflow-hidden hero-bg-image mx-4 sm:mx-6 lg:mx-8 rounded-2xl mt-4">
-        <div
-            class="relative max-w-7xl mx-auto px-6 sm:px-10 py-10 sm:py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-10">
+        <div class="relative max-w-7xl mx-auto px-6 sm:px-10 py-10 sm:py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-10">
             <div class="flex-1 text-center lg:text-left">
                 <h1 class="text-2xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight mb-4">
                     Sublimez Votre<br>Quotidien
@@ -197,21 +149,35 @@
             </div>
             <div class="flex-1 hidden lg:flex justify-center">
                 <div class="relative">
-                    <div
-                        class="w-80 h-80 bg-white/10 rounded-3xl  flex items-center justify-center border border-white/20">
+                    <div class="w-80 h-80 bg-white/10 rounded-3xl  flex items-center justify-center border border-white/20">
                         <div class="text-center">
                             <div class="text-6xl font-bold text-white mb-2">-50%</div>
-                            <div class="text-white/80 text-sm">Sur une sélection Premium pour les achats de plus de 150$
-                            </div>
+                            <div class="text-white/80 text-sm">Sur une sélection Premium pour les achats de plus de 150$</div>
                         </div>
                     </div>
-                    <div
-                        class="absolute -top-4 -right-4 w-20 h-20 bg-gray-900 rounded-2xl flex items-center justify-center rotate-12 shadow-xl">
+                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-gray-900 rounded-2xl flex items-center justify-center rotate-12 shadow-xl">
                         <iconify-icon icon="solar:tag-bold" width="32" class="text-white"></iconify-icon>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- ========== PRODUITS ÉPINGLÉS ========== -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-14 mb-12" id="pinnedSection">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gray-900 rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="solar:pin-bold" width="16" class="text-white"></iconify-icon>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900">Produits épinglés</h2>
+            </div>
+            <a href="/pages/catalog.html"
+                class="text-sm font-medium text-gray-900 hover:text-black flex items-center gap-1 transition-colors">
+                Voir tout <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+            </a>
+        </div>
+        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="pinnedProductGrid"></div>
     </section>
 
     <!-- ========== 10 RÉCEMMENT PUBLIÉS ========== -->
@@ -221,8 +187,7 @@
                 <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900">Récemment publiés</h2>
                 <div class="flex items-center gap-2 mt-1">
                     <span class="relative flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
                     <p class="text-sm text-gray-500">Nouveaux arrivages</p>
@@ -233,9 +198,7 @@
                 Voir tout <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
             </a>
         </div>
-        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="recentProductGrid">
-            <!-- 10 produits récents chargés dynamiquement avec Skeletons -->
-        </div>
+        <div class="product-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" id="recentProductGrid"></div>
     </section>
 
     <!-- ========== FEATURES SECTION ========== -->
@@ -261,47 +224,11 @@
             </div>
             <div class="flex items-center gap-3 p-5 rounded-2xl bg-gray-50 flex-shrink-0 w-64">
                 <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <iconify-icon icon="solar:undo-left-linear" width="20" class="text-gray-900"></iconify-icon>
-                </div>
-                <div>
-                    <div class="text-sm font-medium text-gray-900">Retours gratuits</div>
-                    <div class="text-xs text-gray-500 mt-0.5">Sous 30 jours</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-5 rounded-2xl bg-gray-50 flex-shrink-0 w-64">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
                     <iconify-icon icon="solar:smartphone-linear" width="20" class="text-gray-900"></iconify-icon>
                 </div>
                 <div>
                     <div class="text-sm font-medium text-gray-900">Paiement Mobile</div>
                     <div class="text-xs text-gray-500 mt-0.5">M-Pesa, Orange, Airtel</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-5 rounded-2xl bg-gray-50 flex-shrink-0 w-64">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <iconify-icon icon="solar:headphones-round-linear" width="20" class="text-gray-900"></iconify-icon>
-                </div>
-                <div>
-                    <div class="text-sm font-medium text-gray-900">Service Client 24/7</div>
-                    <div class="text-xs text-gray-500 mt-0.5">Assistance personnalisée</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-5 rounded-2xl bg-gray-50 flex-shrink-0 w-64">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <iconify-icon icon="solar:verified-check-linear" width="20" class="text-gray-900"></iconify-icon>
-                </div>
-                <div>
-                    <div class="text-sm font-medium text-gray-900">Produits Certifiés</div>
-                    <div class="text-xs text-gray-500 mt-0.5">Qualité 100% garantie</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-5 rounded-2xl bg-gray-50 flex-shrink-0 w-64">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <iconify-icon icon="solar:map-point-wave-linear" width="20" class="text-gray-900"></iconify-icon>
-                </div>
-                <div>
-                    <div class="text-sm font-medium text-gray-900">Retrait Gratuit</div>
-                    <div class="text-xs text-gray-500 mt-0.5">En point relais sous 24h</div>
                 </div>
             </div>
         </div>
@@ -312,21 +239,12 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900">Tous les produits</h2>
             <div class="flex flex-wrap items-center gap-2" id="filterBar">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mr-1">Filtrer :</span>
-                <button data-filter="all" onclick="filterAllProducts('all')"
-                    class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 text-white transition-all">Tout</button>
-                <button data-filter="Collections Femme" onclick="filterAllProducts('Collections Femme')"
-                    class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Collections Femme</button>
-                <button data-filter="Style Homme" onclick="filterAllProducts('Style Homme')"
-                    class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Style Homme</button>
-                <button data-filter="Tech & Gadgets" onclick="filterAllProducts('Tech & Gadgets')"
-                    class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Tech & Gadgets</button>
-                <button data-filter="Art de vivre" onclick="filterAllProducts('Art de vivre')"
-                    class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Art de vivre</button>
+                <button data-filter="all" onclick="filterAllProducts('all')" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 text-white transition-all">Tout</button>
+                <button data-filter="Collections Femme" onclick="filterAllProducts('Collections Femme')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Collections Femme</button>
+                <button data-filter="Style Homme" onclick="filterAllProducts('Style Homme')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Style Homme</button>
                 <div class="ml-2 flex items-center gap-1.5 border-l border-gray-200 pl-2">
                     <iconify-icon icon="solar:sort-by-time-linear" width="16" class="text-gray-500"></iconify-icon>
-                    <select id="sortAllProducts" onchange="sortAndRenderAll()"
-                        class="text-xs font-semibold text-gray-700 bg-transparent border-none outline-none cursor-pointer">
+                    <select id="sortAllProducts" onchange="sortAndRenderAll()" class="text-xs font-semibold text-gray-700 bg-transparent border-none outline-none cursor-pointer">
                         <option value="recent">Plus récents</option>
                         <option value="price_asc">Prix croissant</option>
                         <option value="price_desc">Prix décroissant</option>
@@ -334,19 +252,13 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" id="allProductGrid">
-            <!-- Tous les produits chargés dynamiquement avec Skeletons -->
-        </div>
-
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" id="allProductGrid"></div>
         <div id="voirPlusContainer" class="mt-12 flex justify-center hidden">
-            <button id="voirPlusBtn" onclick="showMoreProducts()"
-                class="group relative px-8 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex items-center gap-2">
+            <button id="voirPlusBtn" onclick="showMoreProducts()" class="group relative px-8 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm flex items-center gap-2">
                 <span>Voir plus d'articles</span>
-                <iconify-icon icon="solar:alt-arrow-down-linear" width="18"
-                    class="group-hover:translate-y-0.5 transition-transform"></iconify-icon>
+                <iconify-icon icon="solar:alt-arrow-down-linear" width="18" class="group-hover:translate-y-0.5 transition-transform"></iconify-icon>
             </button>
         </div>
-
         <div id="noProductsMsg" class="hidden text-center py-12 text-gray-400 text-sm">Aucun produit trouvé.</div>
     </section>
 
@@ -356,10 +268,7 @@
             <div class="flex items-center justify-between mb-10">
                 <h2 class="text-2xl font-bold uppercase tracking-tighter">Continuer vos recherches</h2>
             </div>
-            <div id="recently-viewed-container" class="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0"
-                style="scrollbar-width:none;">
-                <!-- Recently viewed items injected by JS -->
-            </div>
+            <div id="recently-viewed-container" class="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width:none;"></div>
         </div>
     </section>
 
@@ -380,7 +289,6 @@
     <script type="module" src="/js/components-loader.js"></script>
     <script type="module" src="/js/realtime-notifications.js"></script>
     <script>
-        // Sync mobile cart/fav badges
         function syncMobileBadges() {
             const cartCount = window.CartManager ? CartManager.getItemCount() : 0;
             const favCount = window.FavoritesManager ? FavoritesManager.getCount() : 0;
@@ -398,13 +306,6 @@
         window.addEventListener('newketInitialized', syncMobileBadges);
         window.addEventListener('cartUpdated', syncMobileBadges);
         window.addEventListener('favoritesUpdated', syncMobileBadges);
-    </script>
-    <script>
-        document.addEventListener('newketInitialized', () => {
-            if (window.RecentlyViewedManager) {
-                RecentlyViewedManager.render('recently-viewed-container');
-            }
-        });
     </script>
 </body>
 
