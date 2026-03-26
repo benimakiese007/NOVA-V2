@@ -25,87 +25,67 @@
         body {
             background-color: #f9fafb;
         }
+    </style>
+</head>
 
-        .glass-panel {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 1.5rem;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            color: #6b7280;
-            transition: all 0.2s;
-        }
-
-        .sidebar-link:hover,
-        .sidebar-link.active {
-            background: #f3f4f6;
-            color: #111827;
-            font-weight: 600;
-        }
-
-
-<body class="text-gray-900 antialiased">
+<body class="bg-gray-50 transition-colors duration-200">
     <div id="header-placeholder"></div>
 
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex flex-col md:flex-row gap-8">
-        <!-- Sidebar -->
-        <aside class="w-full md:w-64 flex-shrink-0">
-            <div class="glass-panel p-6 sticky top-24">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl"></div>
-                    <div>
-                        <h2 class="font-bold text-gray-900" id="vendorName">Ma Boutique</h2>
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Vendeur Premium</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-64 flex-shrink-0">
+                <div class="glass-panel p-6 sticky top-24">
+                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
+                        <div class="w-12 h-12 rounded-2xl bg-black flex items-center justify-center text-white shrink-0">
+                            <iconify-icon icon="solar:shop-bold" width="24"></iconify-icon>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Ma Boutique</p>
+                            <h2 class="font-bold text-gray-900 truncate" id="vendorName">Chargement...</h2>
+                        </div>
                     </div>
+                    <nav class="space-y-1">
+                        <a href="#" onclick="switchVendorTab('dashboard')" class="sidebar-link active">
+                            <iconify-icon icon="solar:chart-square-bold" width="20"></iconify-icon>
+                            Tableau de bord
+                        </a>
+                        <a href="/pages/publish.html" class="sidebar-link">
+                            <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
+                            Publier
+                        </a>
+                        <a href="#" onclick="switchVendorTab('products')" class="sidebar-link">
+                            <iconify-icon icon="solar:box-bold" width="20"></iconify-icon>
+                            Mes Produits
+                        </a>
+                        <a href="#" onclick="switchVendorTab('gains')" class="sidebar-link">
+                            <iconify-icon icon="solar:wallet-2-bold" width="20"></iconify-icon>
+                            Ventes & Gains
+                        </a>
+                        <a href="#" onclick="switchVendorTab('settings')" class="sidebar-link">
+                            <iconify-icon icon="solar:settings-bold" width="20"></iconify-icon>
+                            Paramètres
+                        </a>
+                    </nav>
                 </div>
-                <nav class="space-y-1">
-                    <a href="#" onclick="switchVendorTab('dashboard')" class="sidebar-link active">
-                        <iconify-icon icon="solar:chart-square-bold" width="20"></iconify-icon>
-                        Tableau de bord
-                    </a>
-                    <a href="/pages/publish.html" class="sidebar-link">
-                        <iconify-icon icon="solar:add-circle-bold" width="20"></iconify-icon>
-                        Publier
-                    </a>
-                    <a href="#" onclick="switchVendorTab('products')" class="sidebar-link">
-                        <iconify-icon icon="solar:box-bold" width="20"></iconify-icon>
-                        Mes Produits
-                    </a>
-                    <a href="#" onclick="switchVendorTab('gains')" class="sidebar-link">
-                        <iconify-icon icon="solar:wallet-2-bold" width="20"></iconify-icon>
-                        Ventes & Gains
-                    </a>
-                    <a href="#" onclick="switchVendorTab('settings')" class="sidebar-link">
-                        <iconify-icon icon="solar:settings-bold" width="20"></iconify-icon>
-                        Paramètres
-                    </a>
-                </nav>
-            </div>
-        </aside>
+            </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 space-y-8">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Bonjour, <span id="vendorDisplay">Vendeur</span></h1>
-                    <p class="text-gray-500 mt-1">Voici un aperçu de l'activité de votre boutique aujourd'hui.</p>
+            <!-- Main Content -->
+            <div class="flex-1 space-y-8">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight">Bonjour, <span id="vendorDisplay">Vendeur</span></h1>
+                        <p class="text-gray-500 mt-1">Voici un aperçu de l'activité de votre boutique aujourd'hui.</p>
+                    </div>
+                    <a href="/pages/publish.html"
+                        class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-sm hover:shadow-xl transition-all">Ajouter
+                        un produit</a>
                 </div>
-                <a href="/pages/publish.html"
-                    class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-sm hover:shadow-xl transition-all">Ajouter
-                    un produit</a>
-            </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass-panel p-8">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Ventes totales</p>
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-8">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Ventes totales</p>
                     <div class="text-3xl font-black text-gray-900" id="vendorTotalSales">0 FC</div>
                     <p class="text-xs text-green-500 mt-2 font-bold">+0% ce mois</p>
                 </div>
@@ -243,18 +223,6 @@
                                 </thead>
                                 <tbody id="payout-history-body" class="divide-y divide-gray-50">
                                     <!-- Injected by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Withdrawal Modal -->
-            <div id="withdrawalModal" class="fixed inset-0 z-[60] hidden">
-                <div class="absolute inset-0 bg-black/60 " onclick="closeWithdrawalModal()"></div>
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
-                    <div class="bg-white rounded-[2.5rem] p-8 shadow-2xl relative">
                         <button onclick="closeWithdrawalModal()"
                             class="absolute top-6 right-6 text-gray-400 hover:text-black transition-colors">
                             <iconify-icon icon="solar:close-circle-bold" width="32"></iconify-icon>
@@ -376,8 +344,12 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-            <div id="mobile-nav-placeholder"></div>
+    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
 
             <script type="module" src="../js/auth.js"></script>
