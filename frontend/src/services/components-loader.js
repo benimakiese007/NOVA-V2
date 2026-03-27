@@ -7,7 +7,7 @@
 const HEADER_HTML = `
     <!-- Simple fallback header if fetch fails (e.g. local file://) -->
     <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 flex items-center justify-between px-4 py-3 shadow-sm sm:px-8">
-        <a href="index.html" class="text-xl font-bold tracking-tighter">NEWKET</a>
+        <a href="/" class="text-xl font-bold tracking-tighter">NEWKET</a>
         <div class="flex items-center gap-4">
             <a href="/pages/cart.html" class="p-2 hover:bg-gray-100 rounded-lg relative">
                 <iconify-icon icon="solar:bag-3-outline" width="22"></iconify-icon>
@@ -28,7 +28,7 @@ const HEADER_HTML = `
                 title="Menu">
                 <iconify-icon icon="solar:hamburger-menu-linear" width="24" class="text-gray-600"></iconify-icon>
             </button>
-            <a href="index.html" class="flex-shrink-0 flex items-center gap-1 sm:gap-3">
+            <a href="/" class="flex-shrink-0 flex items-center gap-1 sm:gap-3">
                 <span
                     class="text-lg sm:text-xl font-bold tracking-tighter text-gray-900 max-[360px]:hidden">NEWKET</span>
             </a>
@@ -285,7 +285,7 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
 <nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
     <!-- Acheteur (Customer) Nav - 4 items -->
     <div class="nav-bar customer-nav flex justify-around items-center w-full px-2" style="display: none;">
-        <a href="index.html" class="nav-item" title="Accueil" id="nav-home">
+        <a href="/" class="nav-item" title="Accueil" id="nav-home">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
             <span>Accueil</span>
         </a>
@@ -305,7 +305,7 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
 
     <!-- Vendeur (Supplier/Admin) Nav - 6 items -->
     <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 overflow-x-auto" style="display: none; gap: 2px;">
-        <a href="index.html" class="nav-item shrink-0" title="Accueil" style="min-width: 46px;">
+        <a href="/" class="nav-item shrink-0" title="Accueil" style="min-width: 46px;">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
             <span style="font-size: 9px;">Accueil</span>
         </a>
@@ -334,7 +334,7 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
 
 const MINIMAL_HEADER_HTML = `<!-- NewKet Minimal Header Component -->
 <header class="main-header fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm flex h-[60px] sm:h-[64px] items-center justify-center">
-    <a href="index.html" class="flex items-center group" title="Retour à l'accueil">
+    <a href="/" class="flex items-center group" title="Retour à l'accueil">
         <span class="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 transition-transform group-hover:scale-105">NEWKET</span>
     </a>
     <div class="absolute right-4 items-center hidden sm:flex text-gray-300">

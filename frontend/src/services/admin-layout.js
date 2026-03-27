@@ -69,7 +69,7 @@ const AdminLayout = {
                             </div>
                         </div>
 
-                        <a href="../index.html" target="_blank" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors flex items-center gap-2">
+                        <a href="/" target="_blank" class="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors flex items-center gap-2">
                             <iconify-icon icon="solar:globus-linear" width="18"></iconify-icon>
                             <span class="hidden sm:inline">Voir la boutique</span>
                         </a>

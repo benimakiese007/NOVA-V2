@@ -122,7 +122,7 @@ function buildProductCardHTML(p, options = {}) {
                     <iconify-icon icon="${isFavorite ? 'solar:heart-bold' : 'solar:heart-linear'}" width="18" style="${isFavorite ? 'color:#ef4444' : 'color:#6b7280'}"></iconify-icon>
                 </button>
                 <a href="/pages/product.html?id=${p.id}">
-                    <img src="${mainImg}" alt="${p.name}" loading="lazy" onerror="this.src='Images/default.png'">
+                    <img src="${mainImg}" alt="${p.name}" loading="lazy" onerror="this.src="../assets/Images/default.png"">
                 </a>
             </div>
             <div class="product-info">
