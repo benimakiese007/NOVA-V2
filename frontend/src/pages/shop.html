@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -151,7 +151,7 @@
             const email = urlParams.get('email');
 
             if (!email) {
-                location.href = '/pages/shops.html';
+                location.href = '/src/pages/shops.html';
                 return;
             }
 
@@ -217,7 +217,7 @@
 
             } catch (err) {
                 console.error('Error loading shop:', err);
-                location.href = '/pages/shops.html';
+                location.href = '/src/pages/shops.html';
             }
         }
 

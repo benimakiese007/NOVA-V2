@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -555,7 +555,7 @@
             if (!confirm('Se déconnecter de NewKet ?')) return;
             const keys = ['newketUserEmail', 'newketRole', 'newketUser', 'newketToken'];
             keys.forEach(k => localStorage.removeItem(k));
-            window.location.href = '/pages/login.html';
+            window.location.href = '/src/pages/login.html';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
