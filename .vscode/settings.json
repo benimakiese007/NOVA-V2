@@ -1,8 +1,10 @@
 {
-    "files.exclude": { 
+    "files.exclude": {
         ".agent": true,
         ".agents": true,
         ".vscode": true
     },
-    "css.lint.unknownAtRules": "ignore"
+    "css.lint.unknownAtRules": "ignore",
+    "workbench.editor.enablePreviewFromQuickOpen": true,
+    "workbench.editor.enablePreviewFromCodeNavigation": true
 }
