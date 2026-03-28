@@ -614,7 +614,7 @@
         async function submitReview(productId) {
             if (!window.AuthManager || !AuthManager.getRole()) {
                 if (window.showToast) showToast('Veuillez vous connecter pour laisser un avis.', 'error');
-                window.location.href = '/src/pages/login.html?redirect=' + encodeURIComponent(window.location.href);
+                window.location.href = '/pages/login.html?redirect=' + encodeURIComponent(window.location.href);
                 return;
             }
 

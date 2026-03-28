@@ -638,8 +638,8 @@
             localStorage.setItem('newketRole', role);
 
             setTimeout(() => {
-                if (role === 'admin') window.location.href = '/src/pages/admin/dashboard.html';
-                else if (role === 'supplier') window.location.href = '/src/pages/vendor-dashboard.html';
+                if (role === 'admin') window.location.href = '/pages/admin/dashboard.html';
+                else if (role === 'supplier') window.location.href = '/pages/vendor-dashboard.html';
                 else window.location.href = '/';
             }, 800);
         }

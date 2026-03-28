@@ -1,4 +1,4 @@
-const CACHE_NAME = 'newket-cache-v1';
+const CACHE_NAME = 'newket-cache-v2';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -30,6 +30,7 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
+    self.skipWaiting(); // Force installation immediately
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('[Service Worker] Caching critical assets');

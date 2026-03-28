@@ -15,21 +15,21 @@ const AuthManager = {
                     const user = session.user;
                     const role = user.user_metadata.role || 'customer';
                     const email = user.email;
-                    
+
                     this.role = role;
                     localStorage.setItem('newketRole', role);
                     localStorage.setItem('newketUserEmail', email);
                     localStorage.setItem('newketUserId', user.id);
-                    
+
                     const avatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture || null;
                     if (avatarUrl) localStorage.setItem('newketUserAvatar', avatarUrl);
 
                     const status = await this.fetchUserStatus(email);
                     this.status = status;
                     localStorage.setItem('newketUserStatus', status);
-                    
+
                     this.enforcePermissions();
-                    
+
                     if (window.CartManager) CartManager.syncFromSupabase();
                     if (window.FavoritesManager) FavoritesManager.syncFromSupabase();
                 } else if (event === 'SIGNED_OUT') {
@@ -48,7 +48,7 @@ const AuthManager = {
                 const user = data.session.user;
                 this.role = user.user_metadata.role || 'customer';
                 this.status = await this.fetchUserStatus(user.email);
-                
+
                 localStorage.setItem('newketRole', this.role);
                 localStorage.setItem('newketUserStatus', this.status);
                 localStorage.setItem('newketUserId', user.id);
@@ -100,9 +100,9 @@ const AuthManager = {
                 .from('users')
                 .select('status')
                 .eq('email', email)
-                .single();
+                .maybeSingle();
             if (error) throw error;
-            return data.status || 'pending';
+            return data?.status || 'pending';
         } catch (err) {
             console.error('Error fetching user status:', err);
             return 'pending';
@@ -131,7 +131,7 @@ const AuthManager = {
 
     async adminLogin(email, password) {
         if (!window.supabaseClient) return { error: 'Système non initialisé' };
-        
+
         const { data, error } = await window.supabaseClient.auth.signInWithPassword({
             email,
             password
@@ -204,7 +204,7 @@ const AuthManager = {
 
             if (isPending) {
                 this.showPendingNotice();
-                
+
                 // Hide publish links for unverified suppliers (but keep dashboard accessible)
                 document.querySelectorAll('.publish-btn, .supplier-only').forEach(el => {
                     el.style.display = 'none';
