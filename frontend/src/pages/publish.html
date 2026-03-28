@@ -327,7 +327,10 @@
                     return;
                 }
 
-                if (window.LoaderManager) LoaderManager.show('Publication...');
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon> Publication...';
 
                 try {
                     const exchangeRate = parseFloat(exchangeRateInput.value) || 2800;
@@ -337,9 +340,15 @@
                     if (window.SupabaseAdapter && window.SupabaseAdapter.uploadFile) {
                         for (let i = 0; i < selectedFileBlobs.length; i++) {
                             const file = selectedFileBlobs[i];
+                            // Use a unique name with extension, no subfolders for simplicity as in migration
                             const fileName = `${Date.now()}_${i}.${file.name.split('.').pop()}`;
-                            const path = await SupabaseAdapter.uploadFile('product-images', `public/${fileName}`, file);
-                            finalImagePaths.push(path || selectedProductImages[i]);
+                            const publicUrl = await SupabaseAdapter.uploadFile('product-images', fileName, file);
+                            if (publicUrl) {
+                                finalImagePaths.push(publicUrl);
+                            } else {
+                                console.warn(`[NewKet] Upload failed for ${file.name}, using local preview as fallback`);
+                                finalImagePaths.push(selectedProductImages[i]);
+                            }
                         }
                     } else {
                         finalImagePaths = selectedProductImages;
@@ -359,15 +368,18 @@
                     };
 
                     await ProductManager.addProduct(newProduct);
-                    if (window.LoaderManager) LoaderManager.hide();
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
 
                     document.getElementById('publishOverlay').classList.remove('invisible', 'opacity-0');
                     document.getElementById('successState').classList.remove('hidden');
                     this.reset();
                 } catch (error) {
                     console.error('Publish error:', error);
-                    if (window.LoaderManager) LoaderManager.hide();
-                    if (typeof showToast === 'function') showToast("Erreur lors de la publication.", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    if (typeof showToast === 'function') showToast("Erreur lors de la publication : " + (error.message || "Erreur inconnue"), "error");
                 }
             });
         });
