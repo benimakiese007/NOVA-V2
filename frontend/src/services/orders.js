@@ -327,10 +327,12 @@ const OrderManager = {
         return {
             totalOrders: orders.length,
             totalSales,
+            aov: orders.length > 0 ? totalSales / orders.length : 0,
             commissionTotal,
             netSales: totalSales - commissionTotal,
             totalCustomers: customerEmails.size,
             deadStockCount: deadStock.length,
+            deadStockList: deadStock,
             categorySales,
             topProducts
         };

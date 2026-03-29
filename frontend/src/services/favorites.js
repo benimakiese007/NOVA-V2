@@ -115,7 +115,7 @@ const FavoritesManager = {
         const favorites = this.getFavorites();
 
         // Update badges
-        const badges = document.querySelectorAll('#favoritesBadge, #mobileFavoritesBadge, #desktopFavoritesBadge, .favorites-badge');
+        const badges = document.querySelectorAll('#favoritesBadge, #mobileFavoritesBadge, #mobileFavBadge, #desktopFavoritesBadge, .favorites-badge');
         const totalText = document.getElementById('favoritesTotal');
 
         badges.forEach(badge => {

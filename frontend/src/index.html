@@ -294,28 +294,8 @@
         </div>
     </section>
 
-    <div id="mobile-nav-placeholder"></div>
     <div id="footer-placeholder"></div>
-
-    <script>
-        function syncMobileBadges() {
-            const cartCount = window.CartManager ? CartManager.getItemCount() : 0;
-            const favCount = window.FavoritesManager ? FavoritesManager.getCount() : 0;
-            const cartBadge = document.getElementById('mobileCartBadge');
-            const favBadge = document.getElementById('mobileFavBadge');
-            if (cartBadge) {
-                cartBadge.textContent = cartCount;
-                cartBadge.style.display = cartCount > 0 ? 'block' : 'none';
-            }
-            if (favBadge) {
-                favBadge.textContent = favCount;
-                favBadge.style.display = favCount > 0 ? 'block' : 'none';
-            }
-        }
-        window.addEventListener('newketInitialized', syncMobileBadges);
-        window.addEventListener('cartUpdated', syncMobileBadges);
-        window.addEventListener('favoritesUpdated', syncMobileBadges);
-    </script>
+    <div id="mobile-nav-placeholder"></div>
 </body>
 
 </html>

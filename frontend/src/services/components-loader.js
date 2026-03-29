@@ -250,7 +250,7 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
 </footer>`;
 
 const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
-<nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
+<nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-100 z-50 sm:hidden shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
     <!-- Acheteur (Customer) Nav - 4 items -->
     <div class="nav-bar customer-nav flex justify-around items-center w-full px-2 py-1" style="display: none;">
         <a href="{{ROOT}}index.html" class="nav-item flex flex-col items-center justify-center gap-1" title="Accueil" id="nav-home">
@@ -272,7 +272,7 @@ const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
     </div>
 
     <!-- Vendeur (Supplier/Admin) Nav - 6 items -->
-    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 py-1" style="display: none; gap: 4px;">
+    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 py-1 overflow-x-auto" style="display: none; gap: 2px;">
         <a href="{{ROOT}}index.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Accueil">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
             <span class="text-[9px] font-medium">Accueil</span>
@@ -327,14 +327,16 @@ const ComponentLoader = {
             componentsToLoad.push(
                 this.loadComponent('header-placeholder', 'components/header-minimal.html', MINIMAL_HEADER_HTML)
             );
-            // Intentionally omit mobile nav on minimal pages to prevent conversion drop-off
-            // Also, mobile-nav-placeholder element exists in those pages, but will remain empty.
         } else {
             componentsToLoad.push(
-                this.loadComponent('header-placeholder', 'components/header.html', HEADER_HTML),
-                this.loadComponent('mobile-nav-placeholder', 'components/mobile-nav.html', MOBILE_NAV_HTML)
+                this.loadComponent('header-placeholder', 'components/header.html', HEADER_HTML)
             );
         }
+
+        // Always load mobile nav as requested by user
+        componentsToLoad.push(
+            this.loadComponent('mobile-nav-placeholder', 'components/mobile-nav.html', MOBILE_NAV_HTML)
+        );
 
         if (!isMinimalPage) {
             componentsToLoad.push(
@@ -343,6 +345,9 @@ const ComponentLoader = {
         }
 
         await Promise.all(componentsToLoad);
+
+        // Set global flag to avoid race conditions
+        window.componentsLoaded = true;
 
         // Dispatch event when components are ready
         window.dispatchEvent(new CustomEvent('componentsLoaded'));

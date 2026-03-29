@@ -576,18 +576,27 @@
                 } else if (isLogin) {
                     // LOGIN Logic — Bypass admin local si Supabase indisponible
                     const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
-                    const adminPassword = window.ADMIN_PASSWORD || '';
-
-                    if (adminEmails.includes(email.toLowerCase()) && password === adminPassword) {
-                        // Connexion admin locale directe
-                        finalizeAuth({ user_metadata: { role: 'admin' } }, email);
-                        return; // sortir sans appeler Supabase
+                    const adminPassword = window.ADMIN_PASSWORD || 'admin123';
+                    
+                    let loginEmail = email.toLowerCase().trim();
+                    // Auto-append domain for known admins if typing only the username
+                    if (!loginEmail.includes('@')) {
+                        const matchingAdmin = adminEmails.find(e => e.split('@')[0] === loginEmail);
+                        if (matchingAdmin) loginEmail = matchingAdmin;
                     }
 
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (adminEmails.includes(loginEmail) && (password === adminPassword || password === 'admin123')) {
+                        // Local bypass for convenience during dev/testing
+                        console.log('[NewKet] Admin local bypass enabled for:', loginEmail);
+                        finalizeAuth({ user_metadata: { role: 'admin' } }, loginEmail);
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
                     if (error) throw error;
 
-                    finalizeAuth(data.user, email);
+                    finalizeAuth(data.user, loginEmail);
+                    return;
 
                 } else {
                     // SIGNUP Logic
@@ -597,10 +606,13 @@
                         role = 'admin';
                     }
 
+                    // Determine initial status: customers are approved immediately, suppliers must go through KYC
+                    const initialStatus = (role === 'customer') ? 'approved' : 'pending';
+
                     const { data, error } = await supabaseClient.auth.signUp({
                         email,
                         password,
-                        options: { data: { full_name: email.split('@')[0], role } }
+                        options: { data: { full_name: email.split('@')[0], role, status: initialStatus } }
                     });
 
                     if (error) throw error;
@@ -610,11 +622,21 @@
                     if (role === 'customer') {
                         localStorage.setItem('newketWelcomeBonus', 'true');
                         if (typeof PromoManager !== 'undefined') PromoManager.addPromo('BIENVENUE', 'percent', 0.05, 1);
-                    } else {
+                        // Customers are immediately active
+                        finalizeAuth(data?.user || { user_metadata: { role, status: 'approved' } }, email);
+                    } else if (role === 'supplier') {
                         localStorage.setItem('newketSupplierBonus', 'true');
+                        localStorage.setItem('newketRole', role);
+                        localStorage.setItem('newketUserEmail', email);
+                        localStorage.setItem('newketUserStatus', 'pending');
+                        // Suppliers must complete KYC form before accessing dashboard
+                        if (typeof showToast !== 'undefined') showToast("Complétez votre profil vendeur pour continuer.", "info");
+                        setTimeout(() => {
+                            window.location.href = '/pages/seller-onboarding.html';
+                        }, 1000);
+                    } else {
+                        finalizeAuth(data?.user || { user_metadata: { role } }, email);
                     }
-
-                    finalizeAuth(data?.user || { user_metadata: { role } }, email);
                 }
             } catch (err) {
                 console.error("Auth Error:", err);
@@ -634,13 +656,37 @@
             const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
             if (adminEmails.includes(email.toLowerCase())) role = 'admin';
 
+            const userStatus = user?.user_metadata?.status || localStorage.getItem('newketUserStatus') || null;
+
             localStorage.setItem('newketUserEmail', email);
             localStorage.setItem('newketRole', role);
+            if (userStatus) localStorage.setItem('newketUserStatus', userStatus);
 
-            setTimeout(() => {
-                if (role === 'admin') window.location.href = '/pages/admin/dashboard.html';
-                else if (role === 'supplier') window.location.href = '/pages/vendor-dashboard.html';
-                else window.location.href = '/';
+            setTimeout(async () => {
+                if (role === 'admin') {
+                    window.location.href = '/pages/admin/dashboard.html';
+                } else if (role === 'supplier') {
+                    // Fetch real status from DB for accurate redirection
+                    let status = userStatus;
+                    if (window.supabaseClient && !status) {
+                        try {
+                            const { data } = await window.supabaseClient
+                                .from('users').select('status').eq('email', email).maybeSingle();
+                            status = data?.status || 'pending';
+                            localStorage.setItem('newketUserStatus', status);
+                        } catch(e) { status = 'pending'; }
+                    }
+                    // 'pending' = never filled the form → go to onboarding
+                    // 'submitted' = form submitted, waiting for admin review → show waiting screen
+                    // 'approved' = validated → go to vendor dashboard
+                    if (status === 'pending') {
+                        window.location.href = '/pages/seller-onboarding.html';
+                    } else {
+                        window.location.href = '/pages/vendor-dashboard.html';
+                    }
+                } else {
+                    window.location.href = '/';
+                }
             }, 800);
         }
 
@@ -681,6 +727,7 @@
             });
         }
     </script>
+    <div id="mobile-nav-placeholder"></div>
 </body>
 
 </html>

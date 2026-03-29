@@ -142,7 +142,7 @@ const CartManager = {
 
     // Update badge on all pages
     updateBadge() {
-        const badges = document.querySelectorAll('.cart-count, #cart-count');
+        const badges = document.querySelectorAll('.cart-count, #cart-count, #mobileCartBadge');
         const count = this.getItemCount();
         console.log(`[NewKet] Updating cart badges. Total distinct items: ${count}`);
 

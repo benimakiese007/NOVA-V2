@@ -12,6 +12,7 @@ import './favorites.js';
 import './currency.js';
 import './products.js';
 import './orders.js';
+import './user-manager.js';
 import './managers.js';
 
 import './ui-helpers.js';

@@ -74,6 +74,19 @@ const AuthManager = {
         this.enforcePermissions();
         this.updateAccountLink();
         this.checkWelcomeBonus();
+
+        // Listen for components-loader events (Re-enforce once DOM is populated)
+        if (window.componentsLoaded) {
+            console.log('[NewKet] Components already ready, enforcing permissions...');
+            this.enforcePermissions();
+            this.updateAccountLink();
+        } else {
+            window.addEventListener('componentsLoaded', () => {
+                console.log('[NewKet] Components ready, re-enforcing permissions...');
+                this.enforcePermissions();
+                this.updateAccountLink();
+            });
+        }
     },
 
     clearSession() {
@@ -105,18 +118,36 @@ const AuthManager = {
     },
 
     async fetchUserStatus(email) {
-        if (!window.supabaseClient) return 'pending';
+        if (!window.supabaseClient) {
+            // Fall back to role-based default
+            const role = this.role || localStorage.getItem('newketRole');
+            return (role === 'customer' || role === 'admin') ? 'approved' : 'pending';
+        }
         try {
             const { data, error } = await window.supabaseClient
                 .from('users')
-                .select('status')
+                .select('status, role')
                 .eq('email', email)
                 .maybeSingle();
             if (error) throw error;
-            return data?.status || 'pending';
+            
+            // If user not yet in DB (e.g. just signed up), determine default by role
+            if (!data) {
+                const role = this.role || localStorage.getItem('newketRole');
+                return (role === 'customer' || role === 'admin') ? 'approved' : 'pending';
+            }
+            
+            // If found in DB but status is null/empty, determine by role
+            if (!data.status) {
+                const role = data.role || this.role || localStorage.getItem('newketRole');
+                return (role === 'customer' || role === 'admin') ? 'approved' : 'pending';
+            }
+            
+            return data.status;
         } catch (err) {
             console.error('Error fetching user status:', err);
-            return 'pending';
+            const role = this.role || localStorage.getItem('newketRole');
+            return (role === 'customer' || role === 'admin') ? 'approved' : 'pending';
         }
     },
 
@@ -175,11 +206,23 @@ const AuthManager = {
 
         // Mobile Nav Visibility
         if (this.role === 'supplier' || this.role === 'admin') {
-            document.querySelectorAll('.vendor-nav').forEach(el => el.style.display = 'flex');
-            document.querySelectorAll('.customer-nav').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.vendor-nav').forEach(el => {
+                el.classList.remove('hidden');
+                // el.style.display = 'flex'; // Removed: breaks 'contents' display
+            });
+            document.querySelectorAll('.customer-nav').forEach(el => {
+                el.classList.add('hidden');
+                // el.style.display = 'none';
+            });
         } else {
-            document.querySelectorAll('.vendor-nav').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.customer-nav').forEach(el => el.style.display = 'flex');
+            document.querySelectorAll('.vendor-nav').forEach(el => {
+                el.classList.add('hidden');
+                // el.style.display = 'none';
+            });
+            document.querySelectorAll('.customer-nav').forEach(el => {
+                el.classList.remove('hidden');
+                // el.style.display = 'flex';
+            });
         }
 
         if (this.role === 'supplier' || this.role === 'admin') {
@@ -216,19 +259,28 @@ const AuthManager = {
 
             // KYC Enforcement
             const isApproved = this.status === 'approved';
-            const isPending = this.status === 'pending' || !this.status;
+            const isSubmitted = this.status === 'submitted'; // Form filled, waiting for admin
+            const isPending = this.status === 'pending' || !this.status; // Never filled the form
 
             if (isPending) {
+                // Redirect to onboarding form if they haven't filled it yet
+                const path = window.location.pathname;
+                if (!path.includes('seller-onboarding.html')) {
+                    window.location.href = '/pages/seller-onboarding.html';
+                    return;
+                }
+            } else if (isSubmitted) {
+                // Form submitted, waiting for admin to review — show notice
                 this.showPendingNotice();
 
-                // Hide publish links for unverified suppliers (but keep dashboard accessible)
+                // Hide publish/seller-only links
                 document.querySelectorAll('.publish-btn, .supplier-only').forEach(el => {
                     el.style.display = 'none';
                 });
 
                 const path = window.location.pathname;
                 if (path.includes('publish.html')) {
-                    window.location.href = '/index.html';
+                    window.location.href = '/pages/vendor-dashboard.html';
                 }
             } else if (this.status === 'rejected') {
                 this.showRejectedNotice();

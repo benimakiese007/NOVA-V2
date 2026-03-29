@@ -171,9 +171,18 @@
                 // Upload files to Supabase Storage
                 for (let i = 0; i < uploadedFiles.length; i++) {
                     const file = uploadedFiles[i];
-                    const path = `kyc/${userEmail}/${Date.now()}_${file.name}`;
+                    // Nettoyer le nom du fichier (enlever espaces et caractères spéciaux)
+                    const sanitizedName = file.name
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Enlever les accents
+                        .replace(/[^a-zA-Z0-9.\-_]/g, "_"); // Remplacer tout le reste par _
+                        
+                    const path = `kyc/${userEmail}/${Date.now()}_${sanitizedName}`;
                     const url = await window.SupabaseAdapter.uploadFile('vendor-docs', path, file);
                     if (url) docUrls.push(url);
+                }
+
+                if (docUrls.length === 0 && uploadedFiles.length > 0) {
+                    throw new Error("Aucun document n'a pu être envoyé. Vérifiez votre connexion.");
                 }
 
                 // Update user profile in public.users
@@ -186,13 +195,13 @@
                         store_address: storeAddress,
                         preferred_payout_method: payoutMethod,
                         documents_url: docUrls,
-                        status: 'pending'
+                        status: 'submitted'  // 'submitted' = dossier envoyé, en attente d'examen admin
                     })
                     .eq('email', userEmail);
 
                 if (error) throw error;
 
-                localStorage.setItem('newketUserStatus', 'pending');
+                localStorage.setItem('newketUserStatus', 'submitted');
                 if (window.LoaderManager) LoaderManager.hide();
                 
                 const overlay = document.getElementById('successOverlay');

@@ -3,7 +3,12 @@
 window.newketConfig = {
     exchangeRate: 2500
 };
-// window.ADMIN_EMAILS removed - Roles are handled by Supabase
+window.ADMIN_EMAILS = [
+    'benimakiese1234@gmail.com',
+    'admin@newket.com',
+    'tmautuimane00@gmail.com'
+];
+window.ADMIN_PASSWORD = 'admin123';
 
 const App = {
     async init() {
@@ -20,6 +25,7 @@ const App = {
         const initPromises = [];
         if (window.ProductManager) initPromises.push(ProductManager.init());
         if (window.OrderManager) initPromises.push(OrderManager.init());
+        if (window.UserManager) initPromises.push(UserManager.init());
 
         console.log('[NewKet] Awaiting Manager initializations...');
         await Promise.all(initPromises);

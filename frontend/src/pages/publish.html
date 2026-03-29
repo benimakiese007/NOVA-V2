@@ -46,9 +46,6 @@
 
     <div id="header-placeholder"></div>
 
-
-
-
     <main class="max-w-3xl mx-auto px-4 py-12">
         <div class="text-center mb-12">
             <h1 class="text-4xl font-black tracking-tight text-gray-900 mb-4">Vendre un article</h1>
@@ -186,8 +183,6 @@
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60  opacity-0 invisible transition-all duration-300">
         <div
             class="bg-white rounded-[2.5rem] w-full max-w-sm p-10 text-center shadow-2xl transform scale-90 transition-all duration-300">
-
-
             <div id="successState" class="hidden">
                 <div
                     class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -205,10 +200,6 @@
 
     <!-- Confetti Container -->
     <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-[101]"></div>
-
-    <div id="mobile-nav-placeholder"></div>
-    <div id="footer-placeholder"></div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -317,6 +308,13 @@
                 const priceVal = parseFloat(priceInput.value);
                 const currency = currencyInput.value;
 
+                const userId = localStorage.getItem('newketUserId');
+                if (!userId) {
+                    if (typeof showToast === 'function') showToast("Veuillez vous connecter pour publier.", "warning");
+                    setTimeout(() => window.location.href = getRootPath() + 'pages/login.html?redirect=publish', 1500);
+                    return;
+                }
+
                 if (!titleInput.value.trim() || !priceVal || priceVal <= 0) {
                     if (typeof showToast === 'function') showToast("Veuillez remplir les champs obligatoires.", "error");
                     return;
@@ -340,7 +338,6 @@
                     if (window.SupabaseAdapter && window.SupabaseAdapter.uploadFile) {
                         for (let i = 0; i < selectedFileBlobs.length; i++) {
                             const file = selectedFileBlobs[i];
-                            // Use a unique name with extension, no subfolders for simplicity as in migration
                             const fileName = `${Date.now()}_${i}.${file.name.split('.').pop()}`;
                             const publicUrl = await SupabaseAdapter.uploadFile('product-images', fileName, file);
                             if (publicUrl) {
@@ -358,12 +355,15 @@
                         id: 'prod-' + Date.now(),
                         name: titleInput.value.trim(),
                         category: categorySelect.value,
-                        price: finalPrice,
+                        price: Math.round(finalPrice),
                         description: descInput.value.trim(),
                         image: finalImagePaths.join(','),
                         supplier_email: localStorage.getItem('newketUserEmail') || 'anonymous',
+                        user_id: userId,
                         stock: 10,
+                        reviews: 0,
                         is_new: true,
+                        status: 'active',
                         created_at: new Date().toISOString()
                     };
 
@@ -384,7 +384,8 @@
             });
         });
     </script>
-
+    <div id="footer-placeholder"></div>
+    <div id="mobile-nav-placeholder"></div>
 </body>
 
 </html>

@@ -193,16 +193,22 @@
             document.getElementById('productPrice').textContent = priceStr;
             document.getElementById('stickyPrice').textContent = priceStr;
 
-            const images = (p.image || '').split(',');
-            document.getElementById('mainImage').src = images[0].trim();
-            document.getElementById('stickyImg').src = images[0].trim();
+            const images = (p.image || '').split(',').map(img => img.trim()).filter(img => img);
+            const mainImgUrl = images[0] || '../assets/Images/default.png';
+            const optimizedMain = window.getOptimizedImageUrl ? window.getOptimizedImageUrl(mainImgUrl) : mainImgUrl;
+            
+            document.getElementById('mainImage').src = optimizedMain;
+            document.getElementById('stickyImg').src = optimizedMain;
 
             const thumbs = document.getElementById('thumbnailGrid');
-            thumbs.innerHTML = images.map((img, i) => `
-                <div class="aspect-square bg-white rounded-2xl overflow-hidden cursor-pointer border-2 ${i === 0 ? 'border-gray-900' : 'border-transparent'} hover:border-gray-200 transition-all p-2 glass-card" onclick="window.changeImage('${img.trim()}', this)">
-                    <img src="${img.trim()}" class="w-full h-full object-contain mix-blend-multiply" onerror="this.src='../assets/Images/default.png'">
-                </div>
-            `).join('');
+            thumbs.innerHTML = images.map((img, i) => {
+                const optimizedThumb = window.getOptimizedImageUrl ? window.getOptimizedImageUrl(img, { width: 200 }) : img;
+                return `
+                    <div class="aspect-square bg-white rounded-2xl overflow-hidden cursor-pointer border-2 ${i === 0 ? 'border-gray-900' : 'border-transparent'} hover:border-gray-200 transition-all p-2 glass-card" onclick="window.changeImage('${img.replace(/'/g, "\\'")}', this)">
+                        <img src="${optimizedThumb}" class="w-full h-full object-contain mix-blend-multiply" onerror="this.src='../assets/Images/default.png'">
+                    </div>
+                `;
+            }).join('');
 
             // Wishlist state
             const isFav = FavoritesManager.isInFavorites(p.id);
@@ -395,7 +401,9 @@
         };
 
         window.changeImage = (url, el) => {
-            document.getElementById('mainImage').src = url;
+            const optimized = window.getOptimizedImageUrl ? window.getOptimizedImageUrl(url) : url;
+            document.getElementById('mainImage').src = optimized;
+            document.getElementById('zoomModalImg').src = optimized;
             document.querySelectorAll('#thumbnailGrid > div').forEach(d => d.classList.remove('border-gray-900'));
             el.classList.add('border-gray-900');
         };
