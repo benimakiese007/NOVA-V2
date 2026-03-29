@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -14,7 +14,7 @@
     <title>Rapports & Exports | NewKet Admin</title>
     <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script type="module" src="../../services/app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -94,7 +94,7 @@
             <div class="flex flex-col justify-between items-start gap-4">
                 <div>
                     <h1 class="text-3xl font-black tracking-tight text-gray-900">Rapports & Exports</h1>
-                    <p class="text-gray-500">GÃ©nÃ©rez et tÃ©lÃ©chargez des rapports complets de votre activitÃ© au format
+                    <p class="text-gray-500">Générez et téléchargez des rapports complets de votre activité au format
                         CSV.</p>
                 </div>
             </div>
@@ -109,12 +109,12 @@
                             <iconify-icon icon="solar:bag-bold" width="24"></iconify-icon>
                         </div>
                         <h3 class="font-bold text-lg text-gray-900 mb-2">Historique des Commandes</h3>
-                        <p class="text-sm text-gray-500 mb-6">Toutes les commandes, dÃ©taillant les clients, statuts,
-                            montants et dates. IdÃ©al pour votre comptabilitÃ©.</p>
+                        <p class="text-sm text-gray-500 mb-6">Toutes les commandes, détaillant les clients, statuts,
+                            montants et dates. Idéal pour votre comptabilité.</p>
                     </div>
                     <button onclick="exportData('orders')"
                         class="w-full bg-black text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
-                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>TÃ©lÃ©charger CSV
+                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>Télécharger CSV
                     </button>
                 </div>
 
@@ -127,12 +127,12 @@
                             <iconify-icon icon="solar:box-bold" width="24"></iconify-icon>
                         </div>
                         <h3 class="font-bold text-lg text-gray-900 mb-2">Catalogue & Inventaire</h3>
-                        <p class="text-sm text-gray-500 mb-6">Liste complÃ¨te de vos produits, incluant les prix,
-                            catÃ©gories, et l'Ã©tat actuel des stocks. Pratique pour faire l'inventaire.</p>
+                        <p class="text-sm text-gray-500 mb-6">Liste complète de vos produits, incluant les prix,
+                            catégories, et l'état actuel des stocks. Pratique pour faire l'inventaire.</p>
                     </div>
                     <button onclick="exportData('products')"
                         class="w-full bg-black text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
-                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>TÃ©lÃ©charger CSV
+                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>Télécharger CSV
                     </button>
                 </div>
 
@@ -145,12 +145,12 @@
                             <iconify-icon icon="solar:users-group-rounded-bold" width="24"></iconify-icon>
                         </div>
                         <h3 class="font-bold text-lg text-gray-900 mb-2">Base de Clients</h3>
-                        <p class="text-sm text-gray-500 mb-6">Liste de tous vos clients ayant passÃ© commande, incluant
+                        <p class="text-sm text-gray-500 mb-6">Liste de tous vos clients ayant passé commande, incluant
                             leurs contacts et nombre de commandes. Utile pour le marketing.</p>
                     </div>
                     <button onclick="exportData('clients')"
                         class="w-full bg-black text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
-                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>TÃ©lÃ©charger CSV
+                        <iconify-icon icon="solar:download-bold" width="18"></iconify-icon>Télécharger CSV
                     </button>
                 </div>
             </div>
@@ -168,7 +168,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast('Export rÃ©ussi !', 'success');
+            showToast('Export réussi !', 'success');
         }
 
         function exportData(type) {
@@ -182,7 +182,7 @@
                 rows = data.map(o => [o.id, o.customer?.name || 'Client', o.customer?.email || '', o.payment_method || '', o.phone_number || '', new Date(o.date).toLocaleDateString(), o.total, o.status]);
             } else if (type === 'products') {
                 data = ProductManager.getProducts();
-                headers = ['ID', 'Nom', 'CatÃ©gorie', 'Prix', 'Prix Promo', 'Stock', 'ModifiÃ© le'];
+                headers = ['ID', 'Nom', 'Catégorie', 'Prix', 'Prix Promo', 'Stock', 'Modifié le'];
                 rows = data.map(p => [p.id, p.name, p.category, p.price, p.promotionalPrice || '', p.stock || 0, new Date(p.updatedAt || Date.now()).toLocaleDateString()]);
             } else if (type === 'clients') {
                 const orders = OrderManager.getOrders();
@@ -196,12 +196,12 @@
                     clientsMap[email].totalSpent += (o.total || 0);
                 });
                 data = Object.values(clientsMap);
-                headers = ['Nom', 'Email', 'TÃ©lÃ©phone', 'Commandes', 'Total DÃ©pensÃ©'];
+                headers = ['Nom', 'Email', 'Téléphone', 'Commandes', 'Total Dépensé'];
                 rows = data.map(c => [c.name, c.email, c.phone, c.orderCount, c.totalSpent]);
             }
 
             if (rows.length === 0) {
-                showToast(`Aucune donnÃ©e Ã  exporter pour: ${type}`, 'warning');
+                showToast(`Aucune donnée à exporter pour: ${type}`, 'warning');
                 return;
             }
 

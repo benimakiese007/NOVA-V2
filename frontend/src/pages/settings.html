@@ -5,7 +5,7 @@
     <script type="module" src="../services/app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" sizes="512x512" href="../assets/Images/Logo NewKet V2.jpeg">
     <link rel="icon" type="image/png" href="../assets/Images/Logo NewKet V2.jpeg">
     <meta name="theme-color" content="#111827">
@@ -52,11 +52,21 @@
         }
     </style>
     <script>
-        // Check Auth using existing system
+        // Check Auth - redirect to login if not authenticated
         document.addEventListener('DOMContentLoaded', async () => {
-            if (window.AuthManager) {
-                await AuthManager.init();
-                if (!AuthManager.user) {
+            // Wait for supabaseClient to be available
+            const waitForSupabase = () => new Promise(resolve => {
+                if (window.supabaseClient) return resolve();
+                const check = setInterval(() => {
+                    if (window.supabaseClient) { clearInterval(check); resolve(); }
+                }, 50);
+                setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+            });
+            await waitForSupabase();
+
+            if (window.supabaseClient) {
+                const { data } = await window.supabaseClient.auth.getSession();
+                if (!data.session) {
                     window.location.href = '/pages/login.html';
                 }
             }
@@ -68,7 +78,7 @@
 
     <div id="header-placeholder"></div>
 
-    <div class="h-16"></div>
+
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div class="flex flex-col lg:flex-row gap-8 items-start">

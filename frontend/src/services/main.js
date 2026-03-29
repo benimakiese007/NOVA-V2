@@ -113,7 +113,7 @@ const App = {
     },
 
     shakeFavoritesIcon() {
-        const favLinks = document.querySelectorAll('a[href="/pages/favorites.html"], a[href*="favorites"]');
+        const favLinks = document.querySelectorAll('a[href*="favorites.html"], a[href*="favorites"]');
         favLinks.forEach(link => {
             link.classList.remove('fav-shake');
             // Force reflow to restart animation

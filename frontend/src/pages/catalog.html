@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" sizes="512x512" href="../assets/Images/Logo NewKet V2.jpeg">
     <link rel="icon" type="image/png" href="../assets/Images/Logo NewKet V2.jpeg">
     <meta name="theme-color" content="#111827">
@@ -15,7 +15,7 @@
     <meta name="description" content="Découvrez NewKet, la marketplace de luxe de référence en RDC. Achetez et vendez vos articles en toute sécurité.">
     <link rel="stylesheet" href="../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script type="module" src="../services/app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -130,10 +130,6 @@
             animation: fadeIn 0.6s ease forwards;
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
         .sticky-sidebar {
             top: 110px;
         }
@@ -141,26 +137,13 @@
 </head>
 
 <body class="text-slate-900 antialiased">
-
     <div id="header-placeholder"></div>
-
-
-    <!-- Mobile sidebar and overlays now in header component -->
-
-
     <div id="mobile-nav-placeholder"></div>
-    <div class="h-28 sm:h-24 lg:h-32"></div>
-
     <!-- Catalog Filter Overlay (mobile) -->
     <div id="catalogFilterOverlay"></div>
 
     <main class="max-w-7xl mx-auto px-6 pt-8 sm:pt-12 pb-20">
         <div class="mb-10 animate-fade-in" style="animation-delay: 0.1s;">
-            <nav class="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-3">
-                <a href="/" class="hover:text-slate-900">Maison</a>
-                <iconify-icon icon="solar:alt-arrow-right-linear" width="10"></iconify-icon>
-                <span class="text-slate-900">Collections</span>
-            </nav>
             <h1 class="text-4xl font-bold tracking-tight text-slate-900">Explorez l'Exceptionnel</h1>
         </div>
 
@@ -334,10 +317,7 @@
         </div>
     </main>
 
-
-
     <div id="footer-placeholder"></div>
-
 
     <script>
         function initializeCatalog() {
@@ -760,7 +740,6 @@
             if (navCatalog) navCatalog.classList.add('active');
         });
     </script>
-
 </body>
 
-</html>
+</html>

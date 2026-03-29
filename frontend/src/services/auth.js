@@ -3,6 +3,7 @@
 const AuthManager = {
     role: null,
     status: null, // NewKet: Added status for KYC (pending, approved, rejected)
+    user: null, // Supabase user object for pages like settings.html
     _authChecking: true, // Prevents redirect loops while checking auth
 
     async init() {
@@ -13,6 +14,7 @@ const AuthManager = {
 
                 if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     const user = session.user;
+                    this.user = user; // Store user object for settings page
                     const role = user.user_metadata.role || 'customer';
                     const email = user.email;
 
@@ -35,6 +37,7 @@ const AuthManager = {
                 } else if (event === 'SIGNED_OUT') {
                     this.role = null;
                     this.status = null;
+                    this.user = null;
                     this.clearSession();
                     this.enforcePermissions();
                     if (window.location.pathname.includes('/admin/') || window.location.pathname.includes('customer-dashboard')) {
@@ -46,6 +49,7 @@ const AuthManager = {
             const { data } = await window.supabaseClient.auth.getSession();
             if (data.session) {
                 const user = data.session.user;
+                this.user = user; // Store user object
                 this.role = user.user_metadata.role || 'customer';
                 this.status = await this.fetchUserStatus(user.email);
 
@@ -55,6 +59,7 @@ const AuthManager = {
             } else {
                 this.role = null;
                 this.status = null;
+                this.user = null;
                 this.clearSession();
             }
         }
@@ -125,6 +130,7 @@ const AuthManager = {
         }
         this.role = null;
         this.status = null;
+        this.user = null;
         this.clearSession();
         window.location.href = '/index.html';
     },
@@ -277,7 +283,7 @@ const AuthManager = {
             }
 
             if (this.role === 'admin') {
-                accountLink.href = 'settings.html';
+                accountLink.href = '/pages/settings.html';
                 accountLink.title = 'Paramètres';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
@@ -348,7 +354,7 @@ const AuthManager = {
                 }
 
             } else {
-                accountLink.href = 'login.html';
+                accountLink.href = '/pages/login.html';
                 accountLink.title = 'Se connecter';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-linear');

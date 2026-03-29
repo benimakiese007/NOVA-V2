@@ -4,6 +4,8 @@
 import './supabase-client.js';
 import './supabase-adapter.js';
 
+import './config-manager.js';
+
 import './auth.js';
 import './cart.js';
 import './favorites.js';

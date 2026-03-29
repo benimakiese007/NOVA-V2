@@ -30,14 +30,20 @@
   /* Typography */
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Inter', sans-serif;
-  /* Spacing */
-  --container-width: 1280px;
-  --header-height: 80px;
+    /* Header and Layout */
+    --header-height: 145px; /* Desktop height with categories */
+    --footer-height: 400px;
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 639px) {
+  :root {
+    --header-height: 100px; /* Mobile: Search + Main row */
+  }
 }
 
 /* ===== DARK MODE VARIABLE OVERRIDES ===== */
@@ -79,6 +85,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  padding-top: var(--header-height);
 }
 
 /* Prevent mobile auto-zoom on focus by ensuring font-size is at least 16px */
@@ -7498,4 +7505,66 @@ video {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-
+
+/* ==========================================
+   PRODUCT PAGE — Side-by-Side Layout
+   ========================================== */
+
+/* Mobile: stacked layout */
+#productGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+#productImageCol {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+#productDetailsCol {
+  width: 100%;
+}
+
+/* Tablet+ (768px): side-by-side layout */
+@media (min-width: 768px) {
+  #productGrid {
+    flex-direction: row;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  #productImageCol {
+    width: 38%;
+    max-width: none;
+    flex-shrink: 0;
+    margin: 0;
+    position: sticky;
+    top: 6rem;
+  }
+
+  #productDetailsCol {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Desktop (1024px+): more spacing */
+@media (min-width: 1024px) {
+  #productGrid {
+    gap: 3rem;
+  }
+
+  #productImageCol {
+    width: 35%;
+  }
+}
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+  #productGrid {
+    gap: 4rem;
+  }
+}

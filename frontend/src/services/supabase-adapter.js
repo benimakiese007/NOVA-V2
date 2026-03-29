@@ -308,10 +308,15 @@ window.SupabaseAdapter = {
                 return data;
             });
 
-            this._invalidateTable(table);
+            try {
+                this._invalidateTable(table);
+            } catch (ce) {
+                console.warn(`[NewKet Cache] Failed to invalidate table "${table}":`, ce.message);
+            }
+            
             return data && data.length > 0 ? data[0] : null;
         } catch (err) {
-            console.error(`[NewKet] Error inserting into ${table}:`, err);
+            console.error(`[NewKet Supabase] INSERT ERROR on ${table}:`, err.message || err.details || err);
             return null;
         }
     },

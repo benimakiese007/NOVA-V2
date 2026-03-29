@@ -157,7 +157,7 @@ const ProductManager = {
             isPromo: p.is_promo,
             oldPrice: p.old_price,
             // Optimize the primary image URL for faster loading
-            image: getOptimizedImageUrl(p.image),
+            image: window.getOptimizedImageUrl ? window.getOptimizedImageUrl(p.image) : p.image,
         };
     },
 
@@ -167,6 +167,35 @@ const ProductManager = {
 
     getProduct(id) {
         return this.products.find(p => p.id === id);
+    },
+
+    /**
+     * Attempts to find a product locally, then fetches from Supabase if missing.
+     * Essential for direct links to products not in the first 20 results.
+     */
+    async fetchProductById(id) {
+        // 1. Check local memory
+        const local = this.getProduct(id);
+        if (local) return local;
+
+        // 2. Fetch from network
+        try {
+            const product = await window.SupabaseAdapter.fetchWithFilters('products', {
+                eq: [['id', id]],
+                single: true
+            });
+
+            if (product) {
+                const mapped = this._mapProduct(product);
+                // Optional: add to local list so future lookups are instant
+                // but we might not want to pollute the paginated list if it's strictly ordered
+                return mapped;
+            }
+            return null;
+        } catch (err) {
+            console.error(`[NewKet] Error fetching product ${id}:`, err);
+            return null;
+        }
     },
 
     async addProduct(product) {

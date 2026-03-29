@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../assets/css/input.css">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script type="module" src="../../services/app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -96,7 +96,7 @@
                         <button onclick="updateTimeframe('month', this)"
                             class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Mois</button>
                         <button onclick="updateTimeframe('year', this)"
-                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">AnnÃ©e</button>
+                            class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all hover:bg-gray-50 text-gray-400">Année</button>
                         <button onclick="updateTimeframe('all', this)"
                             class="time-btn px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all bg-black text-white">Tout</button>
                     </div>
@@ -110,7 +110,7 @@
                         <iconify-icon icon="solar:users-group-rounded-bold" width="24"></iconify-icon>
                     </div>
                     <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Nouveaux Inscrits
-                        (PÃ©riode)</p>
+                        (Période)</p>
                     <div class="text-3xl font-black" id="statsNewUsers">0</div>
                 </div>
                 <div class="glass-panel p-6 flex flex-col gap-1 border-gray-100">
@@ -160,7 +160,7 @@
                         <h3 class="font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <iconify-icon icon="solar:pie-chart-bold-duotone" width="20"
                                 class="text-purple-500"></iconify-icon>
-                            RÃ©partition par rÃ´le
+                            Répartition par rôle
                         </h3>
                         <div class="h-[200px]">
                             <canvas id="roleChart"></canvas>

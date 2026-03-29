@@ -4,6 +4,31 @@
  */
 
 /**
+ * Returns the relative path to the project root.
+ */
+function getRootPath() {
+    const pathname = window.location.pathname;
+    const parts = pathname.split('/').filter(p => p !== '');
+    let depth = 0;
+    
+    const rIndex = parts.lastIndexOf('pages');
+    if (rIndex !== -1) {
+        depth = parts.length - rIndex - 1;
+    } else {
+        const srcIndex = parts.lastIndexOf('src');
+        if (srcIndex !== -1 && !pathname.endsWith('index.html')) {
+            depth = parts.length - srcIndex - 1;
+        }
+    }
+
+    let prefix = '';
+    for(let i=0; i<depth; i++) {
+        prefix += '../';
+    }
+    return prefix;
+}
+
+/**
  * Shows a toast message to the user.
  */
 function showToast(message, type = 'info') {
@@ -121,14 +146,14 @@ function buildProductCardHTML(p, options = {}) {
                 <button onclick="addToWishlist('${p.id}', event)" class="wishlist-btn ${isFavorite ? 'active' : ''}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
                     <iconify-icon icon="${isFavorite ? 'solar:heart-bold' : 'solar:heart-linear'}" width="18" style="${isFavorite ? 'color:#ef4444' : 'color:#6b7280'}"></iconify-icon>
                 </button>
-                <a href="/pages/product.html?id=${p.id}">
-                    <img src="${mainImg}" alt="${p.name}" loading="lazy" onerror="this.src="../assets/Images/default.png"">
+                <a href="${getRootPath()}pages/product.html?id=${p.id}">
+                    <img src="${mainImg}" alt="${p.name}" loading="lazy" onerror="this.src='${getRootPath()}assets/Images/default.png'">
                 </a>
             </div>
             <div class="product-info">
                 <div class="product-cat">${p.category || ''}</div>
                 <h3 class="product-title">
-                    <a href="/pages/product.html?id=${p.id}">${p.name}</a>
+                    <a href="${getRootPath()}pages/product.html?id=${p.id}">${p.name}</a>
                 </h3>
                 <div class="product-rating">
                     ${starsHTML}
@@ -147,7 +172,7 @@ function buildProductCardHTML(p, options = {}) {
                         <iconify-icon icon="solar:cart-large-minimalistic-bold" width="16"></iconify-icon>
                         Ajouter
                     </button>
-                    <button onclick="if(navigator.share){ navigator.share({title:'${p.name.replace(/'/g, "\\'")} — NewKet', url: window.location.origin + '/pages/product.html?id=${p.id}'}); } else { navigator.clipboard.writeText(window.location.origin + '/pages/product.html?id=${p.id}'); if(window.showToast) showToast('Lien copié !', 'info'); }"
+                    <button onclick="if(navigator.share){ navigator.share({title:'${p.name.replace(/'/g, "\\'")} — NewKet', url: window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + '${getRootPath()}pages/product.html?id=${p.id}'}); } else { navigator.clipboard.writeText(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + '${getRootPath()}pages/product.html?id=${p.id}'); if(window.showToast) showToast('Lien copié !', 'info'); }"
                         style="width:40px; height:40px; border-radius:10px; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:#6b7280; background:white; cursor:pointer; flex-shrink:0; transition: all 0.2s ease;"
                         onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'"
                         title="Partager">
@@ -181,8 +206,24 @@ function buildSkeletonCardHTML(count = 5) {
     return html;
 }
 
+/**
+ * Optimizes an image URL from Supabase storage (or passes it through).
+ */
+function getOptimizedImageUrl(url, opts = { width: 400, quality: 80 }) {
+    if (!url) return url;
+    // Only transform Supabase storage URLs
+    if (!url.includes('supabase.co/storage')) return url;
+    const params = new URLSearchParams();
+    if (opts.width) params.set('width', opts.width);
+    if (opts.quality) params.set('quality', opts.quality);
+    // Avoid duplicating params if already present
+    if (url.includes('width=') || url.includes('quality=')) return url;
+    return `${url}?${params.toString()}`;
+}
+
 window.showToast = showToast;
 window.debounce = debounce;
 window.buildProductCardHTML = buildProductCardHTML;
 window.buildSkeletonCardHTML = buildSkeletonCardHTML;
 window.buildStarsHTML = buildStarsHTML;
+window.getOptimizedImageUrl = getOptimizedImageUrl;
