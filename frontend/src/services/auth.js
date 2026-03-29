@@ -49,18 +49,24 @@ const AuthManager = {
             const { data } = await window.supabaseClient.auth.getSession();
             if (data.session) {
                 const user = data.session.user;
-                this.user = user; // Store user object
+                this.user = user; 
                 this.role = user.user_metadata.role || 'customer';
-                this.status = await this.fetchUserStatus(user.email);
-
+                
+                // Ensure localStorage is in sync with session (Fix for Issue 2: Info mixup)
                 localStorage.setItem('newketRole', this.role);
-                localStorage.setItem('newketUserStatus', this.status);
+                localStorage.setItem('newketUserEmail', user.email);
                 localStorage.setItem('newketUserId', user.id);
+                
+                const avatar = user.user_metadata.avatar_url || user.user_metadata.picture || null;
+                if (avatar) localStorage.setItem('newketUserAvatar', avatar);
+
+                this.status = await this.fetchUserStatus(user.email);
+                localStorage.setItem('newketUserStatus', this.status);
             } else {
                 this.role = null;
                 this.status = null;
                 this.user = null;
-                this.clearSession();
+                this.clearSession(); // Ensure old data is wiped if no session
             }
         }
 
@@ -132,7 +138,11 @@ const AuthManager = {
         this.status = null;
         this.user = null;
         this.clearSession();
-        window.location.href = '/index.html';
+        window.location.href = '/pages/login.html';
+    },
+
+    redirectToOnboarding() {
+        window.location.href = '/pages/seller-onboarding.html';
     },
 
     async adminLogin(email, password) {
@@ -283,8 +293,8 @@ const AuthManager = {
             }
 
             if (this.role === 'admin') {
-                accountLink.href = '/pages/settings.html';
-                accountLink.title = 'Paramètres';
+                accountLink.href = '/pages/admin/dashboard.html';
+                accountLink.title = 'Dashboard Admin';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
                     icon.className = 'text-white';
@@ -310,8 +320,8 @@ const AuthManager = {
                 }
 
             } else if (this.role === 'supplier') {
-                accountLink.href = 'settings.html';
-                accountLink.title = 'Paramètres';
+                accountLink.href = '/pages/vendor-dashboard.html';
+                accountLink.title = 'Tableau de bord Vendeur';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');
                     icon.className = 'text-gray-900';
@@ -328,7 +338,7 @@ const AuthManager = {
                 badge.style.display = 'block';
 
             } else if (this.role === 'customer') {
-                accountLink.href = 'settings.html';
+                accountLink.href = '/pages/settings.html';
                 accountLink.title = 'Paramètres';
                 if (icon) {
                     icon.setAttribute('icon', 'solar:user-bold');

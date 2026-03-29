@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const setupEventListeners = () => {
         newTopicBtn.addEventListener('click', () => {
             if (!window.AuthManager.getRole()) {
-                window.location.href = 'login.html?redirect=forum.html';
+                window.location.href = '/pages/login.html?redirect=forum.html';
                 return;
             }
             newTopicModal.classList.remove('hidden');
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!user) {
             alert('Vous devez être connecté pour répondre.');
-            window.location.href = 'login.html?redirect=forum.html';
+            window.location.href = '/pages/login.html?redirect=forum.html';
             return;
         }
 

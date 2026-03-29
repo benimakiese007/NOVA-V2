@@ -11,20 +11,9 @@ const PRODUCTS_PAGE_SIZE = 20; // Load 20 at a time instead of 200
  * @param {object} opts - Transformation options
  * @returns {string} The optimized URL
  */
-function getOptimizedImageUrl(url, opts = { width: 400, quality: 80 }) {
-    if (!url) return url;
-    // Only transform Supabase storage URLs
-    if (!url.includes('supabase.co/storage')) return url;
-    const params = new URLSearchParams();
-    if (opts.width) params.set('width', opts.width);
-    if (opts.quality) params.set('quality', opts.quality);
-    // Avoid duplicating params if already present
-    if (url.includes('width=') || url.includes('quality=')) return url;
-    return `${url}?${params.toString()}`;
-}
+// Removed duplicate getOptimizedImageUrl - now using standard one from ui-helpers.js
 
-// Expose helper globally so product card renderer can use it
-window.getOptimizedImageUrl = getOptimizedImageUrl;
+
 
 const ProductManager = {
     products: [],

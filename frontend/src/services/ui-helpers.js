@@ -209,16 +209,42 @@ function buildSkeletonCardHTML(count = 5) {
 /**
  * Optimizes an image URL from Supabase storage (or passes it through).
  */
+/**
+ * Optimizes an image URL from Supabase storage (or passes it through).
+ * Also handles comma-separated image strings by taking the first one.
+ */
 function getOptimizedImageUrl(url, opts = { width: 400, quality: 80 }) {
-    if (!url) return url;
+    if (!url) return getRootPath() + 'assets/Images/default.png';
+    
+    // Handle comma-separated list of images
+    const images = url.split(',');
+    const firstImg = (images[0] || '').trim();
+    
+    if (!firstImg || firstImg === 'Images/default.png') {
+        return getRootPath() + 'assets/Images/default.png';
+    }
+
+    // If it's a local preview (Data URL) return it as is
+    if (firstImg.startsWith('data:') || firstImg.startsWith('blob:')) {
+        return firstImg;
+    }
+
+    // Handle relative local paths (Images/...)
+    if (firstImg.startsWith('Images/')) {
+        return getRootPath() + 'assets/' + firstImg;
+    }
+
     // Only transform Supabase storage URLs
-    if (!url.includes('supabase.co/storage')) return url;
+    if (!firstImg.includes('supabase.co/storage')) return firstImg;
+    
     const params = new URLSearchParams();
     if (opts.width) params.set('width', opts.width);
     if (opts.quality) params.set('quality', opts.quality);
+    
     // Avoid duplicating params if already present
-    if (url.includes('width=') || url.includes('quality=')) return url;
-    return `${url}?${params.toString()}`;
+    if (firstImg.includes('width=') || firstImg.includes('quality=')) return firstImg;
+    
+    return `${firstImg}${firstImg.includes('?') ? '&' : '?'}${params.toString()}`;
 }
 
 window.showToast = showToast;

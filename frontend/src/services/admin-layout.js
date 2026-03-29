@@ -30,7 +30,7 @@ const AdminLayout = {
 
         if (!isAdmin) {
             console.error('[NewKet] Unauthorized access to Admin CMS.');
-            window.location.href = '../login.html';
+            window.location.href = '/pages/login.html';
         }
     },
 
