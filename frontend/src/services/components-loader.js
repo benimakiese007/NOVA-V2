@@ -252,50 +252,50 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
 const MOBILE_NAV_HTML = `<!-- NewKet Mobile Bottom Navigation Bar (Fallback) -->
 <nav id="mobileBottomNav" role="navigation" aria-label="Navigation mobile">
     <!-- Acheteur (Customer) Nav - 4 items -->
-    <div class="nav-bar customer-nav flex justify-around items-center w-full px-2" style="display: none;">
-        <a href="{{ROOT}}index.html" class="nav-item" title="Accueil" id="nav-home">
+    <div class="nav-bar customer-nav flex justify-around items-center w-full px-2 py-1" style="display: none;">
+        <a href="{{ROOT}}index.html" class="nav-item flex flex-col items-center justify-center gap-1" title="Accueil" id="nav-home">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon></div>
-            <span>Accueil</span>
+            <span class="text-[10px] font-medium">Accueil</span>
         </a>
-        <a href="{{ROOT}}pages/catalog.html" class="nav-item" title="Boutique" id="nav-catalog">
+        <a href="{{ROOT}}pages/catalog.html" class="nav-item flex flex-col items-center justify-center gap-1" title="Boutique" id="nav-catalog">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="22"></iconify-icon></div>
-            <span>Boutique</span>
+            <span class="text-[10px] font-medium">Boutique</span>
         </a>
-        <a href="{{ROOT}}pages/forum.html" class="nav-item" title="Forum" id="nav-forum">
+        <a href="{{ROOT}}pages/forum.html" class="nav-item flex flex-col items-center justify-center gap-1" title="Forum" id="nav-forum">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="22"></iconify-icon></div>
-            <span>Forum</span>
+            <span class="text-[10px] font-medium">Forum</span>
         </a>
-        <a href="{{ROOT}}pages/customer-dashboard.html" class="nav-item" title="Compte" id="mobileBottomAccountCustomer">
+        <a href="{{ROOT}}pages/customer-dashboard.html" class="nav-item flex flex-col items-center justify-center gap-1" title="Compte" id="mobileBottomAccountCustomer">
             <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="22"></iconify-icon></div>
-            <span>Compte</span>
+            <span class="text-[10px] font-medium">Compte</span>
         </a>
     </div>
 
     <!-- Vendeur (Supplier/Admin) Nav - 6 items -->
-    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 overflow-x-auto" style="display: none; gap: 2px;">
-        <a href="{{ROOT}}index.html" class="nav-item shrink-0" title="Accueil" style="min-width: 46px;">
+    <div class="nav-bar vendor-nav flex justify-between items-center w-full px-1 py-1" style="display: none; gap: 4px;">
+        <a href="{{ROOT}}index.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Accueil">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:home-2-bold" width="20"></iconify-icon></div>
-            <span style="font-size: 9px;">Accueil</span>
+            <span class="text-[9px] font-medium">Accueil</span>
         </a>
-        <a href="{{ROOT}}pages/catalog.html" class="nav-item shrink-0" title="Boutique" style="min-width: 46px;">
+        <a href="{{ROOT}}pages/catalog.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Boutique">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:shop-linear" width="20"></iconify-icon></div>
-            <span style="font-size: 9px;">Boutique</span>
+            <span class="text-[9px] font-medium">Boutique</span>
         </a>
-        <a href="{{ROOT}}pages/publish.html" class="nav-item shrink-0 publish-btn relative" title="Vendre" style="min-width: 60px;">
+        <a href="{{ROOT}}pages/publish.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[65px] publish-btn relative" title="Vendre">
             <div class="nav-icon-wrap bg-gray-900 text-white rounded-full w-12 h-12 flex items-center justify-center absolute -top-8 left-1/2 transform -translate-x-1/2 shadow-lg border-4 border-white"><iconify-icon icon="solar:add-circle-bold" width="26"></iconify-icon></div>
-            <span style="font-size: 9px; margin-top: 18px;">Vendre</span>
+            <span class="text-[9px] font-bold" style="margin-top: 18px;">Vendre</span>
         </a>
-        <a href="{{ROOT}}pages/forum.html" class="nav-item shrink-0" title="Forum" style="min-width: 46px;">
+        <a href="{{ROOT}}pages/forum.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Forum">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chat-round-line-linear" width="20"></iconify-icon></div>
-            <span style="font-size: 9px;">Forum</span>
+            <span class="text-[9px] font-medium">Forum</span>
         </a>
-        <a href="{{ROOT}}pages/vendor-dashboard.html" class="nav-item shrink-0" title="Dashboard" style="min-width: 46px;">
+        <a href="{{ROOT}}pages/vendor-dashboard.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Dashboard">
             <div class="nav-icon-wrap"><iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon></div>
-            <span style="font-size: 9px;">Dashboard</span>
+            <span class="text-[9px] font-medium">Stats</span>
         </a>
-        <a href="{{ROOT}}pages/vendor-dashboard.html" class="nav-item shrink-0" title="Compte" id="mobileBottomAccountVendor" style="min-width: 46px;">
+        <a href="{{ROOT}}pages/vendor-dashboard.html" class="nav-item flex flex-col items-center justify-center shrink-0 min-w-[50px] gap-1" title="Compte" id="mobileBottomAccountVendor">
             <div class="nav-icon-wrap relative"><iconify-icon icon="solar:user-linear" width="20"></iconify-icon></div>
-            <span style="font-size: 9px;">Compte</span>
+            <span class="text-[9px] font-medium">Profil</span>
         </a>
     </div>
 </nav>`;

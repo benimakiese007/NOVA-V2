@@ -217,8 +217,8 @@
                             <div class="range-selected" id="price-range-track"></div>
                         </div>
                         <div class="range-input relative mb-8">
-                            <input type="range" id="min-price-slider" min="0" max="5000000" value="0" step="1000">
-                            <input type="range" id="max-price-slider" min="0" max="5000000" value="5000000" step="1000">
+                            <input type="range" id="min-price-slider" min="0" max="250000000" value="0" step="10000">
+                            <input type="range" id="max-price-slider" min="0" max="250000000" value="250000000" step="10000">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 price-inputs">
@@ -407,7 +407,7 @@
 
             const updateInput = () => {
                 minSlider.value = minInput.value || 0;
-                maxSlider.value = maxInput.value || 5000000;
+                maxSlider.value = maxInput.value || 250000000;
                 updateSlider();
             };
 

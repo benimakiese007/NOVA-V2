@@ -55,7 +55,9 @@ export default defineConfig({
         admin_support: './pages/admin/support.html',
         admin_user_details: './pages/admin/user-details.html',
         admin_user_stats: './pages/admin/user-stats.html',
-        admin_user: './pages/admin/user.html'
+        admin_user: './pages/admin/user.html',
+        admin_index: './pages/admin/index.html',
+        admin_newsletter: './pages/admin/newsletter.html'
       }
     }
   }
