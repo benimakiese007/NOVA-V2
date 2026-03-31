@@ -56,9 +56,9 @@
                             <iconify-icon icon="solar:box-bold" width="20"></iconify-icon>
                             Mes Produits
                         </a>
-                        <a href="#" onclick="switchVendorTab('gains')" class="sidebar-link">
-                            <iconify-icon icon="solar:wallet-2-bold" width="20"></iconify-icon>
-                            Ventes & Gains
+                        <a href="#" onclick="switchVendorTab('leads')" class="sidebar-link">
+                            <iconify-icon icon="solar:users-group-rounded-bold" width="20"></iconify-icon>
+                            Prospects WhatsApp
                         </a>
                         <a href="#" onclick="switchVendorTab('settings')" class="sidebar-link">
                             <iconify-icon icon="solar:settings-bold" width="20"></iconify-icon>
@@ -82,15 +82,15 @@
 
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-panel p-8">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Ventes totales</p>
-                    <div class="text-3xl font-black text-gray-900" id="vendorTotalSales">0 FC</div>
-                    <p class="text-xs text-green-500 mt-2 font-bold">+0% ce mois</p>
+                <div class="glass-panel p-8">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Clics WhatsApp</p>
+                    <div class="text-3xl font-black text-gray-900" id="vendorTotalSales">0</div>
+                    <p class="text-xs text-green-500 mt-2 font-bold">+0 ce mois</p>
                 </div>
                 <div class="glass-panel p-8">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Commandes</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Prospects Uniques</p>
                     <div class="text-3xl font-black text-gray-900" id="vendorOrders">0</div>
-                    <p class="text-xs text-gray-400 mt-2 font-bold font-medium pt-1">0 en attente</p>
+                    <p class="text-xs text-gray-400 mt-2 font-bold font-medium pt-1">Activité récente</p>
                 </div>
                 <div class="glass-panel p-8">
                     <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Produits en ligne</p>
@@ -104,10 +104,10 @@
                 <!-- Sales Chart -->
                 <div class="glass-panel p-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-bold text-gray-900">Évolution des ventes</h3>
+                        <h3 class="font-bold text-gray-900">Intérêt pour vos produits</h3>
                         <div
                             class="text-[10px] font-bold text-green-500 uppercase tracking-widest bg-green-50 px-2 py-1 rounded-md">
-                            Direct</div>
+                            WhatsApp</div>
                     </div>
                     <div class="aspect-[16/9]">
                         <canvas id="salesChart"></canvas>
@@ -117,7 +117,7 @@
                 <!-- Recent Orders Table -->
                 <div class="glass-panel p-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-bold text-gray-900">Commandes Récentes</h3>
+                        <h3 class="font-bold text-gray-900">Derniers Prospects</h3>
                         <a href="#"
                             class="text-xs font-bold text-gray-400 hover:text-black transition-colors uppercase tracking-widest">Voir
                             tout</a>

@@ -3,17 +3,19 @@
 window.newketConfig = {
     exchangeRate: 2500
 };
-window.ADMIN_EMAILS = [
+
+// Admin email list — used only to assign 'admin' role on signup.
+// DO NOT store passwords here. Bypass logins are handled by Supabase auth only.
+const ADMIN_EMAILS = [
     'benimakiese1234@gmail.com',
     'admin@newket.com',
     'tmautuimane00@gmail.com'
 ];
-window.ADMIN_PASSWORD = 'admin123';
+window.ADMIN_EMAILS = ADMIN_EMAILS;
+// ADMIN_PASSWORD intentionally removed — use Supabase Auth only.
 
 const App = {
     async init() {
-        console.log('[NewKet] App initializing...');
-
         // 0. Initialize Configuration
         if (window.ConfigManager) await ConfigManager.init();
 
@@ -27,28 +29,19 @@ const App = {
         if (window.OrderManager) initPromises.push(OrderManager.init());
         if (window.UserManager) initPromises.push(UserManager.init());
 
-        console.log('[NewKet] Awaiting Manager initializations...');
         await Promise.all(initPromises);
-        console.log('[NewKet] Managers initialized.');
 
         // 3. Initialize UI State
         if (window.CurrencyManager) {
-            console.log('[NewKet] Initializing CurrencyManager...');
             CurrencyManager.init();
         }
-        if (window.CartManager) {
-            console.log('[NewKet] Updating cart badges...');
-            CartManager.updateBadge();
-        }
         if (window.FavoritesManager) {
-            console.log('[NewKet] Updating Favorites UI...');
             FavoritesManager.updateUI();
         }
 
         // 4. Global Event Listeners
         this.bindGlobalEvents();
 
-        console.log('[NewKet] App core systems ready.');
         window.newketInitialized = true;
         window.dispatchEvent(new CustomEvent('newketInitialized'));
     },
@@ -56,7 +49,6 @@ const App = {
     bindGlobalEvents() {
         // Sync Cart and Favorites across tabs
         window.addEventListener('storage', (e) => {
-            if (e.key === 'newketCart' && window.CartManager) CartManager.updateBadge();
             if (e.key === 'newketFavorites' && window.FavoritesManager) FavoritesManager.updateUI();
         });
 
@@ -66,14 +58,7 @@ const App = {
             if (btn) btn.classList.remove('hidden');
         });
 
-        // Add to Cart global handler
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.add-to-cart-btn');
-            if (btn && window.CartManager) {
-                e.preventDefault();
-                this.handleAddToCart(btn);
-            }
-        });
+
 
         // Add to Wishlist global handler
         window.addToWishlist = (productId, event) => {
@@ -129,12 +114,6 @@ const App = {
         });
     },
 
-    handleAddToCart(btn) {
-        const productId = btn.dataset.productId || this.resolveProductId(btn);
-        const product = this.resolveProductData(productId, btn);
-        CartManager.addItem(product);
-        if (typeof showToast === 'function') showToast(`Ajouté au panier : ${product.name}`);
-    },
 
     resolveProductId(element) {
         const card = element.closest('.product-card');

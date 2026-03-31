@@ -153,8 +153,8 @@
                 </div>
                 <nav class="space-y-1">
                     <a href="#" onclick="switchTab('orders')" class="sidebar-link active" id="link-orders">
-                        <iconify-icon icon="solar:bag-3-bold" width="20"></iconify-icon>
-                        Mes Commandes
+                        <iconify-icon icon="solar:chat-round-line-bold" width="20"></iconify-icon>
+                        Mes Demandes WhatsApp
                     </a>
                     <a href="#" onclick="switchTab('favorites')" class="sidebar-link" id="link-favorites">
                         <iconify-icon icon="solar:heart-bold" width="20"></iconify-icon>
@@ -193,9 +193,9 @@
         <main class="flex-1 min-w-0">
             <!-- Orders Tab -->
             <div id="tab-orders" class="space-y-6 tab-content">
-                <h1 class="text-2xl font-bold tracking-tight">Historique des commandes</h1>
+                <h1 class="text-2xl font-bold tracking-tight">Historique de mes demandes</h1>
                 <div id="orders-list" class="space-y-4">
-                    <!-- Orders injected here -->
+                    <!-- Orders/Leads injected here -->
                 </div>
             </div>
 
@@ -215,26 +215,26 @@
                     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
                         <div
                             class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-2">
-                            <iconify-icon icon="solar:wallet-money-bold" width="24"></iconify-icon>
+                            <iconify-icon icon="solar:chat-round-line-bold" width="24"></iconify-icon>
                         </div>
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total dépensé</p>
-                        <div class="text-2xl font-black text-gray-900" id="customer-total-spent">0 FC</div>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-2">
-                            <iconify-icon icon="solar:bag-heart-bold" width="24"></iconify-icon>
-                        </div>
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Commandes</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Demandes Shop</p>
                         <div class="text-2xl font-black text-gray-900" id="customer-order-count">0</div>
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
                         <div
-                            class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-2">
-                            <iconify-icon icon="solar:star-bold" width="24"></iconify-icon>
+                            class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:heart-bold" width="24"></iconify-icon>
                         </div>
-                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Moyenne / Panier</p>
-                        <div class="text-2xl font-black text-gray-900" id="customer-avg-order">0 FC</div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Favoris</p>
+                        <div class="text-2xl font-black text-gray-900" id="customer-total-spent">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-1">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-2">
+                            <iconify-icon icon="solar:clock-circle-bold" width="24"></iconify-icon>
+                        </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Dernier Contact</p>
+                        <div class="text-base font-bold text-gray-900" id="customer-avg-order">Aujourd'hui</div>
                     </div>
                     <div class="bg-black text-white p-6 rounded-3xl shadow-xl shadow-black/10 flex flex-col gap-1">
                         <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center mb-2">
@@ -370,7 +370,7 @@
             class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden animate-in fade-in zoom-in duration-300">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
                 <div>
-                    <h2 class="text-xl font-bold" id="modalOrderIdText">Détails de la commande</h2>
+                    <h2 class="text-xl font-bold" id="modalOrderIdText">Détails de la demande</h2>
                     <p class="text-sm text-gray-500" id="modalOrderDateText"></p>
                 </div>
                 <button onclick="closeOrderModal()"
@@ -387,8 +387,8 @@
                         <div id="modalOrderStatus" class="px-3 py-1 rounded-full text-xs font-bold inline-block"></div>
                     </div>
                     <div class="space-y-1 text-right">
-                        <div class="text-xs font-bold text-gray-400 uppercase">Mode de paiement</div>
-                        <div class="text-sm font-medium">Paiement à la livraison</div>
+                        <div class="text-xs font-bold text-gray-400 uppercase">Mode de contact</div>
+                        <div class="text-sm font-medium">WhatsApp Direct</div>
                     </div>
                 </div>
 
@@ -418,11 +418,6 @@
 
                 <!-- Actions -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                    <button onclick="downloadInvoice()"
-                        class="flex-1 py-3 bg-gray-100 text-black rounded-xl font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
-                        <iconify-icon icon="solar:download-bold" width="20"></iconify-icon>
-                        Facture PDF
-                    </button>
                     <button onclick="closeOrderModal()"
                         class="flex-1 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-colors">
                         Fermer
@@ -748,9 +743,9 @@
             if (orders.length === 0) {
                 ordersList.innerHTML = `
                     <div class="glass-panel p-12 text-center text-gray-500">
-                        <iconify-icon icon="solar:box-minimalistic-linear" width="48" class="mb-4 text-gray-300"></iconify-icon>
-                        <p>Votre carnet de commandes est encore vierge. L'exceptionnel vous attend.</p>
-                        <a href="./catalog.html" class="inline-block mt-4 text-sm font-bold text-black border-b border-black uppercase tracking-widest">Commencer l'expérience</a>
+                        <iconify-icon icon="solar:chat-round-line-linear" width="48" class="mb-4 text-gray-300"></iconify-icon>
+                        <p>Vous n'avez pas encore envoyé de demande. L'exceptionnel vous attend.</p>
+                        <a href="./catalog.html" class="inline-block mt-4 text-sm font-bold text-black border-b border-black uppercase tracking-widest">Voir les articles</a>
                     </div>
                 `;
             } else {
@@ -758,7 +753,7 @@
                     <div class="glass-panel p-6 cursor-pointer hover:border-black transition-all group" onclick="openOrderModal('${order.id}')">
                         <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-gray-100">
                             <div>
-                                <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commande #${order.id}</div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Demande #${order.id}</div>
                                 <div class="text-sm text-gray-500">${new Date(order.date).toLocaleDateString()}</div>
                             </div>
                             <div class="flex items-center gap-3">
@@ -805,8 +800,8 @@
                         </div>
                         <h3 class="font-bold text-gray-900 text-[10px] sm:text-base mb-1 truncate">${item.name}</h3>
                         <div class="text-[9px] sm:text-sm text-gray-500 mb-4">${CurrencyManager.formatPrice(item.price)}</div>
-                        <button onclick="addToCart('${item.id}')" class="w-full py-2 bg-black text-white rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
-                            Ajouter au panier
+                        <button onclick="if(window.contactSeller) window.contactSeller('${item.id}', this)" class="w-full py-2 bg-green-600 text-white rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-green-700 flex items-center justify-center gap-2 transition-colors">
+                            <iconify-icon icon="ic:baseline-whatsapp" width="16"></iconify-icon> Contacter via WhatsApp
                         </button>
                     </div>
                 `).join('');
@@ -905,12 +900,7 @@
             renderFavorites(); // Dynamic refresh
         }
 
-        function addToCart(id) {
-            const product = ProductManager.getProduct(id);
-            if (product) {
-                CartManager.addItem(product);
-            }
-        }
+        // Add to cart has been removed and replaced with contactSeller from ui-helpers.
     </script>
 
 </body>

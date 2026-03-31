@@ -72,15 +72,6 @@ const HEADER_HTML = `
                         style="display:none; font-size:10px; width:18px; height:18px;">0</span>
                 </a>
 
-                <!-- Cart -->
-                <a href="{{ROOT}}pages/cart.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
-                    title="Panier">
-                    <iconify-icon icon="solar:bag-3-linear" width="22" class="text-gray-600"></iconify-icon>
-                    <span
-                        class="absolute -top-0.5 -right-0.5 bg-gray-900 text-white text-xs rounded-full flex items-center justify-center font-medium"
-                        style="font-size:10px; width:18px; height:18px;" id="cart-count">0</span>
-                </a>
-
                 <!-- Account -->
                 <a href="{{ROOT}}pages/login.html" class="relative p-1 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block"
                     title="Compte" id="accountLink">
@@ -221,7 +212,7 @@ const FOOTER_HTML = `<!-- NewKet Footer Component -->
                 <h4 class="text-sm font-bold uppercase tracking-widest text-white/90">Services</h4>
                 <ul class="space-y-4">
                     <li><a href="{{ROOT}}pages/customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Mon Compte</a></li>
-                    <li><a href="{{ROOT}}pages/customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Suivi de Commande</a></li>
+                    <li><a href="{{ROOT}}pages/customer-dashboard.html" class="text-gray-400 hover:text-white text-sm transition-colors">Mes Activités</a></li>
                     <li><a href="{{ROOT}}pages/about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Aide & FAQ</a></li>
                     <li><a href="{{ROOT}}pages/publish.html" class="text-gray-400 hover:text-white text-sm transition-colors publish-btn">Vendre un article</a></li>
                 </ul>
@@ -313,13 +304,12 @@ const MINIMAL_HEADER_HTML = `<!-- NewKet Minimal Header Component -->
 
 const ComponentLoader = {
     async init() {
-        console.log('[NewKet] Initializing Component Loader...');
 
         // Determine if we are on the home page (index.html or root)
         const currentPath = window.location.pathname;
         const isHomePage = currentPath === '/' || currentPath === '' || currentPath.endsWith('index.html');
         // Pages that require focus/conversion
-        const isMinimalPage = currentPath.endsWith('login.html') || currentPath.endsWith('cart.html') || currentPath.endsWith('publish.html');
+        const isMinimalPage = currentPath.endsWith('login.html') || currentPath.endsWith('publish.html');
 
         const componentsToLoad = [];
 
@@ -352,12 +342,10 @@ const ComponentLoader = {
         // Dispatch event when components are ready
         window.dispatchEvent(new CustomEvent('componentsLoaded'));
 
-        // Re-initialize UI managers that depend on header/footer
         if (window.AuthManager) {
             AuthManager.enforcePermissions();
             AuthManager.updateAccountLink();
         }
-        if (window.CartManager) CartManager.updateBadge();
         if (window.FavoritesManager) FavoritesManager.updateUI();
         if (window.CurrencyManager) CurrencyManager.updateCurrencyUI();
         if (window.SearchManager) SearchManager.init();
@@ -381,12 +369,10 @@ const ComponentLoader = {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const html = await response.text();
             this.injectHTML(element, html);
-            console.log(`[NewKet] Loaded ${path} via fetch`);
         } catch (error) {
             // CORS / file:// fallback: use inline HTML
             if (fallbackHTML) {
                 this.injectHTML(element, fallbackHTML);
-                console.log(`[NewKet] Loaded ${path} via inline fallback`);
             } else {
                 console.error(`[NewKet] Failed to load component ${path}:`, error);
             }

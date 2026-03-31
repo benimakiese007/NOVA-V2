@@ -3,15 +3,16 @@
 
 import './supabase-client.js';
 import './supabase-adapter.js';
+import './sanitize.js';
 
 import './config-manager.js';
 
 import './auth.js';
-import './cart.js';
+// import './cart.js';
 import './favorites.js';
 import './currency.js';
 import './products.js';
-import './orders.js';
+// import './orders.js';
 import './user-manager.js';
 import './managers.js';
 
@@ -24,4 +25,3 @@ import './realtime-notifications.js';
 // main.js is usually the last one as it depends on initialized UI
 import './main.js';
 
-console.log('[NewKet] App initialized successfully.');

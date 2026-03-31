@@ -3,23 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page non trouvée - NewKet</title>
-    <meta name="description" content="La page que vous cherchez n'existe pas sur NewKet.">
-    <link rel="stylesheet" href="../assets/css/input.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <title>404 - Page non trouvée — NewKet</title>
+    <meta name="description" content="La page que vous cherchez n'existe pas sur NewKet. Retournez à l'accueil.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js" defer></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-16px); }
+        }
+        .floating { animation: float 3.5s ease-in-out infinite; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.7s ease forwards; }
+        .fade-up-delay { animation: fadeUp 0.7s ease 0.2s forwards; opacity: 0; }
+        .fade-up-delay-2 { animation: fadeUp 0.7s ease 0.4s forwards; opacity: 0; }
+    </style>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
-    <main class="flex-grow flex items-center justify-center p-8 text-center">
-        <div class="max-w-md w-full bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
-            <h1 class="text-6xl font-black text-gray-900 mb-4">404</h1>
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Page introuvable</h2>
-            <p class="text-gray-500 mb-8">Oups ! La page que vous recherchez semble avoir disparu ou n'a jamais existé. Explorez nos autres sections.</p>
-            <a href="../../index.html" class="inline-block bg-primary text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-primary/30 hover:-translate-y-1 transition-all duration-300">
-                Retour à l'accueil
-            </a>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Minimal Header -->
+    <header class="w-full px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between">
+        <a href="/index.html" class="text-lg font-black tracking-tighter text-gray-900">NEWKET</a>
+        <a href="/index.html" class="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors">
+            ← Retour à l'accueil
+        </a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-8">
+        <div class="text-center max-w-lg w-full">
+
+            <!-- Floating 404 Number -->
+            <div class="floating mb-8">
+                <span class="text-[120px] sm:text-[160px] font-black text-gray-900 leading-none select-none">404</span>
+            </div>
+
+            <!-- Message -->
+            <div class="fade-up">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Page introuvable</h1>
+                <p class="text-gray-500 text-base mb-8 leading-relaxed">
+                    Oups ! La page que vous recherchez semble avoir disparu<br class="hidden sm:block">
+                    ou n'a jamais existé. Explorez nos autres sections.
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="fade-up-delay flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="/index.html"
+                   class="inline-flex items-center gap-2 bg-gray-900 text-white font-semibold px-8 py-3.5 rounded-2xl hover:bg-black transition-all duration-200 shadow-lg shadow-gray-900/20">
+                    <iconify-icon icon="solar:home-bold" width="18"></iconify-icon>
+                    Accueil
+                </a>
+                <a href="/pages/catalog.html"
+                   class="inline-flex items-center gap-2 bg-white text-gray-700 font-semibold px-8 py-3.5 rounded-2xl border border-gray-200 hover:border-gray-900 hover:text-gray-900 transition-all duration-200">
+                    <iconify-icon icon="solar:shop-linear" width="18"></iconify-icon>
+                    Voir le catalogue
+                </a>
+            </div>
+
+            <!-- Suggestion links -->
+            <div class="fade-up-delay-2 mt-10 flex flex-wrap justify-center gap-3 text-sm text-gray-400">
+                <a href="/pages/login.html" class="hover:text-gray-700 transition-colors">Se connecter</a>
+                <span>·</span>
+                <a href="/pages/about.html" class="hover:text-gray-700 transition-colors">À propos</a>
+                <span>·</span>
+                <a href="/pages/forum.html" class="hover:text-gray-700 transition-colors">Forum</a>
+                <span>·</span>
+                <a href="/pages/favorites.html" class="hover:text-gray-700 transition-colors">Mes favoris</a>
+            </div>
+
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-gray-400 border-t border-gray-100 bg-white">
+        &copy; 2025 NewKet — Marketplace Moderne
+    </footer>
+
 </body>
 </html>

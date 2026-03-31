@@ -46,12 +46,13 @@ function showToast(message, type = 'info') {
 
     const { icon, color } = icons[type] || icons.info;
 
+    const safeMsg = (typeof window.escapeHTML === 'function') ? window.escapeHTML(message) : String(message).replace(/</g, '&lt;').replace(/>/g, '&gt;');
     toast.innerHTML = `
         <div class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
             <iconify-icon icon="${icon}" width="24" class="${color}"></iconify-icon>
         </div>
         <div class="flex-1">
-            <p class="text-sm font-bold text-gray-900">${message}</p>
+            <p class="text-sm font-bold text-gray-900">${safeMsg}</p>
         </div>
     `;
 
@@ -165,12 +166,12 @@ function buildProductCardHTML(p, options = {}) {
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: auto;">
                     <button 
-                        onclick="const prod = window.ProductManager ? ProductManager.getProduct('${p.id}') : null; if(prod && window.CartManager){ CartManager.addItem(prod); }"
-                        style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:#111827; color:white; border:none; border-radius:12px; font-size:0.875rem; font-weight:700; padding:0.75rem 1rem; cursor:pointer; transition:background 0.2s ease; letter-spacing:0.01em;"
-                        onmouseover="this.style.background='#000'" onmouseout="this.style.background='#111827'"
+                        onclick="if(window.contactSeller) window.contactSeller('${p.id}', this)"
+                        style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:#16a34a; color:white; border:none; border-radius:12px; font-size:0.875rem; font-weight:700; padding:0.75rem 1rem; cursor:pointer; transition:background 0.2s ease; letter-spacing:0.01em;"
+                        onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'"
                         data-product-id="${p.id}">
-                        <iconify-icon icon="solar:cart-large-minimalistic-bold" width="16"></iconify-icon>
-                        Ajouter
+                        <iconify-icon icon="ic:baseline-whatsapp" width="16"></iconify-icon>
+                        WhatsApp
                     </button>
                     <button onclick="if(navigator.share){ navigator.share({title:'${p.name.replace(/'/g, "\\'")} — NewKet', url: window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + '${getRootPath()}pages/product.html?id=${p.id}'}); } else { navigator.clipboard.writeText(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + '${getRootPath()}pages/product.html?id=${p.id}'); if(window.showToast) showToast('Lien copié !', 'info'); }"
                         style="width:40px; height:40px; border-radius:10px; border:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:#6b7280; background:white; cursor:pointer; flex-shrink:0; transition: all 0.2s ease;"
@@ -246,6 +247,80 @@ function getOptimizedImageUrl(url, opts = { width: 400, quality: 80 }) {
     
     return `${firstImg}${firstImg.includes('?') ? '&' : '?'}${params.toString()}`;
 }
+
+/**
+ * Enregistre un clic WhatsApp (Lead) dans la base de données.
+ */
+async function recordLead(productId, vendorId, productName) {
+    try {
+        const client = window.SupabaseAdapter.getClient();
+        if (!client) return;
+
+        const { data: userData } = await client.auth.getUser();
+        const user = userData?.user;
+
+        await client.from('whatsapp_clicks').insert({
+            product_id: productId,
+            vendor_id: vendorId,
+            user_id: user?.id || null,
+            metadata: {
+                product_name: productName,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            }
+        });
+        
+        console.log('[NewKet] Click (Lead) recorded:', productId);
+    } catch (err) {
+        console.error('[NewKet] Failed to record lead:', err);
+    }
+}
+
+/**
+ * Handles WhatsApp redirection for product contact
+ */
+window.contactSeller = async (productId, btnElement) => {
+    try {
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = '<iconify-icon icon="line-md:loading-twotone-loop" width="16"></iconify-icon>...';
+        btnElement.disabled = true;
+        
+        const p = window.ProductManager.getProduct(productId) || await window.ProductManager.fetchProductById(productId);
+        if(!p) {
+            showToast('Produit introuvable', 'error');
+            btnElement.innerHTML = originalHtml;
+            btnElement.disabled = false;
+            return;
+        }
+
+        const sellerInfo = await window.SupabaseAdapter.fetchWithFilters('profiles', {
+            eq: [['id', p.user_id]], single: true
+        });
+        
+        const phone = sellerInfo?.store_phone_whatsapp || sellerInfo?.phone;
+        if (!phone) {
+            showToast("Ce vendeur n'a pas de numéro WhatsApp lié.", 'error');
+            btnElement.innerHTML = originalHtml;
+            btnElement.disabled = false;
+            return;
+        }
+        
+        // Record lead asynchronously
+        recordLead(p.id, p.user_id, p.name);
+
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const productUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + getRootPath() + 'pages/product.html?id=' + p.id;
+        const message = encodeURIComponent(`Bonjour, je suis intéressé par l'article *${p.name}*\nPrix: ${p.price} FC\n\nLien: ${productUrl}`);
+        window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+        
+        btnElement.innerHTML = originalHtml;
+        btnElement.disabled = false;
+    } catch (err) {
+        console.error('[NewKet] Contact error:', err);
+        showToast("Erreur lors de la redirection WhatsApp.", "error");
+        btnElement.disabled = false;
+    }
+};
 
 window.showToast = showToast;
 window.debounce = debounce;

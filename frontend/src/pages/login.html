@@ -574,23 +574,8 @@
                     }, 1500);
 
                 } else if (isLogin) {
-                    // LOGIN Logic — Bypass admin local si Supabase indisponible
-                    const adminEmails = (window.ADMIN_EMAILS || []).map(e => e.toLowerCase());
-                    const adminPassword = window.ADMIN_PASSWORD || 'admin123';
-                    
+                    // LOGIN Logic — All authentication via Supabase Auth
                     let loginEmail = email.toLowerCase().trim();
-                    // Auto-append domain for known admins if typing only the username
-                    if (!loginEmail.includes('@')) {
-                        const matchingAdmin = adminEmails.find(e => e.split('@')[0] === loginEmail);
-                        if (matchingAdmin) loginEmail = matchingAdmin;
-                    }
-
-                    if (adminEmails.includes(loginEmail) && (password === adminPassword || password === 'admin123')) {
-                        // Local bypass for convenience during dev/testing
-                        console.log('[NewKet] Admin local bypass enabled for:', loginEmail);
-                        finalizeAuth({ user_metadata: { role: 'admin' } }, loginEmail);
-                        return;
-                    }
 
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
                     if (error) throw error;

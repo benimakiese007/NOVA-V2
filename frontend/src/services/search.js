@@ -1,4 +1,5 @@
 /* newket EMarket Search Manager */
+import { escapeHTML } from './sanitize.js';
 
 const SearchManager = {
     debounceTimer: null,
@@ -60,7 +61,7 @@ const SearchManager = {
             if (!filtered || filtered.length === 0) {
                 container.innerHTML = `
                     <div class="p-5 text-center text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">
-                        Aucun résultat pour "${query}"
+                        Aucun résultat pour "${escapeHTML(query)}"
                     </div>`;
             } else {
                 container.innerHTML = filtered.map(p => {
@@ -69,13 +70,13 @@ const SearchManager = {
                         ? `${firstImg}?width=100&quality=70` : firstImg;
                         
                     return `
-                    <a href="product.html?id=${p.id}" class="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+                    <a href="product.html?id=${escapeHTML(p.id)}" class="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                         <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl p-1.5 flex-shrink-0">
-                            <img src="${optImg}" loading="lazy" class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" alt="${p.name}">
+                            <img src="${escapeHTML(optImg)}" loading="lazy" class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" alt="${escapeHTML(p.name)}">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-xs font-black text-gray-900 dark:text-gray-100 truncate group-hover:text-black dark:group-hover:text-white transition-colors">${p.name}</div>
-                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">${p.category}</div>
+                            <div class="text-xs font-black text-gray-900 dark:text-gray-100 truncate group-hover:text-black dark:group-hover:text-white transition-colors">${escapeHTML(p.name)}</div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">${escapeHTML(p.category)}</div>
                         </div>
                         <div class="text-xs font-black text-gray-900 dark:text-gray-100">
                             ${window.CurrencyManager ? CurrencyManager.formatPrice(p.price) : p.price + ' FC'}

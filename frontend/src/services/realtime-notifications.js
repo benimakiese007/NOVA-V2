@@ -146,7 +146,6 @@ const AppNotifications = {
         // Optionally, register a service worker if not already done by standard html
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('[NewKet] Service Worker registered'))
                 .catch(err => console.error('[NewKet] SW registration failed', err));
         }
     },

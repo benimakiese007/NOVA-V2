@@ -164,8 +164,14 @@
                 const whatsapp = document.getElementById('whatsapp').value;
                 const storeDescription = document.getElementById('storeDescription').value;
                 const storeAddress = document.getElementById('storeAddress').value;
-                const payoutMethod = document.getElementById('payoutMethod').value;
-                const userEmail = localStorage.getItem('newketUserEmail');
+                const pMethodElem = document.getElementById('payoutMethod');
+                const payoutMethod = pMethodElem ? pMethodElem.value : '';
+                
+                const sessionRes = await window.supabaseClient.auth.getSession();
+                const user = sessionRes?.data?.session?.user;
+                if (!user) throw new Error("Vous n'êtes pas connecté");
+                
+                const userId = user.id;
                 
                 let docUrls = [];
                 // Upload files to Supabase Storage
@@ -176,7 +182,7 @@
                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Enlever les accents
                         .replace(/[^a-zA-Z0-9.\-_]/g, "_"); // Remplacer tout le reste par _
                         
-                    const path = `kyc/${userEmail}/${Date.now()}_${sanitizedName}`;
+                    const path = `kyc/${userId}/${Date.now()}_${sanitizedName}`;
                     const url = await window.SupabaseAdapter.uploadFile('vendor-docs', path, file);
                     if (url) docUrls.push(url);
                 }
@@ -186,20 +192,19 @@
                 }
 
                 // Update user profile in public.users
-                const { data, error } = await window.supabaseClient
-                    .from('users')
-                    .update({
-                        company_name: companyName,
-                        store_phone_whatsapp: whatsapp,
-                        store_description: storeDescription,
-                        store_address: storeAddress,
-                        preferred_payout_method: payoutMethod,
-                        documents_url: docUrls,
-                        status: 'submitted'  // 'submitted' = dossier envoyé, en attente d'examen admin
-                    })
-                    .eq('email', userEmail);
+                const updateRes = await window.SupabaseAdapter.update('users', userId, {
+                    company_name: companyName,
+                    store_phone_whatsapp: whatsapp,
+                    store_description: storeDescription,
+                    store_address: storeAddress,
+                    preferred_payout_method: payoutMethod,
+                    documents_url: docUrls,
+                    status: 'submitted' 
+                });
 
-                if (error) throw error;
+                if (!updateRes) {
+                    throw new Error("Erreur de sauvegarde: aucun profil mis à jour.");
+                }
 
                 localStorage.setItem('newketUserStatus', 'submitted');
                 if (window.LoaderManager) LoaderManager.hide();

@@ -19,7 +19,6 @@ const ConfigManager = {
     },
 
     async init() {
-        console.log('[NewKet] ConfigManager initializing...');
         const saved = localStorage.getItem('newket_global_config');
         if (saved) {
             try {
@@ -41,13 +40,11 @@ const ConfigManager = {
                     this.saveLocal();
                 }
             } catch (err) {
-                console.log('[NewKet] Could not load remote settings, using local/default.');
             }
         }
 
         // Global export for legacy code
         window.newketConfig = this.config;
-        console.log('[NewKet] ConfigManager ready. Rate:', this.config.exchangeRate);
     },
 
     getConfig() {

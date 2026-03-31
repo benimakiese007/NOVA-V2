@@ -10,7 +10,6 @@ const AuthManager = {
         this._authChecking = true;
         if (window.supabaseClient) {
             window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                console.log('Auth State Change:', event);
 
                 if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     const user = session.user;
@@ -77,12 +76,10 @@ const AuthManager = {
 
         // Listen for components-loader events (Re-enforce once DOM is populated)
         if (window.componentsLoaded) {
-            console.log('[NewKet] Components already ready, enforcing permissions...');
             this.enforcePermissions();
             this.updateAccountLink();
         } else {
             window.addEventListener('componentsLoaded', () => {
-                console.log('[NewKet] Components ready, re-enforcing permissions...');
                 this.enforcePermissions();
                 this.updateAccountLink();
             });
@@ -253,19 +250,21 @@ const AuthManager = {
         }
 
         if (this.role === 'supplier') {
-            document.querySelectorAll('.cart-trigger, .add-to-cart-btn, #cart-count').forEach(el => {
-                el.style.display = '';
-            });
-
             // KYC Enforcement
             const isApproved = this.status === 'approved';
             const isSubmitted = this.status === 'submitted'; // Form filled, waiting for admin
             const isPending = this.status === 'pending' || !this.status; // Never filled the form
 
             if (isPending) {
-                // Redirect to onboarding form if they haven't filled it yet
+                // Determine if we are on a protected vendor-only page
                 const path = window.location.pathname;
-                if (!path.includes('seller-onboarding.html')) {
+                const isProtectedVendorPage = 
+                    path.includes('vendor-dashboard.html') || 
+                    path.includes('publish.html') || 
+                    path.includes('inventory.html') ||
+                    path.includes('orders.html');
+
+                if (isProtectedVendorPage && !path.includes('seller-onboarding.html')) {
                     window.location.href = '/pages/seller-onboarding.html';
                     return;
                 }
@@ -292,9 +291,6 @@ const AuthManager = {
         }
 
         if (this.role === 'customer') {
-            document.querySelectorAll('.cart-trigger, .add-to-cart-btn, #cart-count').forEach(el => {
-                el.style.display = '';
-            });
             document.querySelectorAll('.publish-btn, .supplier-only, #headerDashboardLink').forEach(el => {
                 el.style.display = 'none';
             });
@@ -333,7 +329,7 @@ const AuthManager = {
                 let img = accountLink.querySelector('.nav-user-avatar');
                 if (!img) {
                     img = document.createElement('img');
-                    img.className = 'nav-user-avatar w-6 h-6 sm:w-full sm:h-full object-cover rounded-full';
+                    img.className = 'nav-user-avatar w-7 h-7 object-cover rounded-full';
                     accountLink.appendChild(img);
                 }
                 img.src = avatarUrl;

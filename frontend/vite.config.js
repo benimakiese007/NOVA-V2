@@ -10,6 +10,7 @@ export default defineConfig({
     }
   },
   root: 'src',
+  envDir: '../',
   publicDir: '../public',
   // Vite va résoudre le build à la racine par défaut
   build: {

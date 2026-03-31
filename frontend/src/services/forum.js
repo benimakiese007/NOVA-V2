@@ -2,6 +2,7 @@
  * Forum Logic for NewKet
  * Handles categories, topics, and posts with Supabase integration.
  */
+import { escapeHTML } from './sanitize.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const categoriesList = document.getElementById('categoriesList');
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let categories = [];
     let currentCategoryId = null;
+    let currentTopicId = null;
 
     // Initialize Forum
     const initForum = async () => {
@@ -58,10 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const isActive = currentCategoryId === cat.id;
             categoriesList.innerHTML += `
                 <button class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-gray-900 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}" 
-                    onclick="window.forumManager.filterByCategory('${cat.id}')">
+                    onclick="window.forumManager.filterByCategory('${escapeHTML(cat.id)}')">
                     <div class="flex items-center gap-3">
-                        <iconify-icon icon="${cat.icon || 'solar:chat-round-line-linear'}" width="18"></iconify-icon>
-                        ${cat.name}
+                        <iconify-icon icon="${escapeHTML(cat.icon || 'solar:chat-round-line-linear')}" width="18"></iconify-icon>
+                        ${escapeHTML(cat.name)}
                     </div>
                 </button>
             `;
@@ -124,31 +126,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 day: 'numeric',
                 month: 'long'
             });
+            const avatarSrc = escapeHTML(topic.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + topic.user_id);
 
             return `
-                <div class="forum-card bg-white p-6 rounded-3xl border border-gray-100 shadow-sm cursor-pointer group" onclick="window.forumManager.viewTopic('${topic.id}')">
+                <div class="forum-card bg-white p-6 rounded-3xl border border-gray-100 shadow-sm cursor-pointer group" onclick="window.forumManager.viewTopic('${escapeHTML(topic.id)}')">
                     <div class="flex gap-4">
                         <div class="shrink-0">
-                            <img src="${topic.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + topic.user_id}" 
+                            <img src="${avatarSrc}" 
                                 class="w-12 h-12 rounded-full border-2 border-slate-50 shadow-sm object-cover">
                         </div>
                         <div class="flex-1">
                             <div class="flex items-start justify-between mb-1">
                                 <h3 class="text-lg font-bold text-gray-900 group-hover:text-black transition-colors leading-tight">
-                                    ${topic.title}
+                                    ${escapeHTML(topic.title)}
                                 </h3>
                                 <div class="flex items-center gap-1.5 text-gray-400">
                                     <iconify-icon icon="solar:chat-round-dots-linear" width="18"></iconify-icon>
-                                    <span class="text-sm font-bold">${topic.forum_posts[0].count}</span>
+                                    <span class="text-sm font-bold">${escapeHTML(topic.forum_posts[0].count)}</span>
                                 </div>
                             </div>
                             <p class="text-gray-500 text-sm line-clamp-2 mb-4">
-                                ${topic.content}
+                                ${escapeHTML(topic.content)}
                             </p>
                             <div class="flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                <span class="text-gray-900">${topic.users?.name || 'Utilisateur'}</span>
+                                <span class="text-gray-900">${escapeHTML(topic.users?.name || 'Utilisateur')}</span>
                                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                <span>${date}</span>
+                                <span>${escapeHTML(date)}</span>
                             </div>
                         </div>
                     </div>
@@ -160,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Category Select in Modal
     const renderCategorySelect = () => {
         topicCategorySelect.innerHTML = categories.map(cat => `
-            <option value="${cat.id}">${cat.name}</option>
+            <option value="${escapeHTML(cat.id)}">${escapeHTML(cat.name)}</option>
         `).join('');
     };
 
@@ -272,23 +275,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 minute: '2-digit'
             });
 
+            const detailAvatar = escapeHTML(data.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + data.user_id);
             headerSection.innerHTML = `
                 <div class="flex items-center gap-2 mb-4">
                     <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                        ${data.forum_categories.name}
+                        ${escapeHTML(data.forum_categories.name)}
                     </span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">${data.title}</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">${escapeHTML(data.title)}</h1>
                 <div class="flex items-center gap-4 py-6 border-t border-gray-50">
-                    <img src="${data.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + data.user_id}" 
+                    <img src="${detailAvatar}" 
                         class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover">
                     <div>
-                        <div class="font-bold text-gray-900">${data.users?.name || 'Utilisateur'}</div>
-                        <div class="text-xs text-gray-400 font-medium">${date}</div>
+                        <div class="font-bold text-gray-900">${escapeHTML(data.users?.name || 'Utilisateur')}</div>
+                        <div class="text-xs text-gray-400 font-medium">${escapeHTML(date)}</div>
                     </div>
                 </div>
                 <div class="mt-6 text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    ${data.content}
+                    ${escapeHTML(data.content)}
                 </div>
             `;
         } catch (err) {
@@ -326,19 +330,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
+                const postAvatar = escapeHTML(post.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + post.user_id);
 
                 return `
                     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                         <div class="flex items-start gap-4">
-                            <img src="${post.users?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + post.user_id}" 
+                            <img src="${postAvatar}" 
                                 class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover">
                             <div class="flex-1">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="font-bold text-gray-900 text-sm">${post.users?.name || 'Utilisateur'}</span>
-                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${date}</span>
+                                    <span class="font-bold text-gray-900 text-sm">${escapeHTML(post.users?.name || 'Utilisateur')}</span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${escapeHTML(date)}</span>
                                 </div>
                                 <div class="text-gray-700 text-sm whitespace-pre-wrap">
-                                    ${post.content}
+                                    ${escapeHTML(post.content)}
                                 </div>
                             </div>
                         </div>

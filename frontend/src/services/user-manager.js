@@ -12,13 +12,11 @@ const UserManager = {
             return;
         }
 
-        console.log('[UserManager] Fetching users...');
         try {
             // Fetch all users from the 'users' table
             const users = await SupabaseAdapter.fetch('users');
             this.data = users || [];
             this._initialized = true;
-            console.log(`[UserManager] Loaded ${this.data.length} users.`);
         } catch (error) {
             console.error('[UserManager] Error initializing users:', error);
             this.data = [];
@@ -37,7 +35,6 @@ const UserManager = {
         const client = SupabaseAdapter.getClient();
         if (!client) return { error: 'Supabase not initialized' };
 
-        console.log(`[UserManager] Updating status for ${userId} to ${status}`);
         const result = await SupabaseAdapter.update('users', userId, { status });
         
         if (result) {
@@ -50,7 +47,6 @@ const UserManager = {
     },
 
     async deleteUser(userId) {
-        console.log(`[UserManager] Deleting user ${userId}`);
         const success = await SupabaseAdapter.delete('users', userId);
         if (success) {
             this.data = this.data.filter(u => u.id !== userId);

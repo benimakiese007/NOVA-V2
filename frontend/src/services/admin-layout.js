@@ -5,7 +5,6 @@
 
 const AdminLayout = {
     async init() {
-        console.log('[NewKet] Initializing Admin Layout...');
         
         // 1. Security Check (Strict Admin only for admin/ folder)
         this.checkAccess();
@@ -20,7 +19,6 @@ const AdminLayout = {
         // 4. Global Event Listeners (Mobile menu etc)
         this.bindEvents();
         
-        console.log('[NewKet] Admin Layout Ready.');
     },
 
     checkAccess() {

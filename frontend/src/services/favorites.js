@@ -27,7 +27,6 @@ const FavoritesManager = {
             await window.supabaseClient
                 .from('user_favorites')
                 .upsert({ user_id: user.id, favorites_data: JSON.stringify(favorites), updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
-            console.log('[NewKet] Favorites synced to Supabase.');
         } catch (err) {
             console.warn('[NewKet] Favorites Supabase sync failed (non-blocking):', err.message);
         }
@@ -61,7 +60,6 @@ const FavoritesManager = {
             const merged = Array.from(mergedMap.values());
             localStorage.setItem('newketFavorites', JSON.stringify(merged));
             this.updateUI();
-            console.log('[NewKet] Favorites synced from Supabase. Items:', merged.length);
         } catch (err) {
             console.warn('[NewKet] Favorites Supabase pull failed (non-blocking):', err.message);
         }

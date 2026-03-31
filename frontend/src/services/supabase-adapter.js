@@ -43,7 +43,6 @@ window.SupabaseAdapter = {
                 delete this._cache[key];
             }
         });
-        console.log(`[NewKet Cache] Invalidated cache for "${table}"`);
     },
 
     // ========== CLIENT ==========
@@ -107,7 +106,6 @@ window.SupabaseAdapter = {
         const cacheKey = this._getCacheKey(table, { select });
         const cached = this._getFromCache(cacheKey);
         if (cached) {
-            console.log(`[NewKet Cache] HIT for "${table}"`);
             return cached;
         }
 
@@ -151,7 +149,6 @@ window.SupabaseAdapter = {
         if (!options.skipCache) {
             const cached = this._getFromCache(cacheKey);
             if (cached) {
-                console.log(`[NewKet Cache] HIT for "${table}" (filtered)`);
                 return cached;
             }
         }

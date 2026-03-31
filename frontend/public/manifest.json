@@ -16,8 +16,12 @@
     {
       "src": "Images/Logo NewKet V2.jpeg",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "type": "image/jpeg"
+    },
+    {
+      "src": "Images/Logo NewKet V2.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
     }
   ]
 }

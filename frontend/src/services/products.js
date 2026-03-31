@@ -40,7 +40,6 @@ const ProductManager = {
                 const parsed = JSON.parse(localCache);
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                     this.products = parsed;
-                    console.log('[NewKet] Loaded products from cache:', this.products.length);
                     window.dispatchEvent(new CustomEvent('productsUpdated'));
                 }
             } catch (e) {
@@ -53,7 +52,6 @@ const ProductManager = {
         this._hasMore = true;
         this.fetchFreshData().finally(() => {
             this.loading = false;
-            console.log('[NewKet] ProductManager initial fetch complete. Products:', this.products.length);
         });
 
         return Promise.resolve();
@@ -87,8 +85,6 @@ const ProductManager = {
                 if (dataChanged) {
                     window.dispatchEvent(new CustomEvent('productsUpdated'));
                 }
-
-                console.log(`[NewKet] Loaded page 1 — ${mappedProducts.length}/${result.count} products.`);
             }
         } catch (err) {
             console.error('[NewKet] Error fetching products:', err);
@@ -116,7 +112,6 @@ const ProductManager = {
                 this._hasMore = this.products.length < this._totalCount;
 
                 window.dispatchEvent(new CustomEvent('productsUpdated'));
-                console.log(`[NewKet] Loaded page ${nextPage} — total loaded: ${this.products.length}/${this._totalCount}.`);
             } else {
                 this._hasMore = false;
                 window.dispatchEvent(new CustomEvent('productsUpdated'));

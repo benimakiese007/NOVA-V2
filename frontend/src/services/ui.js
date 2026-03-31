@@ -5,12 +5,10 @@
 
 const UI = {
     init() {
-        console.log('[NewKet UI] Handler initializing...');
         this.renderHomeGrid();
 
         // Listen for data updates
         window.addEventListener('productsUpdated', () => {
-            console.log('[NewKet UI] Data updated, re-rendering...');
             this.renderHomeGrid();
         });
 
